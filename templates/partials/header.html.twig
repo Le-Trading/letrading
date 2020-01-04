@@ -25,15 +25,15 @@
                         <a href="#" class="dropdown-item">Mes réservations</a>
                         <a href="#" class="dropdown-item">Modifier mon profil</a>
                         <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item">Déconnexion</a>
+                        <a href="{{path('account_logout')}}" class="dropdown-item">Déconnexion</a>
                     </div>
                 </li>
             {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Inscription</a>
+                    <a class="nav-link" href="{{path('account_register')}}">Inscription</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Connexion</a>
+                    <a class="nav-link" href="{{path('account_login')}}">Connexion</a>
                 </li>
             {% endif %}
         </ul>

@@ -5,10 +5,16 @@ namespace App\Entity;
 use Cocur\Slugify\Slugify;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\HasLifecycleCallbacks()
+ * @UniqueEntity(
+ *  fields={"email"},
+ *  message="L'email est déja utilisé, merci de le modifier"
+ * )
  */
 class User implements UserInterface
 {
@@ -21,33 +27,44 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Vous devez renseigner votre prénom")
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Vous devez renseigner votre nom")
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Vous devez renseigner votre pseudo")
      */
     private $pseudo;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Email(message="Veuillez renseigner un email valide !")
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Url(message="Veuillez donner une URL valide")
      */
     private $picture;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Mot de passe invalide")
      */
     private $hash;
+
+    /**
+     * @Assert\EqualTo(propertyPath="hash", message="Mot de passe invalide")
+     */
+    public $passwordConfirm;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -67,6 +84,10 @@ class User implements UserInterface
             $slugify = new Slugify();
             $this->slug = $slugify->slugify($this->firstName. ' ' .$this->lastName);
         }
+    }
+
+    public function getFullName(){
+        return "{$this->firstName} {$this->lastName}";
     }
 
     public function getId(): ?int
