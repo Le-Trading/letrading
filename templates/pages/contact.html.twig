@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contactez nous{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div id="contactForm" class="py-3 px-3">
+                <h1>Formulaire de contact</h1>
+                {{form_start(form)}}
+                {{form_widget(form)}}
+                <button type="submit" class="btn btn-success">Contactez nous</button>
+                {{form_end(form)}}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
