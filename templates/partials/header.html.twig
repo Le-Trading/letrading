@@ -9,7 +9,28 @@
                 <a class="nav-link" href="{{path('homepage')}}">Accueil</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Annonces</a>
+                <a class="nav-link" href="#">Discussions</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Live</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Historiques</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Offres</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#">Divers</a>
+                <div class="dropdown-menu dropdown-menu-center">
+                        <a href="#" class="dropdown-item">Témoignage</a>
+                        <a href="#" class="dropdown-item">Lexique</a>
+                        <a href="#" class="dropdown-item">Qui sommes nous ?</a>
+                        <a href="#" class="dropdown-item">Parrainage</a>
+                        <a href="#" class="dropdown-item">Affiliation</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">Contactez nous</a>
+                </div>
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
@@ -19,11 +40,8 @@
                         <img src="{{app.user.picture}}" class="avatar avatar-mini" alt="{{app.user.fullName}}"> {{app.user.fullName}}
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <a href="#" class="dropdown-item">Créer une annonce</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item">Mon compte</a>
-                        <a href="#" class="dropdown-item">Mes réservations</a>
-                        <a href="#" class="dropdown-item">Modifier mon profil</a>
+                        <a href="{{path('account_index')}}" class="dropdown-item">Mon compte</a>
+                        <a href="#" class="dropdown-item">Mes abonnements</a>
                         <div class="dropdown-divider"></div>
                         <a href="{{path('account_logout')}}" class="dropdown-item">Déconnexion</a>
                     </div>

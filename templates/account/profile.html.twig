@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier votre profil{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="py-3 px-3">
+                <h1>Modification du compte</h1>
+                {{form_start(form)}}
+                {{form_widget(form)}}
+                <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
+                {{form_end(form)}}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
