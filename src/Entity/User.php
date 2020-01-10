@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use Cocur\Slugify\Slugify;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -72,6 +74,16 @@ class User implements UserInterface
     private $slug;
 
     /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Role", mappedBy="user")
+     */
+    private $userRole;
+
+    public function __construct()
+    {
+        $this->userRole = new ArrayCollection();
+    }
+
+    /**
      * Permet d'init le slug
      * 
      * @ORM\PrePersist
@@ -79,14 +91,16 @@ class User implements UserInterface
      *
      * @return void
      */
-    public function initializeSlug(){
-        if(empty($this->slug)){
+    public function initializeSlug()
+    {
+        if (empty($this->slug)) {
             $slugify = new Slugify();
-            $this->slug = $slugify->slugify($this->firstName. ' ' .$this->lastName);
+            $this->slug = $slugify->slugify($this->firstName . ' ' . $this->lastName);
         }
     }
 
-    public function getFullName(){
+    public function getFullName()
+    {
         return "{$this->firstName} {$this->lastName}";
     }
 
@@ -181,21 +195,48 @@ class User implements UserInterface
 
     public function getRoles()
     {
+        $roles = $this->userRole->map(function ($role) {
+            return $role->getTitle();
+        })->toArray();
         $roles[] = 'ROLE_USER';
-
         return $roles;
     }
 
-    public function getPassword(){
+    public function getPassword()
+    {
         return $this->hash;
     }
 
-    public function getSalt(){}
+    public function getSalt()
+    {
+    }
 
     public function getUsername()
     {
         return $this->email;
     }
-    
-    public function eraseCredentials(){}
+
+    public function eraseCredentials()
+    {
+    }
+
+    public function addRole(Role $role): self
+    {
+        if (!$this->userRole->contains($role)) {
+            $this->userRole[] = $role;
+            $role->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRole(Role $role): self
+    {
+        if ($this->userRole->contains($role)) {
+            $this->userRole->removeElement($role);
+            $role->removeUser($this);
+        }
+
+        return $this;
+    }
 }
