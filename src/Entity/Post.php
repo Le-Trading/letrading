@@ -53,6 +53,11 @@ class Post
      */
     private $postVotes;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isAdmin;
+
     public function __construct()
     {
         $this->files = new ArrayCollection();
@@ -69,6 +74,9 @@ class Post
     public function prePersist(){
         if (empty($this->createdAt)){
             $this->createdAt = new \DateTime();
+        }
+        if (empty($this->isAdmin)){
+            $this->isAdmin = false;
         }
     }
 
@@ -183,6 +191,18 @@ class Post
                 $postVote->setPost(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsAdmin(): ?bool
+    {
+        return $this->isAdmin;
+    }
+
+    public function setIsAdmin(bool $isAdmin): self
+    {
+        $this->isAdmin = $isAdmin;
 
         return $this;
     }

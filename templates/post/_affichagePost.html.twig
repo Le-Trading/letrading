@@ -1,6 +1,7 @@
 {% set author = post.author %}
 
-<div class="card mb-2">
+<div class="card mb-2 {% if (is_granted(" role_super_admin") or is_granted(" role_admin")) or post.isAdmin %} bg-primary {% endif %}
+		">
 	<div class="card-body">
 		<div class="row">
 			<div class="col-md-2">
@@ -10,15 +11,20 @@
 			<div class="col-md-10">
 				<p>
 					<a class="float-left" href="#">
-						<strong>{{author.pseudo}}</p>
-					</strong>
+						<strong {% if (is_granted(" role_super_admin") or is_granted(" role_admin")) or post.isAdmin %} class="text-danger" {% endif %}>
+							{{author.pseudo}}
+						</strong>
+					</p>
 				</p>
 			</a>
 		</p>
 		<div class="clearfix"></div>
-		{{post.content | raw}}
+<div class="{% if (is_granted(" role_super_admin") or is_granted(" role_admin")) or post.isAdmin %} text-white {% endif %}">
+
+			{{post.content | raw}}
+		</div>
 		<p>
-			<a class="float-right btn btn-outline-primary ml-2">
+			<a class="float-right btn btn-info text-white ml-2">
 				<i class="fa fa-reply"></i>
 				Reply</a>
 			<a class="float-right btn text-white btn-danger">
