@@ -2,10 +2,14 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\PrePersist;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Vich\UploaderBundle\Entity\File as EmbeddedFile;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PostRepository")
@@ -43,10 +47,6 @@ class Post
      */
     private $content;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\File", mappedBy="post")
-     */
-    private $files;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\PostVote", mappedBy="post")
@@ -58,11 +58,13 @@ class Post
      */
     private $isAdmin;
 
+
+
     public function __construct()
     {
-        $this->files = new ArrayCollection();
         $this->postVotes = new ArrayCollection();
     }
+
 
     /**
      * Callback appelé à chaque création de post
@@ -71,11 +73,12 @@ class Post
      *
      * @return void
      */
-    public function prePersist(){
-        if (empty($this->createdAt)){
+    public function prePersist()
+    {
+        if (empty($this->createdAt)) {
             $this->createdAt = new \DateTime();
         }
-        if (empty($this->isAdmin)){
+        if (empty($this->isAdmin)) {
             $this->isAdmin = false;
         }
     }
@@ -129,37 +132,6 @@ class Post
     public function setContent(string $content): self
     {
         $this->content = $content;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|File[]
-     */
-    public function getFiles(): Collection
-    {
-        return $this->files;
-    }
-
-    public function addFile(File $file): self
-    {
-        if (!$this->files->contains($file)) {
-            $this->files[] = $file;
-            $file->setPost($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFile(File $file): self
-    {
-        if ($this->files->contains($file)) {
-            $this->files->removeElement($file);
-            // set the owning side to null (unless already changed)
-            if ($file->getPost() === $this) {
-                $file->setPost(null);
-            }
-        }
 
         return $this;
     }

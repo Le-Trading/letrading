@@ -79,11 +79,6 @@ class User implements UserInterface
     private $posts;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\File", mappedBy="user", cascade={"persist", "remove"})
-     */
-    private $avatar;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\PostVote", mappedBy="user")
      */
     private $postVotes;
@@ -258,23 +253,7 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getAvatar(): ?File
-    {
-        return $this->avatar;
-    }
 
-    public function setAvatar(?File $avatar): self
-    {
-        $this->avatar = $avatar;
-
-        // set (or unset) the owning side of the relation if necessary
-        $newUser = null === $avatar ? null : $this;
-        if ($avatar->getUser() !== $newUser) {
-            $avatar->setUser($newUser);
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection|PostVote[]

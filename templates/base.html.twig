@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Le Trading - {% block title %}Bienvenue{% endblock %}</title>
-        <link rel="stylesheet" href="/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css" integrity="sha384-REHJTs1r2ErKBuJB0fCK99gCYsVjwxHrSU0N7I1zl9vZbggVJXRMsv/sLlOAGb4M" crossorigin="anonymous">
-        <link rel="stylesheet" href="/css/app.css">
-        {% block stylesheets %}{% endblock %}
-    </head>
-    <body>
-        {% include 'partials/header.html.twig' %}
-        {% block body %}{% endblock %}
-        {% include 'partials/footer.html.twig' %}
-        <script src="/js/jquery.min.js"></script>
-        <script src="/js/popper.min.js"></script>
-        <script src="/js/bootstrap.min.js"></script>
-        {% block javascripts %}{% endblock %}
-    </body>
-</html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Le Trading -
+			{% block title %}Bienvenue
+			{% endblock %}
+		</title>
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css" integrity="sha384-REHJTs1r2ErKBuJB0fCK99gCYsVjwxHrSU0N7I1zl9vZbggVJXRMsv/sLlOAGb4M" crossorigin="anonymous">
+		<link rel="stylesheet" href="/css/app.css"> {% block stylesheets %}{% endblock %}
+		</head>
+		<body>
+			{% include 'partials/header.html.twig' %}
+			{% block body %}{% endblock %}
+			{% include 'partials/footer.html.twig' %}
+			<script src="/js/jquery.min.js"></script>
+			<script src="/js/popper.min.js"></script>
+			<script src="/js/bootstrap.min.js"></script>
+			{% block javascripts %}{% endblock %}
+		</body>
+	</html>

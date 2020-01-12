@@ -23,10 +23,10 @@
 					<div class="col-12">
 						{% set posts = thread.posts %}
 						{% for post in posts %}
-                        	{% if not post.isAdmin %}
+							{% if not post.isAdmin %}
 
-							{% include 'post/_affichagePost.html.twig' with {'post' : post} %}
-                            {% endif %}
+								{% include 'post/_affichagePost.html.twig' with {'post' : post} %}
+							{% endif %}
 
 						{% endfor %}
 					</div>
@@ -41,7 +41,7 @@
 						{% for post in posts %}
 							{% if post.isAdmin %}
 
-								{% include 'post/_affichagePost.html.twig' with {'post' : post} %}
+								{% include 'post/_affichagePost.html.twig' with {'post' : post, 'thread' : thread} %}
 							{% endif %}
 						{% endfor %}
 					</div>
@@ -60,4 +60,11 @@
 $('textarea.ckeditor').ckeditor();
 });
 	</script>
+	<script>
+		function handleAnswering(id) {
+CKEDITOR.instances['post_content'].insertText('@' + $(id).data('target') + ' ');
+
+}
+	</script>
+
 {% endblock %}

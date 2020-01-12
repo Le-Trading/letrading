@@ -1,7 +1,6 @@
 {% set author = post.author %}
 
-<div class="card mb-2 {% if (is_granted(" role_super_admin") or is_granted(" role_admin")) or post.isAdmin %} bg-primary {% endif %}
-		">
+<div class="card mb-2 {% if isGranted.isGranted(author, 'ROLE_ADMIN') or post.isAdmin %} bg-primary {% endif %}">
 	<div class="card-body">
 		<div class="row">
 			<div class="col-md-2">
@@ -11,25 +10,31 @@
 			<div class="col-md-10">
 				<p>
 					<a class="float-left" href="#">
-						<strong {% if (is_granted(" role_super_admin") or is_granted(" role_admin")) or post.isAdmin %} class="text-danger" {% endif %}>
+						<strong {% if isGranted.isGranted(author, 'ROLE_ADMIN') or post.isAdmin %} class="text-danger" {% endif %}>
 							{{author.pseudo}}
 						</strong>
-					</p>
+					</a>
+					{% if isGranted.isGranted(app.user, 'ROLE_ADMIN') %}
+						<a href="{{ path('thread_post_delete', {'slug' : thread.slug, 'id' : post.id}) }}" class="float-right btn btn-danger text-white mb-3" onclick="return confirm(`Êtes vous sûr de vouloir supprimer le post ?`)">
+							X
+						</a>
+					{% endif %}
 				</p>
-			</a>
-		</p>
-		<div class="clearfix"></div>
-<div class="{% if (is_granted(" role_super_admin") or is_granted(" role_admin")) or post.isAdmin %} text-white {% endif %}">
 
-			{{post.content | raw}}
+				<div class="clearfix"></div>
+				<div class="{% if isGranted.isGranted(author, 'ROLE_ADMIN') or post.isAdmin %} text-white {% endif %}">
+
+					{{post.content | raw}}
+				</div>
+				<p>
+					<a class="float-right btn btn-info text-white ml-2" data-target="{{author.pseudo}}" onclick="handleAnswering(this);">
+						<i class="fa fa-reply"></i>
+						Reply</a>
+					<a class="float-right btn text-white btn-danger">
+						<i class="fa fa-heart"></i>
+						Like</a>
+				</p>
+			</div>
 		</div>
-		<p>
-			<a class="float-right btn btn-info text-white ml-2">
-				<i class="fa fa-reply"></i>
-				Reply</a>
-			<a class="float-right btn text-white btn-danger">
-				<i class="fa fa-heart"></i>
-				Like</a>
-		</p>
 	</div>
-</div></div></div>
+</div>
