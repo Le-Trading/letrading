@@ -88,10 +88,16 @@ class User implements UserInterface
      */
     private $postVotes;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Role", mappedBy="user")
+     */
+    private $userRole;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->postVotes = new ArrayCollection();
+        $this->userRole = new ArrayCollection();
     }
 
     /**
@@ -102,14 +108,16 @@ class User implements UserInterface
      *
      * @return void
      */
-    public function initializeSlug(){
-        if(empty($this->slug)){
+    public function initializeSlug()
+    {
+        if (empty($this->slug)) {
             $slugify = new Slugify();
-            $this->slug = $slugify->slugify($this->firstName. ' ' .$this->lastName);
+            $this->slug = $slugify->slugify($this->firstName . ' ' . $this->lastName);
         }
     }
 
-    public function getFullName(){
+    public function getFullName()
+    {
         return "{$this->firstName} {$this->lastName}";
     }
 
@@ -202,25 +210,22 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getRoles()
+    public function getPassword()
     {
-        $roles[] = 'ROLE_USER';
-
-        return $roles;
-    }
-
-    public function getPassword(){
         return $this->hash;
     }
 
-    public function getSalt(){}
+    public function getSalt()
+    {
+    }
 
     public function getUsername()
     {
         return $this->email;
     }
-    
-    public function eraseCredentials(){}
+    public function eraseCredentials()
+    {
+    }
 
     /**
      * @return Collection|Post[]
@@ -236,9 +241,9 @@ class User implements UserInterface
             $this->posts[] = $post;
             $post->setAuthor($this);
         }
-
         return $this;
     }
+
 
     public function removePost(Post $post): self
     {
@@ -297,6 +302,34 @@ class User implements UserInterface
             if ($postVote->getUser() === $this) {
                 $postVote->setUser(null);
             }
+        }
+        return $this;
+    }
+
+    public function getRoles()
+    {
+        $roles = $this->userRole->map(function ($role) {
+            return $role->getTitle();
+        })->toArray();
+        $roles[] = 'ROLE_USER';
+        return $roles;
+    }
+
+    public function addRole(Role $role): self
+    {
+        if (!$this->userRole->contains($role)) {
+            $this->userRole[] = $role;
+            $role->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRole(Role $role): self
+    {
+        if ($this->userRole->contains($role)) {
+            $this->userRole->removeElement($role);
+            $role->removeUser($this);
         }
 
         return $this;
