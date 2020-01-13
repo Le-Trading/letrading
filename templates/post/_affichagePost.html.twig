@@ -4,8 +4,8 @@
 	<div class="card-body">
 		<div class="row">
 			<div class="col-md-2">
-				<img src="{{author.picture}}" class="img img-rounded img-fluid"/>
-				<small class="text-secondary text-center">{{post.createdAt | date('d/m/Y H:i')}}</small>
+				<img src="{{author.picture}}" alt="Avatar de {{author.pseudo}}" class=" img img-rounded img-fluid"/>
+				<small class=" text-secondary text-center">{{post.createdAt | date('d/m/Y H:i')}}</small>
 			</div>
 			<div class="col-md-10">
 				<p>
@@ -25,6 +25,41 @@
 				<div class="{% if isGranted.isGranted(author, 'ROLE_ADMIN') or post.isAdmin %} text-white {% endif %}">
 
 					{{post.content | raw}}
+
+					{% if post.media %}
+
+						<!-- Button trigger modal -->
+						<button type="button" class="btn btn-lg" data-toggle="modal" data-target="#model{{post.id}}">
+							<img src="{{vich_uploader_asset(post.media, 'imageFile', 'App\\Entity\\Media')}}" class="img-thumbnail" alt="Image du post de {{post.author.pseudo}}">
+
+
+						</button>
+
+						<!-- Modal -->
+						<div class="modal fade" id="model{{post.id}}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<img src="{{vich_uploader_asset(post.media, 'imageFile', 'App\\Entity\\Media')}}" style="max-height:100%; max-width:100%;" class="img" alt="{{post.author.pseudo}}">
+
+
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					{% endif %}
+
+
 				</div>
 				<p>
 					<a class="float-right btn btn-info text-white ml-2" data-target="{{author.pseudo}}" onclick="handleAnswering(this);">

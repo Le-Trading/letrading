@@ -1,51 +1,58 @@
-div.container{
-    margin-top: 20px;
+div.container {
+  margin-top: 20px;
 }
 
 div.ad-blocktop {
-    padding: 2em;
-    background-size: cover;
-    background-position: center center;
+  padding: 2em;
+  background-size: cover;
+  background-position: center center;
 }
 
-div.ad-blocktop h1, div.ad-blocktop p {
-    color: white;
-    text-shadow : 3px 3px 3px rgba(0,0,0,0.5);
+div.ad-blocktop h1,
+div.ad-blocktop p {
+  color: white;
+  text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
 }
 
 div.carousel-caption {
-    text-shadow : 3px 3px 3px rgba(0,0,0,0.5);
+  text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
 }
 
-.avatar{
-    max-width: 128px;
-    max-height: 128px;
-    border-radius: 50%;
+.avatar {
+  max-width: 128px;
+  max-height: 128px;
+  border-radius: 50%;
 }
 
-.avatar-medium{
-    max-width: 64px;
-    max-height: 64px;
+.avatar-medium {
+  max-width: 64px;
+  max-height: 64px;
 }
 
-.avatar-mini{
-    max-width: 24px;
-    max-height: 24px;
+.avatar-mini {
+  max-width: 24px;
+  max-height: 24px;
 }
 
-.dropdown:hover .dropdown-menu { 
-    display: block; 
-} 
-
-.datepicker table tr td.disabled{
-    color: red!important;
+.dropdown:hover .dropdown-menu {
+  display: block;
 }
 
-.avatar-micro{
-    max-width: 24px;
-    max-height: 24px;
+.datepicker table tr td.disabled {
+  color: red !important;
 }
 
-.primary-color{
-    color: #2c3e50;
+.avatar-micro {
+  max-width: 24px;
+  max-height: 24px;
+}
+
+.primary-color {
+  color: #2c3e50;
+}
+.custom-file-label {
+  opacity: 0;
+}
+.custom-file-input {
+  opacity: 1;
 }

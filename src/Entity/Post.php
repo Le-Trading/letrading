@@ -14,6 +14,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PostRepository")
  * @ORM\HasLifecycleCallbacks
+ * @Vich\Uploadable
  */
 class Post
 {
@@ -58,6 +59,10 @@ class Post
      */
     private $isAdmin;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Media", mappedBy="post", cascade={"persist", "remove"})
+     */
+    private $media;
 
 
     public function __construct()
@@ -77,6 +82,9 @@ class Post
     {
         if (empty($this->createdAt)) {
             $this->createdAt = new \DateTime();
+        }
+        if (empty($this->updatedAt)) {
+            $this->updatedAt = new \DateTime();
         }
         if (empty($this->isAdmin)) {
             $this->isAdmin = false;
@@ -175,6 +183,24 @@ class Post
     public function setIsAdmin(bool $isAdmin): self
     {
         $this->isAdmin = $isAdmin;
+
+        return $this;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?Media $media): self
+    {
+        $this->media = $media;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newPost = null === $media ? null : $this;
+        if ($media->getPost() !== $newPost) {
+            $media->setPost($newPost);
+        }
 
         return $this;
     }

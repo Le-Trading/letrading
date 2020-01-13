@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Post;
+use App\Form\MediaType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Vich\UploaderBundle\Form\Type\VichImageType;
@@ -19,7 +20,11 @@ class PostType extends ApplicationType
         $builder
             ->add('content', TextareaType::class, $this->getConfiguration(false, 'Entrez votre message ici', [
                 'attr' => array('class' => 'ckeditor')
-            ]));
+            ]))
+            ->add('media', MediaType::class, [
+                'attr' => ['placeholder' => 'Choisissez votre fichier'],
+                'required' => false
+            ]);
         if ($options['isAdmin']) {
             $builder->add('isAdmin', CheckboxType::class, [
                 'label' => 'Est-ce un message de type admin ?',

@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
+use Serializable;
 use Cocur\Slugify\Slugify;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -88,6 +90,13 @@ class User implements UserInterface
      */
     private $userRole;
 
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Media", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $media;
+
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -103,7 +112,7 @@ class User implements UserInterface
      *
      * @return void
      */
-    public function initializeSlug()
+    public function prePersist()
     {
         if (empty($this->slug)) {
             $slugify = new Slugify();
@@ -309,6 +318,24 @@ class User implements UserInterface
         if ($this->userRole->contains($role)) {
             $this->userRole->removeElement($role);
             $role->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?Media $media): self
+    {
+        $this->media = $media;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newUser = null === $media ? null : $this;
+        if ($media->getUser() !== $newUser) {
+            $media->setUser($newUser);
         }
 
         return $this;
