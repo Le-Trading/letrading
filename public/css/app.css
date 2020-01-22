@@ -56,3 +56,39 @@ div.carousel-caption {
 .custom-file-input {
   opacity: 1;
 }
+
+#account_media img {
+  height: 100%;
+  width: 100%;
+}
+.hidden-form {
+  display: none;
+}
+
+.liked {
+  color: #fff !important;
+  background-color: #e74c3c;
+  border-color: #e74c3c;
+  font-weight: bold;
+  transition-duration: 1s;
+
+
+}
+.not-liked {
+  color: #e74c3c !important;
+  background-color: #fff;
+  border-color: #e74c3c;
+  transition-duration: 1s;
+}
+
+.liked-thumbs {
+  color: #656fbf;
+  text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+  transition-duration: 1s;
+
+}
+.not-liked-thumbs {
+  color: #656fbf;
+  text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+  transition-duration: 1s;
+}

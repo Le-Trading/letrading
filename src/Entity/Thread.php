@@ -50,8 +50,9 @@ class Thread
      * 
      * @return void
      */
-    public function initializeSlug(){
-        if (empty($this->slug)){
+    public function initializeSlug()
+    {
+        if (empty($this->slug)) {
             $slug = new Slugify();
             $this->slug = $slug->slugify($this->title);
         }

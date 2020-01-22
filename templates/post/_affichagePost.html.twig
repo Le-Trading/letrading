@@ -1,6 +1,6 @@
 {% set author = post.author %}
 
-<div class="card mb-2 {% if isGranted.isGranted(author, 'ROLE_ADMIN') or post.isAdmin %} bg-primary {% endif %}">
+<div class="card mb-2 {% if post.respond != null %} ml-5 {% endif %} {% if isGranted.isGranted(author, 'ROLE_ADMIN') or post.isAdmin %} bg-primary {% endif %}" id="post{{post.id}}">
 	<div class="card-body">
 		<div class="row">
 			<div class="col-md-2">
@@ -61,15 +61,36 @@
 
 
 				</div>
-				<p>
-					<a class="float-right btn btn-info text-white ml-2" data-target="{{author.pseudo}}" onclick="handleAnswering(this);">
-						<i class="fa fa-reply"></i>
-						Reply</a>
-					<a class="float-right btn text-white btn-danger">
-						<i class="fa fa-heart"></i>
-						Like</a>
+				<p id="thumbsLike{{post.id}}" class="float-left js-css-likes {% if post.isLikedByUser(app.user) %} liked-thumbs {% else %} not-liked-thumbs {% endif %}">
+
+					<i class="{% if post.isLikedByUser(app.user) %} fas{% else %} far{% endif %} fa-thumbs-up"></i>
+
+					<span class="js-likes" id="nbVotes{{post.id}}">
+						{{post.postVotes | length}}
+					</span>
+
 				</p>
-			</div>
+				<a class=" float-right btn btn-info text-white ml-2" data-target=" {{author.pseudo}} " data-response="{{post.id}}" onclick="handleAnswering(this);">
+					<i class="fa fa-reply"></i>
+					Répondre</a>
+				<a href="{{path('thread_post_like', {'slug' : thread.slug, 'id' : post.id})}}" class="float-right btn js-css-likes {% if post.isLikedByUser(app.user) %} liked {% else %} not-liked {% endif %}" data-id="{{post.id}}" id="boutonLike{{post.id}}">
+
+					<i class="fa fa-heart"></i>
+					J'aime</a>
+			</p>
 		</div>
 	</div>
-</div>
+</div></div>{% if post.responses | length > 0 %}
+<p class="text-right">
+	<a href="#collapse{{post.id}}" class="btn btn-secondary text-right" role="button" data-toggle="collapse" aria-expanded="false">
+		<strong>{{ post.responses | length }}
+			réponses à ce commentaire</strong>
+	</a>
+</p>
+<div class="collapse" id="collapse{{post.id}}">
+
+
+	{% for response in post.responses %}
+		{% include 'post/_affichagePost.html.twig' with {'post' : response} %}
+	{% endfor %}
+</div>{% endif %}

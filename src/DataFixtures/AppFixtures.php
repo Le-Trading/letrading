@@ -7,6 +7,7 @@ use App\Entity\Post;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Entity\Thread;
+use App\Entity\PostVote;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -82,6 +83,13 @@ class AppFixtures extends Fixture
                     ->setThread($thread)
                     ->setContent($content);
                 $manager->persist($post);
+
+                for ($k = 0; $k < mt_rand(0, 10); $k++) {
+                    $like = new PostVote();
+                    $like->setPost($post)
+                        ->setUser($faker->randomElement($users));
+                    $manager->persist($like);
+                }
             }
             $manager->persist($thread);
         }
