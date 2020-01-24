@@ -1,0 +1,96 @@
+{% set author = post.author %}
+
+<div class="card mb-2 {% if post.respond != null %} ml-5 {% endif %} {% if isGranted.isGranted(author, 'ROLE_ADMIN') or post.isAdmin %} bg-primary {% endif %}" id="post{{post.id}}">
+	<div class="card-body">
+		<div class="row">
+			<div class="col-md-2">
+				<img src="{{author.picture}}" alt="Avatar de {{author.pseudo}}" class=" img img-rounded img-fluid"/>
+				<small class=" text-secondary text-center">{{post.createdAt | date('d/m/Y H:i')}}</small>
+			</div>
+			<div class="col-md-10">
+				<p>
+					<a class="float-left" href="#">
+						<strong {% if isGranted.isGranted(author, 'ROLE_ADMIN') or post.isAdmin %} class="text-danger" {% endif %}>
+							{{author.pseudo}}
+						</strong>
+					</a>
+					{% if isGranted.isGranted(app.user, 'ROLE_ADMIN') %}
+						<a href="{{ path('thread_post_delete', {'slug' : thread.slug, 'id' : post.id}) }}" class="float-right btn btn-danger text-white mb-3" onclick="return confirm(`Êtes vous sûr de vouloir supprimer le post ?`)">
+							X
+						</a>
+					{% endif %}
+				</p>
+
+				<div class="clearfix"></div>
+				<div class="{% if isGranted.isGranted(author, 'ROLE_ADMIN') or post.isAdmin %} text-white {% endif %}">
+
+					{{post.content | raw}}
+
+					{% if post.media %}
+
+						<!-- Button trigger modal -->
+						<button type="button" class="btn btn-lg" data-toggle="modal" data-target="#model{{post.id}}">
+							<img src="{{vich_uploader_asset(post.media, 'imageFile', 'App\\Entity\\Media')}}" class="img-thumbnail" alt="Image du post de {{post.author.pseudo}}">
+
+
+						</button>
+
+						<!-- Modal -->
+						<div class="modal fade" id="model{{post.id}}" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<img src="{{vich_uploader_asset(post.media, 'imageFile', 'App\\Entity\\Media')}}" style="max-height:100%; max-width:100%;" class="img" alt="{{post.author.pseudo}}">
+
+
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					{% endif %}
+
+
+				</div>
+				<p id="thumbsLike{{post.id}}" class="float-left js-css-likes {% if post.isLikedByUser(app.user) %} liked-thumbs {% else %} not-liked-thumbs {% endif %}">
+
+					<i class="{% if post.isLikedByUser(app.user) %} fas{% else %} far{% endif %} fa-thumbs-up"></i>
+
+					<span class="js-likes" id="nbVotes{{post.id}}">
+						{{post.postVotes | length}}
+					</span>
+
+				</p>
+				<a class=" float-right btn btn-info text-white ml-2" data-target=" {{author.pseudo}} " data-response="{{post.id}}" onclick="handleAnswering(this);">
+					<i class="fa fa-reply"></i>
+					Répondre</a>
+				<a href="{{path('thread_post_like', {'slug' : thread.slug, 'id' : post.id})}}" class="float-right btn js-css-likes {% if post.isLikedByUser(app.user) %} liked {% else %} not-liked {% endif %}" data-id="{{post.id}}" id="boutonLike{{post.id}}">
+
+					<i class="fa fa-heart"></i>
+					J'aime</a>
+			</p>
+		</div>
+	</div>
+</div></div>{% if post.responses | length > 0 %}
+<p class="text-right">
+	<a href="#collapse{{post.id}}" class="btn btn-secondary text-right" role="button" data-toggle="collapse" aria-expanded="false">
+		<strong>{{ post.responses | length }}
+			réponses à ce commentaire</strong>
+	</a>
+</p>
+<div class="collapse" id="collapse{{post.id}}">
+
+
+	{% for response in post.responses %}
+		{% include 'post/_affichagePost.html.twig' with {'post' : response} %}
+	{% endfor %}
+</div>{% endif %}

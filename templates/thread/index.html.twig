@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{thread.title}}
+{% endblock %}
+
+{% block body %}
+	<div class="container">
+		<h1 class="h4 text-center mb-5">Fil d'actualité du forum
+			{{thread.title}}</h1>
+		<div class="row">
+			<div class="col-6 mb-5">
+				<div class="row mb-5">
+					<div class="col-12 rounded bg-light p-3">
+						<div class="mb-2">Postez votre message</div>
+						{{form_start(form, { 'attr' : { 'id' : 'form-add-forum' }}
+						)}}
+						{{form_row(form.content)}}
+						{{form_row(form.media)}}
+						{{form_errors(form)}}
+						<button class="btn btn-primary mt-1" type="submit">Ajouter son message</button>
+						{{form_end(form)}}
+					</div>
+					<div id="form_response" class="hidden-form container p-3">
+						<hr class="bg-light">
+						<p class="text-center text-dark answer-form">Répondre à un message</p>
+
+						{{form_start(formReply)}}
+						{{form_row(formReply.content)}}
+
+						{{form_row(formReply.media)}}
+						{{form_row(formReply.respond)}}
+						<button class="btn btn-dark mt-1" type="submit">Répondre</button>
+						{{form_end(formReply)}}
+
+					</div>
+
+				</div>
+				<div class="row">
+					<div class="col-12">
+						{% set posts = thread.posts %}
+						{% for post in posts %}
+							{% if not post.isAdmin and post.respond == null %}
+
+								{% include 'post/_affichagePost.html.twig' with {'post' : post} %}
+							{% endif %}
+
+						{% endfor %}
+					</div>
+
+				</div>
+			</div>
+			<div class="col-6 mb-5">
+				<h2 class="h4 text-center mb-5">Messages administrateur</h2>
+				<div class="row">
+					<div class="col-12">
+						{% set posts = thread.posts %}
+						{% for post in posts %}
+
+							{% if post.isAdmin %}
+								{% include 'post/_affichagePost.html.twig' with {'post' : post, 'thread' : thread} %}
+							{% endif %}
+						{% endfor %}
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block javascripts %}
+	<script src="https://unpkg.com/axios@0.19.2/dist/axios.min.js"></script>
+	<script>
+		function handleAnswering(id) {
+CKEDITOR.instances.response_content.destroy();
+
+var id = $(id).data('response');
+$('#post' + id).after().append($('#form_response'));
+$('#form_response').removeClass('hidden-form');
+$('#response_respond').val(id);
+CKEDITOR.replace('response_content', {
+"toolbar": [
+[
+"Bold", "Italic"
+],
+[
+"NumberedList",
+"BulletedList",
+"-",
+"Outdent",
+"Indent"
+],
+[
+"Link", "Unlink"
+],
+["About"]
+],
+"language": "fr"
+});
+
+}
+	</script>
+	<script type="text/javascript">
+		function onClickBtnVote(event) {
+event.preventDefault();
+const url = this.href;
+const id = this.dataset.id;
+const icone = this.querySelector('#thumbsLike'+id +' i');
+axios.get(url).then(function (response) {
+const likes = response.data.votes;
+$('#nbVotes' + id).text(likes);
+if($('#thumbsLike' + id + ' i').hasClass('far')){
+	$('#thumbsLike' + id + ' i').removeClass('far').addClass('fas');
+}
+else{
+	$('#thumbsLike' + id + ' i').removeClass('fas').addClass('far');
+	}
+if($('#thumbsLike'+id).hasClass('liked-thumbs')){
+	$('#thumbsLike'+id).removeClass('liked-thumbs').addClass('not-liked-thumbs');
+}
+else{
+	$('#thumbsLike'+id).removeClass('not-liked-thumbs').addClass('liked-thumbs');
+	}
+
+if($('#boutonLike'+id).hasClass('liked')){
+	$('#boutonLike'+id).removeClass('liked').addClass('not-liked');
+}
+else{
+	$('#boutonLike'+id).removeClass('not-liked').addClass('liked');
+}
+});
+}
+document.querySelectorAll('a.js-css-likes').forEach(function (link) {
+link.addEventListener('click', onClickBtnVote);
+});
+	</script>
+
+	
+
+{% endblock %}

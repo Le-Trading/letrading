@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page de  l'offre
+{% endblock %}
+
+{% block body %}
+	<div class="container">
+		<div class="card-deck mb-3 text-center">
+			{% for offer in offers %}
+				<div class="card mb-4 box-shadow">
+					<div class="card-header">
+						<h4 class="my-0 font-weight-normal">{{offer.title}}</h4>
+					</div>
+					<div class="card-body">
+						<h1 class="card-title pricing-card-title">{{offer.price}}€
+							{% if offer.type == "subscription" %}
+								<small class="text-muted">/ mois</small>
+							{% endif %}
+						</h1>
+						<ul class="list-unstyled mt-3 mb-4">
+							{{offer.description}}
+						</ul>
+						<a href="{{path('order_prepare', {'title':offer.title})}}" class="btn btn-lg btn-block btn-primary">Je m'abonne</a>
+
+
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}
