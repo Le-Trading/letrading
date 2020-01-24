@@ -20,7 +20,8 @@
 						<ul class="list-unstyled mt-3 mb-4">
 							{{offer.description}}
 						</ul>
-						<a href="" class="btn btn-lg btn-block btn-primary">Découvrir</a>
+						<a href="{{path('order_prepare', {'type':offer.type})}}" class="btn btn-lg btn-block btn-primary">Je m'abonne</a>
+
 					</div>
 				</div>
 			{% endfor %}

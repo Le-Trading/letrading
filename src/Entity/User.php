@@ -97,6 +97,11 @@ class User implements UserInterface
     private $media;
 
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $chargeId;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -319,6 +324,18 @@ class User implements UserInterface
             $this->userRole->removeElement($role);
             $role->removeUser($this);
         }
+
+        return $this;
+    }
+
+    public function getChargeId(): ?string
+    {
+        return $this->chargeId;
+    }
+
+    public function setChargeId(string $chargeId): self
+    {
+        $this->chargeId = $chargeId;
 
         return $this;
     }
