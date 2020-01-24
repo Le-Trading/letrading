@@ -4,8 +4,11 @@ namespace App\Controller;
 
 use Stripe\Charge;
 use Stripe\Stripe;
+use App\Entity\Offers;
+use App\Entity\Payment;
 use App\Client\StripeClient;
 use App\Repository\OffersRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -45,10 +48,12 @@ class OffersController extends AbstractController
     }
 
     /**
-     * @Route("/prepare/{type}", name="order_prepare")
+     * @Route("/offers/{title}/prepare", name="order_prepare")
      */
-    public function prepareAction(Request $request, StripeClient $stripe, string $type)
+    public function prepareAction(Request $request, Offers $offer, StripeClient $stripe)
     {
+        $payment = new Payment();
+        
         $form = $this->get('form.factory')
         ->createNamedBuilder('payment-form')
         ->add('token', HiddenType::class, [
@@ -61,9 +66,10 @@ class OffersController extends AbstractController
             $form->handleRequest($request);
         
             if ($form->isValid()) {
-                if($type=="charge"){
+                if($offer->getType() == "charge"){
                     try {
-                        $stripe->createPremiumCharge($this->getUser(), $form->get('token')->getData());
+                        $stripe->createPremiumCharge($this->getUser(), $form->get('token')->getData(), $offer);
+
                         $this->addFlash(
                             'success',
                             "Votre formation a bien été payée !"
@@ -76,9 +82,10 @@ class OffersController extends AbstractController
                     } finally {
                         return $this->redirectToRoute('offers_index');
                     } 
-                }else if($type=="subscription"){
+                }else if($offer->getType()=="subscription"){
                     try {
-                        $stripe->createClassicSubscription($this->getUser(), $form->get('token')->getData());
+                        $stripe->createClassicSubscription($this->getUser(), $form->get('token')->getData(), $offer);
+
                         $this->addFlash(
                             'success',
                             "Votre formation a bien été payée !"

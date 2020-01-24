@@ -2,7 +2,6 @@ var form = document.getElementById('{{ form.vars.id }}');
 var errors = document.getElementById('card-errors');
 
 var stripe = Stripe('{{ stripe_public_key }}');
-
 var elements = stripe.elements();
 var card = elements.create('card');
 

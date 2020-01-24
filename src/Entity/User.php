@@ -79,13 +79,14 @@ class User implements UserInterface
     private $userRole;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\OneToMany(targetEntity="App\Entity\Payment", mappedBy="User")
      */
-    protected $chargeId;
+    private $payments;
 
     public function __construct()
     {
         $this->userRole = new ArrayCollection();
+        $this->payments = new ArrayCollection();
     }
 
     /**
@@ -245,14 +246,33 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getChargeId(): ?string
+    /**
+     * @return Collection|Payment[]
+     */
+    public function getPayments(): Collection
     {
-        return $this->chargeId;
+        return $this->payments;
     }
 
-    public function setChargeId(string $chargeId): self
+    public function addPayment(Payment $payment): self
     {
-        $this->chargeId = $chargeId;
+        if (!$this->payments->contains($payment)) {
+            $this->payments[] = $payment;
+            $payment->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePayment(Payment $payment): self
+    {
+        if ($this->payments->contains($payment)) {
+            $this->payments->removeElement($payment);
+            // set the owning side to null (unless already changed)
+            if ($payment->getUser() === $this) {
+                $payment->setUser(null);
+            }
+        }
 
         return $this;
     }
