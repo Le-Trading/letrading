@@ -3,8 +3,11 @@
 namespace App\DataFixtures;
 
 use Faker\Factory;
+use App\Entity\Post;
 use App\Entity\Role;
 use App\Entity\User;
+use App\Entity\Thread;
+use App\Entity\PostVote;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -22,10 +25,9 @@ class AppFixtures extends Fixture
     {
         $faker = Factory::create('FR-fr');
 
-        //gestion des utilisateurs 
+        // CREATION DES UTILISATEURS 
         $users = [];
         $genres = ['male', 'female'];
-
         // gestion des roles
         $adminRole = new Role();
         $superAdminRole = new Role();
@@ -61,6 +63,35 @@ class AppFixtures extends Fixture
 
             $manager->persist($user);
             $users[] = $user;
+        }
+        // FIN DE CREATION DES UTILISATEURS
+
+        /********** CREATION DE THREADS  ***********/
+        for ($i = 0; $i <= 2; $i++) {
+            $thread = new Thread();
+
+            $thread->setTitle($faker->sentence());
+
+
+            /****** CREATION DE POSTS *************/
+            for ($j = 0; $j <= mt_rand(0, 15); $j++) {
+                $user = $users[mt_rand(0, count($users) - 1)];
+                $content = '<p>' . join('</p><p>', $faker->paragraphs(mt_rand(1, 2))) . '</p>';
+
+                $post = new Post();
+                $post->setAuthor($user)
+                    ->setThread($thread)
+                    ->setContent($content);
+                $manager->persist($post);
+
+                for ($k = 0; $k < mt_rand(0, 10); $k++) {
+                    $like = new PostVote();
+                    $like->setPost($post)
+                        ->setUser($faker->randomElement($users));
+                    $manager->persist($like);
+                }
+            }
+            $manager->persist($thread);
         }
 
         $manager->flush();

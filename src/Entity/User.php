@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
+use Serializable;
 use Cocur\Slugify\Slugify;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -74,9 +76,26 @@ class User implements UserInterface
     private $slug;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Post", mappedBy="author")
+     */
+    private $posts;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PostVote", mappedBy="user")
+     */
+    private $postVotes;
+
+    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Role", mappedBy="user")
      */
     private $userRole;
+
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Media", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $media;
+
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Payment", mappedBy="User")
@@ -85,6 +104,8 @@ class User implements UserInterface
 
     public function __construct()
     {
+        $this->posts = new ArrayCollection();
+        $this->postVotes = new ArrayCollection();
         $this->userRole = new ArrayCollection();
         $this->payments = new ArrayCollection();
     }
@@ -97,7 +118,7 @@ class User implements UserInterface
      *
      * @return void
      */
-    public function initializeSlug()
+    public function prePersist()
     {
         if (empty($this->slug)) {
             $slugify = new Slugify();
@@ -199,15 +220,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getRoles()
-    {
-        $roles = $this->userRole->map(function ($role) {
-            return $role->getTitle();
-        })->toArray();
-        $roles[] = 'ROLE_USER';
-        return $roles;
-    }
-
     public function getPassword()
     {
         return $this->hash;
@@ -221,9 +233,80 @@ class User implements UserInterface
     {
         return $this->email;
     }
-
     public function eraseCredentials()
     {
+    }
+
+    /**
+     * @return Collection|Post[]
+     */
+    public function getPosts(): Collection
+    {
+        return $this->posts;
+    }
+
+    public function addPost(Post $post): self
+    {
+        if (!$this->posts->contains($post)) {
+            $this->posts[] = $post;
+            $post->setAuthor($this);
+        }
+        return $this;
+    }
+
+
+    public function removePost(Post $post): self
+    {
+        if ($this->posts->contains($post)) {
+            $this->posts->removeElement($post);
+            // set the owning side to null (unless already changed)
+            if ($post->getAuthor() === $this) {
+                $post->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+
+    /**
+     * @return Collection|PostVote[]
+     */
+    public function getPostVotes(): Collection
+    {
+        return $this->postVotes;
+    }
+
+    public function addPostVote(PostVote $postVote): self
+    {
+        if (!$this->postVotes->contains($postVote)) {
+            $this->postVotes[] = $postVote;
+            $postVote->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePostVote(PostVote $postVote): self
+    {
+        if ($this->postVotes->contains($postVote)) {
+            $this->postVotes->removeElement($postVote);
+            // set the owning side to null (unless already changed)
+            if ($postVote->getUser() === $this) {
+                $postVote->setUser(null);
+            }
+        }
+        return $this;
+    }
+
+    public function getRoles()
+    {
+        $roles = $this->userRole->map(function ($role) {
+            return $role->getTitle();
+        })->toArray();
+        $roles[] = 'ROLE_USER';
+        return $roles;
     }
 
     public function addRole(Role $role): self
@@ -272,6 +355,24 @@ class User implements UserInterface
             if ($payment->getUser() === $this) {
                 $payment->setUser(null);
             }
+        }
+
+        return $this;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?Media $media): self
+    {
+        $this->media = $media;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newUser = null === $media ? null : $this;
+        if ($media->getUser() !== $newUser) {
+            $media->setUser($newUser);
         }
 
         return $this;
