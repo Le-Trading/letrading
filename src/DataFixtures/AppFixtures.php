@@ -46,11 +46,6 @@ class AppFixtures extends Fixture
                 $user->addRole($superAdminRole);
             $genre = $faker->randomElement($genres);
 
-            $picture = 'https://randomuser.me/portraits/';
-            $pictureId = $faker->numberBetween(1, 99) . '.jpg';
-
-            if ($genre == "male") $picture = $picture . 'men/' . $pictureId;
-            else $picture = $picture . 'women/' . $pictureId;
 
             $hash = $this->encoder->encodePassword($user, 'password');
 
@@ -58,8 +53,7 @@ class AppFixtures extends Fixture
                 ->setLastName($faker->lastname)
                 ->setPseudo($faker->userName)
                 ->setEmail($faker->email)
-                ->setHash($hash)
-                ->setPicture($picture);
+                ->setHash($hash);
 
             $manager->persist($user);
             $users[] = $user;

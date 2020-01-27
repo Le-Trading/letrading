@@ -53,11 +53,6 @@ class User implements UserInterface
      */
     private $email;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Assert\Url(message="Veuillez donner une URL valide")
-     */
-    private $picture;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -180,18 +175,6 @@ class User implements UserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
-
-        return $this;
-    }
-
-    public function getPicture(): ?string
-    {
-        return $this->picture;
-    }
-
-    public function setPicture(?string $picture): self
-    {
-        $this->picture = $picture;
 
         return $this;
     }
@@ -376,5 +359,26 @@ class User implements UserInterface
         }
 
         return $this;
+    }
+    /**
+     * @var string le token qui servira lors de l'oubli de mot de passe
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $resetToken;
+
+    /**
+     * @return string
+     */
+    public function getResetToken(): string
+    {
+        return $this->resetToken;
+    }
+
+    /**
+     * @param string $resetToken
+     */
+    public function setResetToken(?string $resetToken): void
+    {
+        $this->resetToken = $resetToken;
     }
 }
