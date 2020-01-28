@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20200117095747 extends AbstractMigration
+final class Version20200127213632 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -22,9 +22,7 @@ final class Version20200117095747 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE post ADD respond_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE post ADD CONSTRAINT FK_5A8A6C8D3B91B7B5 FOREIGN KEY (respond_id) REFERENCES post (id)');
-        $this->addSql('CREATE INDEX IDX_5A8A6C8D3B91B7B5 ON post (respond_id)');
+        $this->addSql('ALTER TABLE user ADD reset_token VARCHAR(255) DEFAULT NULL');
     }
 
     public function down(Schema $schema) : void
@@ -32,8 +30,6 @@ final class Version20200117095747 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE post DROP FOREIGN KEY FK_5A8A6C8D3B91B7B5');
-        $this->addSql('DROP INDEX IDX_5A8A6C8D3B91B7B5 ON post');
-        $this->addSql('ALTER TABLE post DROP respond_id');
+        $this->addSql('ALTER TABLE user DROP reset_token');
     }
 }

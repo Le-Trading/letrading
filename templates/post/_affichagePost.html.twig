@@ -4,7 +4,11 @@
 	<div class="card-body">
 		<div class="row">
 			<div class="col-md-2">
-				<img src="{{author.picture}}" alt="Avatar de {{author.pseudo}}" class=" img img-rounded img-fluid"/>
+				{% if author.media %}
+					<img src="{{ vich_uploader_asset(author.media, 'imageFile', 'App\\Entity\\Media') }}" alt="Avatar de {{author.pseudo}}" class=" img img-rounded img-fluid"/>
+					{% else %}
+						<img src="{{ asset('images/image-user.png') }}" alt="Avatar de {{author.pseudo}}" class=" img img-rounded img-fluid"/>
+				{% endif %}
 				<small class=" text-secondary text-center">{{post.createdAt | date('d/m/Y H:i')}}</small>
 			</div>
 			<div class="col-md-10">
