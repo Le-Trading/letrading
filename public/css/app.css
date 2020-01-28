@@ -34,8 +34,12 @@ div.carousel-caption {
   max-height: 24px;
 }
 
-.dropdown:hover .dropdown-menu {
-  display: block;
+li.dropdown:hover > .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu{
+  margin:0!important;
 }
 
 .datepicker table tr td.disabled {

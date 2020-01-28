@@ -17,6 +17,15 @@ class PagesController extends AbstractController
      */
     public function index()
     {
+        $offerClassic = [
+            'classic',
+            'blablabla',
+            50,
+            'subscription'
+        ];
+        foreach($offerClassic as $offer){
+        dump($offer);
+        }
         return $this->render('home.html.twig');
     }
 

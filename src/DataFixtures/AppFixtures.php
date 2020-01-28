@@ -6,6 +6,7 @@ use Faker\Factory;
 use App\Entity\Post;
 use App\Entity\Role;
 use App\Entity\User;
+use App\Entity\Offers;
 use App\Entity\Thread;
 use App\Entity\PostVote;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -59,6 +60,25 @@ class AppFixtures extends Fixture
             $users[] = $user;
         }
         // FIN DE CREATION DES UTILISATEURS
+
+        // CREATION DES OFFRES
+        $offers = new Offers();
+        
+        // offre 1 
+        $offers->setTitle('classic');
+        $offers->setDescription($faker->paragraphs(mt_rand(1, 2)));
+        $offers->setPrice(50);
+        $offers->setType('subscription');
+        $manager->persist($offers);
+
+        //offre  2
+        $offers->setTitle('premium');
+        $offers->setDescription($faker->paragraphs(mt_rand(1, 2)));
+        $offers->setPrice(3000);
+        $offers->setType('charge');
+        $manager->persist($offers);
+
+        // FIN CREATION DES OFFRES
 
         /********** CREATION DE THREADS  ***********/
         for ($i = 0; $i <= 2; $i++) {
