@@ -42,9 +42,17 @@ class OffersController extends AbstractController
      */
     public function show($title, OffersRepository $repo){
         $offers = $repo->findByTitle($title);
-        return $this->render('offers/show.html.twig', [
-            'offers' => $offers
-        ]);
+        if($this->getUser()){
+            return $this->render('offers/show.html.twig', [
+                'offers' => $offers
+            ]);
+        }else{
+            $this->addFlash(
+                'warning',
+                "Merci de vous connecter ou bien vous créer un compte pour avoir accès à nos offres"
+            );
+            return $this->redirectToRoute('account_login');
+        }
     }
 
     /**
