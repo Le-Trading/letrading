@@ -62,30 +62,36 @@ class AppFixtures extends Fixture
         // FIN DE CREATION DES UTILISATEURS
 
         // CREATION DES OFFRES
+        $descriptionOffer = '<p>' . join('</p><p>', $faker->paragraphs(mt_rand(1, 2))) . '</p>';
+        // offre 1
         $offers = new Offers();
-        
-        // offre 1 
-        $offers->setTitle('classic');
-        $offers->setDescription($faker->paragraphs(mt_rand(1, 2)));
-        $offers->setPrice(50);
-        $offers->setType('subscription');
+        $offers->setTitle('classic')
+                ->setDescription($descriptionOffer)
+                ->setPrice(50)
+                ->setType('subscription');
         $manager->persist($offers);
 
-        //offre  2
-        $offers->setTitle('premium');
-        $offers->setDescription($faker->paragraphs(mt_rand(1, 2)));
-        $offers->setPrice(3000);
-        $offers->setType('charge');
+        //offre 2
+        $offers = new Offers();
+        $offers->setTitle('premium')
+                ->setDescription($descriptionOffer)
+                ->setPrice(3000)
+                ->setType('charge');
         $manager->persist($offers);
 
         // FIN CREATION DES OFFRES
 
         /********** CREATION DE THREADS  ***********/
+        $threadTheme = [
+            'indices',
+            'forex',
+            'action'
+        ];
         for ($i = 0; $i <= 2; $i++) {
             $thread = new Thread();
 
-            $thread->setTitle($faker->sentence());
-
+            $thread->setSlug($threadTheme[$i])
+                    ->setTitle($faker->sentence());
 
             /****** CREATION DE POSTS *************/
             for ($j = 0; $j <= mt_rand(0, 15); $j++) {
@@ -107,7 +113,6 @@ class AppFixtures extends Fixture
             }
             $manager->persist($thread);
         }
-
         $manager->flush();
     }
 }
