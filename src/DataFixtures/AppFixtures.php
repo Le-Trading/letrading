@@ -113,7 +113,6 @@ class AppFixtures extends Fixture
             }
             $manager->persist($thread);
         }
-
         $manager->flush();
     }
 }
