@@ -60,7 +60,7 @@ class OffersController extends AbstractController
             ->add('token', HiddenType::class, [
                 'constraints' => [new NotBlank()],
             ])
-            ->add('submit', SubmitType::class)
+            ->add('valider', SubmitType::class)
             ->getForm();
     
             if ($request->isMethod('POST')) {
@@ -106,9 +106,10 @@ class OffersController extends AbstractController
             }
             
             return $this->render('offers/prepare.html.twig', [
+            'offer' => $offer,
             'form' => $form->createView(),
             'stripe_public_key' => $this->getParameter('stripe_public_key'),
-            ]); 
+            ]);
         }else{
             $this->addFlash(
                 'warning',
