@@ -33,5 +33,4 @@ class ContactService{
         
                 $this->mailer->send($message);
     }
-
 }
