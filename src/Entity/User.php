@@ -103,6 +103,7 @@ class User implements UserInterface
         $this->postVotes = new ArrayCollection();
         $this->userRole = new ArrayCollection();
         $this->payments = new ArrayCollection();
+        $this->souscriptions = new ArrayCollection();
     }
 
     /**
@@ -367,6 +368,11 @@ class User implements UserInterface
     protected $resetToken;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Souscription", mappedBy="user")
+     */
+    private $souscriptions;
+
+    /**
      * @return string
      */
     public function getResetToken(): string
@@ -380,5 +386,36 @@ class User implements UserInterface
     public function setResetToken(?string $resetToken): void
     {
         $this->resetToken = $resetToken;
+    }
+
+    /**
+     * @return Collection|Souscription[]
+     */
+    public function getSouscriptions(): Collection
+    {
+        return $this->souscriptions;
+    }
+
+    public function addSouscription(Souscription $souscription): self
+    {
+        if (!$this->souscriptions->contains($souscription)) {
+            $this->souscriptions[] = $souscription;
+            $souscription->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSouscription(Souscription $souscription): self
+    {
+        if ($this->souscriptions->contains($souscription)) {
+            $this->souscriptions->removeElement($souscription);
+            // set the owning side to null (unless already changed)
+            if ($souscription->getUser() === $this) {
+                $souscription->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

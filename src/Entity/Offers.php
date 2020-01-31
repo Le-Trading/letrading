@@ -43,9 +43,15 @@ class Offers
      */
     private $payments;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Souscription", mappedBy="offer")
+     */
+    private $souscriptions;
+
     public function __construct()
     {
         $this->payments = new ArrayCollection();
+        $this->souscriptions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -126,6 +132,37 @@ class Offers
             // set the owning side to null (unless already changed)
             if ($payment->getOffer() === $this) {
                 $payment->setOffer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Souscription[]
+     */
+    public function getSouscriptions(): Collection
+    {
+        return $this->souscriptions;
+    }
+
+    public function addSouscription(Souscription $souscription): self
+    {
+        if (!$this->souscriptions->contains($souscription)) {
+            $this->souscriptions[] = $souscription;
+            $souscription->setOffer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSouscription(Souscription $souscription): self
+    {
+        if ($this->souscriptions->contains($souscription)) {
+            $this->souscriptions->removeElement($souscription);
+            // set the owning side to null (unless already changed)
+            if ($souscription->getOffer() === $this) {
+                $souscription->setOffer(null);
             }
         }
 
