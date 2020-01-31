@@ -1,5 +1,9 @@
 {% for thread in threads %}
-    <li>
-        <a href="{{ path('thread_show', {'slug':thread.slug}) }}" class="dropdown-item text-capitalize">{{thread.slug}}</a>
-    </li>
+	<li>
+		{% if app.user == null %}
+			<a href="{{ path('account_login') }}" class="dropdown-item text-capitalize">{{thread.slug}}</a>
+		{% else %}
+			<a href="{{ path('thread_show', {'slug':thread.slug}) }}" class="dropdown-item text-capitalize">{{thread.slug}}</a>
+		{% endif %}
+	</li>
 {% endfor %}
