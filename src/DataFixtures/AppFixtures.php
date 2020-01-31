@@ -63,17 +63,17 @@ class AppFixtures extends Fixture
 
         // CREATION DES OFFRES
         $offers = new Offers();
-        
+        $descriptionOffer = '<p>' . join('</p><p>', $faker->paragraphs(mt_rand(1, 2))) . '</p>';
         // offre 1 
         $offers->setTitle('classic');
-        $offers->setDescription($faker->paragraphs(mt_rand(1, 2)));
+        $offers->setDescription($descriptionOffer);
         $offers->setPrice(50);
         $offers->setType('subscription');
         $manager->persist($offers);
 
         //offre  2
         $offers->setTitle('premium');
-        $offers->setDescription($faker->paragraphs(mt_rand(1, 2)));
+        $offers->setDescription($descriptionOffer);
         $offers->setPrice(3000);
         $offers->setType('charge');
         $manager->persist($offers);
