@@ -244,7 +244,7 @@ class AccountController extends AbstractController
             }
 
             $user->setResetToken(null);
-            $user->setPassword($passwordEncoder->encodePassword($user, $request->request->get('password')));
+            $user->setHash($passwordEncoder->encodePassword($user, $request->request->get('password')));
             $entityManager->flush();
 
             $this->addFlash('info', 'Mot de passe mis à jour');

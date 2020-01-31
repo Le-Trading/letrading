@@ -1,52 +1,207 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+	<link rel="stylesheet" href="/css/stripe.css">
+{% endblock %}
+
 {% block body %}
 	<div class="container">
-		{{ form_start(form, {attr: {id: form.vars.id}}) }}
-		<div class="form-group">
-			<label for="card-element">
-				Credit or Debit Card
-			</label>
-			<div id="card-element" class="form-control"></div>
-			<div id="card-errors" class="help-block" role="alert"></div>
+		<h2 class="text-center">Offre séléctionnée <i class="fas fa-check"></i></h2>
+		<hr>
+		<div class="card mb-4 box-shadow">
+			<div class="card-body">
+				<ul>
+					<li>
+						<h4 class="my-0 font-weight-normal">Offre "{{offer.title}}"</h4>
+					</li>
+					<br>
+					<li>
+						<h4 class="card-title pricing-card-title">
+							Prix de l'offre : {{offer.price}}€ 
+							{% if offer.type == "subscription" %}
+								<small class="text-muted">/ mois</small>
+							{% endif %}
+						</h4>
+					</li>
+					<li>
+						<h4 class="card-title pricing-card-title">
+							Description :
+						</h4>
+						<h5>{{offer.description | raw}}</h5>
+					</li>
+				</ul>
+			</div>
 		</div>
-		{{ form_widget(form.token) }}
-		{{ form_end(form) }}
+		<br>
+		<h2 class="text-center">Choisissez votre moyen de paiement <i class="fas fa-wallet"></i></h2>
+		<hr>
+		<div class="card-body p-5">
+			<ul class="nav bg-light nav-pills rounded nav-fill mb-3" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link active" data-toggle="pill" href="#nav-tab-card">
+					<i class="fa fa-credit-card"></i> Par carte bleue</a>
+				</li>
+				{% if offer.type == "charge" %}
+					<li class="nav-item">
+						<a class="nav-link" data-toggle="pill" href="#nav-tab-card-multiple">
+						<i class="fa fa-money-bill-alt"></i>  3 fois sans frais</a>
+					</li>
+				{% endif %}
+				<li class="nav-item">
+					<a class="nav-link" data-toggle="pill" href="#nav-tab-paypal">
+					<i class="fab fa-paypal"></i>  Paypal</a>
+				</li>
+			</ul>
+
+			<div class="tab-content">
+				<div class="tab-pane fade show active" id="nav-tab-card">
+					{{ form_start(form, {attr: {id: form.vars.id}}) }}
+						<div class="form-group">
+							<label for="card-element">
+								Numéro de carte bleue
+							</label>
+							<div id="example2-card-number" class="form-control col-xs-12"></div>
+							<br>
+							<label for="card-element">
+								Date d'expiration
+							</label>
+							<div id="example2-card-expiry" class="form-control col-xs-12"></div>
+							<br>
+							<label for="card-element">
+								Code de vérification
+							</label>
+							<div id="example2-card-cvc" class="form-control col-xs-12"></div>
+							<div id="card-errors" class="help-block col-xs-12" role="alert"></div>
+						</div>
+						{{ form_widget(form.token) }}
+					{{ form_end(form) }}
+				</div>
+				{% if offer.type == "charge" %}
+					<div class="tab-pane fade" id="nav-tab-card-multiple">
+						<p>Yoyo</p>
+					</div>
+				{% endif %}
+				<div class="tab-pane fade" id="nav-tab-paypal">
+					<p>Paypal is easiest way to pay online</p>
+					<button type="button" class="btn btn-primary"> <i class="fab fa-paypal"></i> Log in my Paypal </button>
+					<p><strong>Note:</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+					tempor incididunt ut labore et dolore magna aliqua. </p>
+				</div>
+			</div>
+		</div>
 	</div>
 {% endblock %}
 
 {% block javascripts %}
 	<script>
 		var form = document.getElementById('{{ form.vars.id }}');
-var errors = document.getElementById('card-errors');
+		var errors = document.getElementById('card-errors');
 
-var stripe = Stripe('{{ stripe_public_key }}');
-var elements = stripe.elements();
-var card = elements.create('card');
+		var stripe = Stripe('{{ stripe_public_key }}');
+		var elements = stripe.elements();
+		var inputs = document.querySelectorAll('.cell.example.example2 .input');
+		Array.prototype.forEach.call(inputs, function(input) {
+			input.addEventListener('focus', function() {
+			input.classList.add('focused');
+			});
+			input.addEventListener('blur', function() {
+			input.classList.remove('focused');
+			});
+			input.addEventListener('keyup', function() {
+			if (input.value.length === 0) {
+				input.classList.add('empty');
+			} else {
+				input.classList.remove('empty');
+			}
+			});
+		});
 
-card.mount('#card-element');
-card.addEventListener('change', function (event) {
-if (event.error) {
-errors.textContent = event.error.message;
-form.classList.add('has-error');
-} else {
-errors.textContent = '';
-form.classList.remove('has-error');
-}
-});
+		var elementStyles = {
+			base: {
+				color: '#32325D',
+				fontWeight: 500,
+				fontFamily: 'Source Code Pro, Consolas, Menlo, monospace',
+				fontSize: '16px',
+				fontSmoothing: 'antialiased',
 
-form.addEventListener('submit', function (event) {
-event.preventDefault();
+				'::placeholder': {
+					color: '#CFD7DF',
+				},
+				':-webkit-autofill': {
+					color: '#e39f48',
+				},
+				},
+				invalid: {
+				color: '#E25950',
 
-stripe.createToken(card).then(function (result) {
-if (result.error) {
-errors.textContent = result.error.message;
-form.classList.add('has-error');
-} else {
-document.getElementById('{{ form.children.token.vars.id }}').setAttribute('value', result.token.id);
-form.submit();
-}
-});
-});
+				'::placeholder': {
+					color: '#FFCCA5',
+				},
+			},
+		};
+
+		var elementClasses = {
+			focus: 'focused',
+			empty: 'empty',
+			invalid: 'invalid',
+		};
+		
+		var cardNumber = elements.create('cardNumber', {
+			style: elementStyles,
+			classes: elementClasses,
+		});
+  		cardNumber.mount('#example2-card-number');
+		cardNumber.addEventListener('change', function (event) {
+			if (event.error) {
+				errors.textContent = event.error.message;
+				form.classList.add('has-error');
+			} else {
+				errors.textContent = '';
+				form.classList.remove('has-error');
+			}
+		});
+
+		var cardExpiry = elements.create('cardExpiry', {
+			style: elementStyles,
+			classes: elementClasses,
+		});
+		cardExpiry.mount('#example2-card-expiry');
+		cardExpiry.addEventListener('change', function (event) {
+			if (event.error) {
+				errors.textContent = event.error.message;
+				form.classList.add('has-error');
+			} else {
+				errors.textContent = '';
+				form.classList.remove('has-error');
+			}
+		});
+
+		var cardCvc = elements.create('cardCvc', {
+			style: elementStyles,
+			classes: elementClasses,
+		});
+		cardCvc.mount('#example2-card-cvc');
+		cardCvc.addEventListener('change', function (event) {
+			if (event.error) {
+				errors.textContent = event.error.message;
+				form.classList.add('has-error');
+			} else {
+				errors.textContent = '';
+				form.classList.remove('has-error');
+			}
+		});
+		
+		form.addEventListener('submit', function (event) {
+			event.preventDefault();
+			stripe.createToken(cardNumber).then(function (result) {
+				if (result.error) {
+					errors.textContent = result.error.message;
+					form.classList.add('has-error');
+				} else {
+					document.getElementById('{{ form.children.token.vars.id }}').setAttribute('value', result.token.id);
+					form.submit();
+				}
+			});
+		});
 	</script>
 {% endblock %}
