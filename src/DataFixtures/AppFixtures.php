@@ -65,8 +65,6 @@ class AppFixtures extends Fixture
         $descriptionOffer = '<p>' . join('</p><p>', $faker->paragraphs(mt_rand(1, 2))) . '</p>';
         // offre 1
         $offers = new Offers();
-        $descriptionOffer = '<p>' . join('</p><p>', $faker->paragraphs(mt_rand(1, 2))) . '</p>';
-        // offre 1
         $offers->setTitle('classic')
                 ->setDescription($descriptionOffer)
                 ->setPrice(50)
@@ -84,16 +82,21 @@ class AppFixtures extends Fixture
         // FIN CREATION DES OFFRES
 
         /********** CREATION DE THREADS  ***********/
-        $threadTheme = [
+        $threadSlug = [
             'indices',
             'forex',
             'action'
         ];
+        $threadTitle = [
+            'Indice boursier',
+            'Forex',
+            'Action'
+        ];
         for ($i = 0; $i <= 2; $i++) {
             $thread = new Thread();
 
-            $thread->setSlug($threadTheme[$i])
-                    ->setTitle($faker->sentence());
+            $thread->setSlug($threadSlug[$i])
+                    ->setTitle($threadTitle[$i]);
 
             /****** CREATION DE POSTS *************/
             for ($j = 0; $j <= mt_rand(0, 15); $j++) {
