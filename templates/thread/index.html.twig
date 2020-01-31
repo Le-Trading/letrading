@@ -39,12 +39,10 @@
 				<div class="row">
 					<div class="col-12">
 						{% set posts = thread.posts %}
-						{% for post in posts %}
+						{% for post in posts|reverse %}
 							{% if not post.isAdmin and post.respond == null %}
-
 								{% include 'post/_affichagePost.html.twig' with {'post' : post} %}
 							{% endif %}
-
 						{% endfor %}
 					</div>
 

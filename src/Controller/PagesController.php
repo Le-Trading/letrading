@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Contact;
 use App\Form\ContactType;
+use App\Repository\OffersRepository;
 use App\Service\ContactService;
 use App\Repository\ThreadRepository;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,9 +17,12 @@ class PagesController extends AbstractController
     /**
      * @Route("/", name="homepage")
      */
-    public function index()
+    public function index(OffersRepository $repo)
     {
-        return $this->render('home.html.twig');
+        $offers = $repo->findAll();
+        return $this->render('home.html.twig',
+            ['offers' => $offers]
+        );
     }
 
     /**
