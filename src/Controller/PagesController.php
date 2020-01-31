@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Contact;
 use App\Form\ContactType;
 use App\Service\ContactService;
+use App\Repository\ThreadRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,6 +19,17 @@ class PagesController extends AbstractController
     public function index()
     {
         return $this->render('home.html.twig');
+    }
+
+    /**
+     * Recuperation des threads pour affichage header
+     */
+    public function getThreads(ThreadRepository $repo){
+        $threads = $repo->findAll();
+        return $this->render(
+            'partials/request/thread.html.twig',
+            ['threads' => $threads]
+        );
     }
 
     /**

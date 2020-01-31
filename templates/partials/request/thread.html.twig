@@ -1,0 +1,5 @@
+{% for thread in threads %}
+    <li>
+        <a href="{{ path('thread_show', {'slug':thread.slug}) }}" class="dropdown-item text-capitalize">{{thread.slug}}</a>
+    </li>
+{% endfor %}

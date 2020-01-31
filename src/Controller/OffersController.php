@@ -42,17 +42,9 @@ class OffersController extends AbstractController
      */
     public function show($title, OffersRepository $repo){
         $offers = $repo->findByTitle($title);
-        if($this->getUser()){
-            return $this->render('offers/show.html.twig', [
-                'offers' => $offers
-            ]);
-        }else{
-            $this->addFlash(
-                'warning',
-                "Merci de vous connecter ou bien vous créer un compte pour avoir accès à nos offres"
-            );
-            return $this->redirectToRoute('account_login');
-        }
+        return $this->render('offers/show.html.twig', [
+            'offers' => $offers
+        ]);
     }
 
     /**
@@ -60,61 +52,70 @@ class OffersController extends AbstractController
      */
     public function prepareAction(Request $request, Offers $offer, StripeClient $stripe)
     {
-        $payment = new Payment();
+        if($this->getUser()){
+            $payment = new Payment();
         
-        $form = $this->get('form.factory')
-        ->createNamedBuilder('payment-form')
-        ->add('token', HiddenType::class, [
-            'constraints' => [new NotBlank()],
-        ])
-        ->add('submit', SubmitType::class)
-        ->getForm();
-
-        if ($request->isMethod('POST')) {
-            $form->handleRequest($request);
-        
-            if ($form->isValid()) {
-                if($offer->getType() == "charge"){
-                    try {
-                        $stripe->createPremiumCharge($this->getUser(), $form->get('token')->getData(), $offer);
-
-                        $this->addFlash(
-                            'success',
-                            "Votre formation a bien été payée !"
-                        );
-                    } catch (\Stripe\Error\Base $e) {
-                        $this->addFlash(
-                            'warning', 
-                            "Votre paiement n'a pas pu être effectué"
-                        );
-                    } finally {
-                        return $this->redirectToRoute('offers_index');
-                    } 
-                }else if($offer->getType()=="subscription"){
-                    try {
-                        $stripe->createClassicSubscription($this->getUser(), $form->get('token')->getData(), $offer);
-
-                        $this->addFlash(
-                            'success',
-                            "Votre formation a bien été payée !"
-                        );
-                    } catch (\Stripe\Error\Base $e) {
-                        $this->addFlash(
-                            'warning', 
-                            "Votre paiement n'a pas pu être effectué"
-                        );
-                    } finally {
-                        return $this->redirectToRoute('offers_index');
+            $form = $this->get('form.factory')
+            ->createNamedBuilder('payment-form')
+            ->add('token', HiddenType::class, [
+                'constraints' => [new NotBlank()],
+            ])
+            ->add('valider', SubmitType::class)
+            ->getForm();
+    
+            if ($request->isMethod('POST')) {
+                $form->handleRequest($request);
+            
+                if ($form->isValid()) {
+                    if($offer->getType() == "charge"){
+                        try {
+                            $stripe->createPremiumCharge($this->getUser(), $form->get('token')->getData(), $offer);
+    
+                            $this->addFlash(
+                                'success',
+                                "Votre formation a bien été payée !"
+                            );
+                        } catch (\Stripe\Error\Base $e) {
+                            $this->addFlash(
+                                'warning', 
+                                "Votre paiement n'a pas pu être effectué"
+                            );
+                        } finally {
+                            return $this->redirectToRoute('offers_index');
+                        } 
+                    }else if($offer->getType()=="subscription"){
+                        try {
+                            $stripe->createClassicSubscription($this->getUser(), $form->get('token')->getData(), $offer);
+    
+                            $this->addFlash(
+                                'success',
+                                "Votre formation a bien été payée !"
+                            );
+                        } catch (\Stripe\Error\Base $e) {
+                            $this->addFlash(
+                                'warning', 
+                                "Votre paiement n'a pas pu être effectué"
+                            );
+                        } finally {
+                            return $this->redirectToRoute('offers_index');
+                        }
+                    }else{
+                        return $this->redirectToRoute('homepage');
                     }
-                }else{
-                    return $this->redirectToRoute('homepage');
                 }
             }
-        }
-        
-        return $this->render('offers/prepare.html.twig', [
-        'form' => $form->createView(),
-        'stripe_public_key' => $this->getParameter('stripe_public_key'),
-        ]);  
+            
+            return $this->render('offers/prepare.html.twig', [
+            'offer' => $offer,
+            'form' => $form->createView(),
+            'stripe_public_key' => $this->getParameter('stripe_public_key'),
+            ]);
+        }else{
+            $this->addFlash(
+                'warning',
+                "Merci de vous connecter ou bien vous créer un compte pour avoir accès à nos offres"
+            );
+            return $this->redirectToRoute('account_login');
+        } 
     }
 }
