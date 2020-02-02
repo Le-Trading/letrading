@@ -17,8 +17,22 @@
 						)}}
 						{{form_row(form.content)}}
 						{{form_row(form.media)}}
+						<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#paramTrade" aria-expanded="false" aria-controls="paramTrade">
+							<i class="fa fa-cogs"></i> Paramétrage trade
+						</button>
+						<div class="collapse" id="paramTrade">
+							{{ form_row(form.feeling) }}
+							<div class="triggerFeeling">
+								{{form_row(form.startPrice)}}
+								{{form_row(form.stopPrice)}}
+								{{form_row(form.tp1)}}
+								{{form_row(form.tp2)}}
+								{{form_row(form.pair)}}
+							</div>
+						</div>
 						{{form_errors(form)}}
-						<button class="btn btn-primary mt-1" type="submit">Ajouter son message</button>
+						<br><br>
+						<button class="btn btn-success mt-1" type="submit">Envoyer <i class="fa fa-comments"></i></button>
 						{{form_end(form)}}
 					</div>
 					<div id="form_response" class="hidden-form container p-3">
@@ -39,7 +53,7 @@
 				<div class="row">
 					<div class="col-12">
 						{% set posts = thread.posts %}
-						{% for post in posts|reverse %}
+						{% for post in posts|sort|reverse %}
 							{% if not post.isAdmin and post.respond == null %}
 								{% include 'post/_affichagePost.html.twig' with {'post' : post} %}
 							{% endif %}
@@ -68,35 +82,50 @@
 {% endblock %}
 {% block javascripts %}
 	<script src="https://unpkg.com/axios@0.19.2/dist/axios.min.js"></script>
+
+	<script>
+		$(function() {
+			$("select").change(function(){
+				$(this).find("option:selected").each(function(){
+					var optionValue = $(this).attr("value");
+					if(optionValue){
+						$(".triggerFeeling").show();
+					} else{
+						$(".triggerFeeling").hide();
+					}
+				});
+			}).change();
+		});
+	</script>
+
 	<script>
 		function handleAnswering(id) {
-CKEDITOR.instances.response_content.destroy();
+			CKEDITOR.instances.response_content.destroy();
 
-var id = $(id).data('response');
-$('#post' + id).after().append($('#form_response'));
-$('#form_response').removeClass('hidden-form');
-$('#response_respond').val(id);
-CKEDITOR.replace('response_content', {
-"toolbar": [
-[
-"Bold", "Italic"
-],
-[
-"NumberedList",
-"BulletedList",
-"-",
-"Outdent",
-"Indent"
-],
-[
-"Link", "Unlink"
-],
-["About"]
-],
-"language": "fr"
-});
-
-}
+			var id = $(id).data('response');
+			$('#post' + id).after().append($('#form_response'));
+			$('#form_response').removeClass('hidden-form');
+			$('#response_respond').val(id);
+			CKEDITOR.replace('response_content', {
+				"toolbar": [
+				[
+				"Bold", "Italic"
+				],
+				[
+				"NumberedList",
+				"BulletedList",
+				"-",
+				"Outdent",
+				"Indent"
+				],
+				[
+				"Link", "Unlink"
+				],
+				["About"]
+				],
+				"language": "fr"
+			});
+		}
 	</script>
 	<script type="text/javascript">
 		function onClickBtnVote(event) {

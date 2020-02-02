@@ -30,6 +30,36 @@
 
 					{{post.content | raw}}
 
+					{#Paramétrage trade - affichage#}
+					<div class="alert {% if post.feeling == "vente" %} alert-danger {% elseif post.feeling == "achat" %} alert-success {% endif %}">
+						{% if post.feeling == "vente" %}
+							<i class="fas fa-arrow-down"></i> {{ post.feeling }}
+						{% elseif post.feeling == "achat" %}
+							<i class="fas fa-arrow-up"></i> {{ post.feeling }}
+						{% endif %}
+
+						{% if post.startPrice %}
+							Prix d'entrée {{ post.startPrice }}
+						{% endif %}
+
+						{% if post.stopPrice %}
+							Stop de protection {{ post.startPrice }}
+						{% endif %}
+
+						{% if post.tp1 %}
+							TP1 {{ post.tp1 }}
+						{% endif %}
+
+						{% if post.tp2 %}
+							TP2 {{ post.tp2 }}
+						{% endif %}
+
+						{% if post.pair %}
+							{{ post.pair }}
+						{% endif %}
+					</div>
+					{#Fin Paramétrage trade - affichage#}
+
 					{% if post.media %}
 
 						<!-- Button trigger modal -->

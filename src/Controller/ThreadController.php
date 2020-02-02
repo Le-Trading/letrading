@@ -33,26 +33,32 @@ class ThreadController extends AbstractController
         $form = $this->createForm(PostType::class, $post, ['isAdmin' => $grantedService->isGranted($this->getUser(), 'ROLE_ADMIN')]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-
-            $post->setAuthor($this->getUser())
-                ->setThread($thread)
-                ->setContent($post->getContent());
-            if ($grantedService->isGranted($this->getUser(), 'ROLE_ADMIN')) {
-                if (empty($post->getIsAdmin())) {
-                    $isAdmin = false;
-                } else {
-                    $isAdmin = true;
+            //verification si contenu existe
+            if($post->getContent() == null && $post->getMedia() == null && $post->getFeeling()== null){
+                $this->addFlash(
+                    'danger',
+                    "Votre message ne possède pas de contenu"
+                );
+            }else{
+                $post->setAuthor($this->getUser())
+                    ->setThread($thread)
+                    ->setContent($post->getContent());
+                if ($grantedService->isGranted($this->getUser(), 'ROLE_ADMIN')) {
+                    if (empty($post->getIsAdmin())) {
+                        $isAdmin = false;
+                    } else {
+                        $isAdmin = true;
+                    }
+                    $post->setIsAdmin($isAdmin);
                 }
-                $post->setIsAdmin($isAdmin);
+                $manager->persist($post);
+                $manager->flush();
+                $this->addFlash(
+                    'success',
+                    "Votre message a bien été enregistré"
+                );
+                return $this->redirectToRoute('thread_show', ['slug' => $thread->getSlug(), 'withAlert' => true]);
             }
-            $manager->persist($post);
-            $manager->flush();
-            $this->addFlash(
-                'success',
-                "Votre message a bien été enregistré"
-            );
-
-            return $this->redirectToRoute('thread_show', ['slug' => $thread->getSlug(), 'withAlert' => true]);
         }
 
         /**************** FORMULAIRE POUR UNE REPONSE A UN POST *********************/

@@ -44,7 +44,7 @@ class Post
     private $createdAt;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      */
     private $content;
 
@@ -73,6 +73,36 @@ class Post
      * @ORM\OneToMany(targetEntity="App\Entity\Post", mappedBy="respond")
      */
     private $responses;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $feeling;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $startPrice;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $stopPrice;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $tp1;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $tp2;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $pair;
 
 
     public function __construct()
@@ -148,7 +178,7 @@ class Post
         return $this->content;
     }
 
-    public function setContent(string $content): self
+    public function setContent(?string $content): self
     {
         $this->content = $content;
 
@@ -273,5 +303,77 @@ class Post
         }
 
         return false;
+    }
+
+    public function getFeeling(): ?string
+    {
+        return $this->feeling;
+    }
+
+    public function setFeeling(?string $feeling): self
+    {
+        $this->feeling = $feeling;
+
+        return $this;
+    }
+
+    public function getStartPrice(): ?float
+    {
+        return $this->startPrice;
+    }
+
+    public function setStartPrice(?float $startPrice): self
+    {
+        $this->startPrice = $startPrice;
+
+        return $this;
+    }
+
+    public function getStopPrice(): ?float
+    {
+        return $this->stopPrice;
+    }
+
+    public function setStopPrice(?float $stopPrice): self
+    {
+        $this->stopPrice = $stopPrice;
+
+        return $this;
+    }
+
+    public function getTp1(): ?float
+    {
+        return $this->tp1;
+    }
+
+    public function setTp1(?float $tp1): self
+    {
+        $this->tp1 = $tp1;
+
+        return $this;
+    }
+
+    public function getTp2(): ?float
+    {
+        return $this->tp2;
+    }
+
+    public function setTp2(?float $tp2): self
+    {
+        $this->tp2 = $tp2;
+
+        return $this;
+    }
+
+    public function getPair(): ?string
+    {
+        return $this->pair;
+    }
+
+    public function setPair(?string $pair): self
+    {
+        $this->pair = $pair;
+
+        return $this;
     }
 }

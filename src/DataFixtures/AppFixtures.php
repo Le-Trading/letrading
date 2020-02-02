@@ -59,6 +59,23 @@ class AppFixtures extends Fixture
             $manager->persist($user);
             $users[] = $user;
         }
+
+        //creations users fixes
+        $usersMail = [
+            'piquardanthony@gmail.com',
+            'tebboune.yacine83@gmail.com'
+        ];
+        for ($i = 0; $i <= 1; $i++) {
+            $user = new User();
+            $hash = $this->encoder->encodePassword($user, 'password');
+            $user->addRole($superAdminRole)
+                ->setFirstName($faker->firstname('male'))
+                ->setLastName($faker->lastname)
+                ->setPseudo($faker->userName)
+                ->setEmail($usersMail[$i])
+                ->setHash($hash);
+            $manager->persist($user);
+        }
         // FIN DE CREATION DES UTILISATEURS
 
         // CREATION DES OFFRES
