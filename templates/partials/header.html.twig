@@ -41,6 +41,10 @@
 		</ul>
 		<ul class="navbar-nav ml-auto">
 			{% if app.user %}
+                {{ render(controller(
+                    'App\\Controller\\PagesController::getNotifs'
+                	))
+                }}
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#">
 						{% if app.user.media %}
@@ -79,3 +83,7 @@
 		</div>
 	</div>
 {% endfor %}
+
+{% block javascripts %}
+
+{% endblock %}

@@ -26,17 +26,6 @@ class PagesController extends AbstractController
     }
 
     /**
-     * Recuperation des threads pour affichage header
-     */
-    public function getThreads(ThreadRepository $repo){
-        $threads = $repo->findAll();
-        return $this->render(
-            'partials/request/thread.html.twig',
-            ['threads' => $threads]
-        );
-    }
-
-    /**
      * Formulaire de contact
      *
      * @Route("/contact-us", name="pages_contact")
@@ -63,5 +52,23 @@ class PagesController extends AbstractController
         return $this->render('pages/contact.html.twig',[
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * Recuperation des threads pour affichage header
+     */
+    public function getThreads(ThreadRepository $repo){
+        $threads = $repo->findAll();
+        return $this->render(
+            'partials/request/thread.html.twig',
+            ['threads' => $threads]
+        );
+    }
+
+    /**
+     * Recuperation des notifs
+     */
+    public function getNotifs(){
+        return $this->render('partials/request/notifs.html.twig');
     }
 }

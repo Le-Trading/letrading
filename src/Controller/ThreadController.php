@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Entity\Thread;
+use App\Entity\User;
 use App\Form\PostType;
 use App\Entity\PostVote;
 use App\Form\ResponseType;
@@ -11,20 +12,25 @@ use App\Service\GrantedService;
 use App\Repository\PostRepository;
 use App\Repository\ThreadRepository;
 use App\Repository\PostVoteRepository;
+use App\Service\MercureCookieGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mercure\Publisher;
+use Symfony\Component\Mercure\Update;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class ThreadController extends AbstractController
 {
     /**
      * @Route("/thread/{slug}", name="thread_show")
      */
-    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo)
+    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo, MercureCookieGenerator $cookieGenerator)
     {
         $post = new Post();
 
@@ -80,12 +86,13 @@ class ThreadController extends AbstractController
 
             return $this->redirectToRoute('thread_show', ['slug' => $thread->getSlug(), 'withAlert' => true]);
         }
-        return $this->render('thread/index.html.twig', [
+        $response = $this->render('thread/index.html.twig', [
             'thread' => $thread,
             'form' => $form->createView(),
             'formReply' => $formReply->createView(),
-
         ]);
+        $response->headers->set('set-cookie', $cookieGenerator->generate($this->getUser()));
+        return $response;
     }
 
     /**
@@ -129,7 +136,7 @@ class ThreadController extends AbstractController
      * @param PostVoteRepository $voteRepo
      * @return Response
      */
-    public function vote(Post $post, EntityManagerInterface $manager, PostVoteRepository $voteRepo): Response
+    public function vote(Post $post, EntityManagerInterface $manager, PostVoteRepository $voteRepo, MessageBusInterface $bus, SerializerInterface $serializer): Response
     {
         $user = $this->getUser();
         if (!$user) return $this->json([
@@ -152,6 +159,12 @@ class ThreadController extends AbstractController
         $manager->persist($vote);
         $manager->flush();
 
+        //envoi notif mercure
+        $update = new Update("http://monsite.com/ping",
+            $serializer->serialize($user, 'json', ['groups' => 'public']),
+            ["http://monsite.com/user/{$post->getAuthor()->getId()}"]
+        );
+        $bus->dispatch($update);
 
         return $this->json(['code' => 200, 'message' => 'Liké', 'votes' => $voteRepo->count(['post' => $post])], 200);
     }
