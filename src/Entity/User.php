@@ -26,7 +26,6 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups("public")
      */
     private $id;
 
@@ -45,7 +44,6 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="Vous devez renseigner votre pseudo")
-     * @Groups("public")
      */
     private $pseudo;
 

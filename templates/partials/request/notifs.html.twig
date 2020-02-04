@@ -10,7 +10,7 @@
         position: relative;
         text-decoration: none;
         float: right;
-        margin: 12px 30px 0 0;
+        margin:8px 15px 0 0;
         font-size: 20px;
     }
     .notification-trigger .notification-num {
@@ -59,7 +59,7 @@
     }
     ul.notification-bar {
         list-style: none;
-        padding: 60px 10px;
+        padding: 60px 10px 20px;
         margin: 0;
         position: relative;
         z-index: 1;
@@ -76,7 +76,9 @@
 <div class="panel">
     <div class="title"><b>Vos notifications</b></div>
     <ul class="notification-bar">
-        <p class="text-center firstMessage">Vous n'avez aucune notification</p>
+        <div class="card">
+                <li class="list-group-item text-center firstMessage">Vous n'avez pas encore de notification</li>
+        </div>
     </ul>
 </div>
 {% block javascripts %}
@@ -89,21 +91,32 @@
         const eventSource = new EventSource(url, {withCredentials: true});
         eventSource.onmessage = e => {
             nbNotif+=compteur;
-            const data = JSON.parse(e.data)
-            let message = "Ping !"
-            if(data.pseudo){
-                message = 'Ping par '+data.pseudo+' !'
+            const data = JSON.parse(e.data);
+            let message = data.fullName;
+            const time = new Date(data.time.date);
+            const link = "/thread/"+data.threadName+"#post"+data.idPost;
+            console.log(time);
+            if(data.type == "like"){
+                message += " a liké votre post <br><br> <small style='float:left;'><i class='fa fa-heart'></i> "+data.time+"</small>";
+            }else if(data.type == "comment"){
+                message += " a répondu à votre post <br><br> <small style='float:left;'><i class='fa fa-comment'></i> "+time + "</small>";
             }
             $('.firstMessage').remove();
-            $('.notification-bar').append(message);
+            $('.notification-bar .card').append('<li class="list-group-item text-center"><a href='+link+'>'+message+'</a></li>');
             $('.notifTrigger').addClass('notification-num').html(nbNotif);
         }
-    </script>
-    <script>
-        $(document).ready(function() {
-            $('.notification-trigger').click(function() {
-                $('.panel').toggleClass('visible');
-            });
-        })
+
+        $('.notification-trigger').click(function() {
+            nbNotif = 0;
+            $('.notifTrigger').removeClass('notification-num').html('');
+            $('.panel').toggleClass('visible');
+        });
+
+        $(document).mouseup(function(e) {
+            var container = $(".panel");
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+                $('.panel').removeClass('visible');
+            }
+        });
     </script>
 {% endblock %}

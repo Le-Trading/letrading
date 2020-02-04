@@ -12,12 +12,10 @@ use App\Service\GrantedService;
 use App\Repository\PostRepository;
 use App\Repository\ThreadRepository;
 use App\Repository\PostVoteRepository;
-use App\Service\MercureCookieGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mercure\Publisher;
 use Symfony\Component\Mercure\Update;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -30,7 +28,7 @@ class ThreadController extends AbstractController
     /**
      * @Route("/thread/{slug}", name="thread_show")
      */
-    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo, MercureCookieGenerator $cookieGenerator)
+    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo, MessageBusInterface $bus, SerializerInterface $serializer)
     {
         $post = new Post();
 
@@ -84,15 +82,27 @@ class ThreadController extends AbstractController
                 "Votre message a bien été enregistré"
             );
 
+            //envoi notif mercure
+            $updateContent = json_encode([
+                'type' => 'comment',
+                'fullName' => $post->getAuthor()->getFullName(),
+                'time' => $post->getCreatedAt(),
+                'threadName' => $post->getThread()->getSlug(),
+                'idPost' => $post->getId()
+            ]);
+            $update = new Update("http://monsite.com/ping",
+                $updateContent,
+                ["http://monsite.com/user/{$post->getAuthor()->getId()}"]
+            );
+            $bus->dispatch($update);
+
             return $this->redirectToRoute('thread_show', ['slug' => $thread->getSlug(), 'withAlert' => true]);
         }
-        $response = $this->render('thread/index.html.twig', [
+         return $this->render('thread/index.html.twig', [
             'thread' => $thread,
             'form' => $form->createView(),
             'formReply' => $formReply->createView(),
         ]);
-        $response->headers->set('set-cookie', $cookieGenerator->generate($this->getUser()));
-        return $response;
     }
 
     /**
@@ -160,8 +170,15 @@ class ThreadController extends AbstractController
         $manager->flush();
 
         //envoi notif mercure
+        $updateContent = json_encode([
+            'type' => 'like',
+            'fullName' => $user->getFullName(),
+            'time' => 'Maintenant',
+            'threadName' => $post->getThread()->getSlug(),
+            'idPost' => $post->getId()
+        ]);
         $update = new Update("http://monsite.com/ping",
-            $serializer->serialize($user, 'json', ['groups' => 'public']),
+            $updateContent,
             ["http://monsite.com/user/{$post->getAuthor()->getId()}"]
         );
         $bus->dispatch($update);
