@@ -175,6 +175,11 @@ class AccountController extends AbstractController
     /**
      * Permet de reset son mot de passe
      * @Route("/forgottenPassword", name="app_forgotten_password")
+     * @param Request $request
+     * @param UserPasswordEncoderInterface $encoder
+     * @param \Swift_Mailer $mailer
+     * @param TokenGeneratorInterface $tokenGenerator
+     * @return Response
      */
     public function forgottenPassword(
         Request $request,
@@ -255,4 +260,5 @@ class AccountController extends AbstractController
         }
 
     }
+
 }

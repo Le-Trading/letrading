@@ -48,6 +48,11 @@ class Offers
      */
     private $souscriptions;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $plan;
+
     public function __construct()
     {
         $this->payments = new ArrayCollection();
@@ -165,6 +170,18 @@ class Offers
                 $souscription->setOffer(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPlan(): ?string
+    {
+        return $this->plan;
+    }
+
+    public function setPlan(string $plan): self
+    {
+        $this->plan = $plan;
 
         return $this;
     }

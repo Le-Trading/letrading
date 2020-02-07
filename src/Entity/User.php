@@ -91,11 +91,31 @@ class User implements UserInterface
      */
     private $media;
 
-
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Payment", mappedBy="User")
      */
     private $payments;
+
+    /**
+     * @ORM\Column(type="string", unique=true, nullable=true)
+     */
+    private $stripeCustomerId;
+
+    /**
+     * @return mixed
+     */
+    public function getStripeCustomerId()
+    {
+        return $this->stripeCustomerId;
+    }
+
+    /**
+     * @param mixed $stripeCustomerId
+     */
+    public function setStripeCustomerId($stripeCustomerId): void
+    {
+        $this->stripeCustomerId = $stripeCustomerId;
+    }
 
     public function __construct()
     {
@@ -103,7 +123,6 @@ class User implements UserInterface
         $this->postVotes = new ArrayCollection();
         $this->userRole = new ArrayCollection();
         $this->payments = new ArrayCollection();
-        $this->souscriptions = new ArrayCollection();
     }
 
     /**
@@ -368,9 +387,9 @@ class User implements UserInterface
     protected $resetToken;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Souscription", mappedBy="user")
+     * @ORM\OneToOne(targetEntity="App\Entity\Souscription", mappedBy="user", cascade={"persist", "remove"})
      */
-    private $souscriptions;
+    private $souscription;
 
     /**
      * @return string
@@ -388,34 +407,43 @@ class User implements UserInterface
         $this->resetToken = $resetToken;
     }
 
-    /**
-     * @return Collection|Souscription[]
-     */
-    public function getSouscriptions(): Collection
+    public function getSouscription(): ?Souscription
     {
-        return $this->souscriptions;
+        return $this->souscription;
     }
 
-    public function addSouscription(Souscription $souscription): self
+    public function setSouscription(Souscription $souscription): self
     {
-        if (!$this->souscriptions->contains($souscription)) {
-            $this->souscriptions[] = $souscription;
+        $this->souscription = $souscription;
+
+        // set the owning side of the relation if necessary
+        if ($souscription->getUser() !== $this) {
             $souscription->setUser($this);
         }
 
         return $this;
     }
 
-    public function removeSouscription(Souscription $souscription): self
+    public function hasActiveSubscription()
     {
-        if ($this->souscriptions->contains($souscription)) {
-            $this->souscriptions->removeElement($souscription);
-            // set the owning side to null (unless already changed)
-            if ($souscription->getUser() === $this) {
-                $souscription->setUser(null);
-            }
-        }
-
-        return $this;
+        return $this->getSouscription() && $this->getSouscription()->isActive();
     }
+
+    public function hasActiveNonCancelledSubscription()
+    {
+        return $this->hasActiveSubscription() && !$this->getSouscription()->isCancelled();
+    }
+
+    public function ownThisOffer(Offers $offer){
+        if($offer->getType() == "subscription" && $this->hasActiveSubscription()){
+            return true;
+        }
+        foreach ($this->getPayments() as $payment ){
+            if ($payment->getOffer() === $offer)
+                return true;
+        }
+        return false;
+    }
+
+
 }

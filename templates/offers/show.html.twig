@@ -4,26 +4,37 @@
 {% endblock %}
 
 {% block body %}
-	<div class="container">
-		<div class="card-deck mb-3 text-center">
-			{% for offer in offers %}
-				<div class="card mb-4 box-shadow">
-					<div class="card-header">
-						<h4 class="my-0 font-weight-normal">{{offer.title}}</h4>
-					</div>
-					<div class="card-body">
-						<h1 class="card-title pricing-card-title">{{offer.price}}€
-							{% if offer.type == "subscription" %}
-								<small class="text-muted">/ mois</small>
-							{% endif %}
-						</h1>
-						<ul class="list-unstyled mt-3 mb-4">
-							{{offer.description | raw}}
-						</ul>
-						<a href="{{path('order_prepare', {'title':offer.title})}}" class="btn btn-lg btn-block btn-primary">Je m'abonne</a>
-					</div>
-				</div>
-			{% endfor %}
-		</div>
-	</div>
+    <div class="container">
+        <h1 class="h3 text-center my-5">Description de l'offre</h1>
+        {% for offer in offers %}
+
+            <div class="card-deck mb-3 text-center">
+
+                <div class="card mb-4 box-shadow">
+                    <div class="card-header">
+                        <h4 class="my-0 font-weight-normal">{{ offer.title }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <h1 class="card-title pricing-card-title">{{ offer.price }}€
+                            {% if offer.type == "subscription" %}
+                                <small class="text-muted">/ mois</small>
+                            {% endif %}
+                        </h1>
+                        <ul class="list-unstyled mt-3 mb-4">
+                            {{ offer.description | raw }}
+                        </ul>
+                        {% if app.user.ownThisOffer(offer) %}
+                            <div class="alert alert-info text-center">
+                                Vous possédez déjà cette offre.
+                            </div>
+                        {% else %}
+                            <a href="{{ path('order_prepare', {'title':offer.title}) }}"
+                               class="btn btn-lg btn-block btn-primary">Je m'abonne</a>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

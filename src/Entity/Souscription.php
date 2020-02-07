@@ -16,11 +16,6 @@ class Souscription
      */
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="souscriptions")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Offers", inversedBy="souscriptions")
@@ -29,36 +24,45 @@ class Souscription
     private $offer;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
-    private $beginningAt;
+    private $billingPeriodEndsAt;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="string")
      */
-    private $endingAt;
+    private $stripeSubscriptionId;
 
     /**
-     * @ORM\Column(type="boolean", nullable=true)
+     * @ORM\OneToOne(targetEntity="App\Entity\User", inversedBy="souscription", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $cancelled;
+    private $user;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $endsAt;
+
+    public function getStripeSubscriptionId()
+    {
+        return $this->stripeSubscriptionId;
+    }
+
+
+    public function setStripeSubscriptionId(string $stripeSubscriptionId): self
+    {
+        $this->stripeSubscriptionId = $stripeSubscriptionId;
+        return $this;
+    }
+
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
 
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
-
-        return $this;
-    }
 
     public function getOffer(): ?Offers
     {
@@ -72,39 +76,75 @@ class Souscription
         return $this;
     }
 
-    public function getBeginningAt(): ?\DateTimeInterface
+
+    /**
+     * @return \DateTime
+     */
+    public function getBillingPeriodEndsAt()
     {
-        return $this->beginningAt;
+        return $this->billingPeriodEndsAt;
     }
 
-    public function setBeginningAt(\DateTimeInterface $beginningAt): self
-    {
-        $this->beginningAt = $beginningAt;
+    public function setBillingPeriodEndsAt(\DateTimeInterface $billingPeriodEndsAt){
+        $this->billingPeriodEndsAt = $billingPeriodEndsAt;
 
         return $this;
     }
 
-    public function getEndingAt(): ?\DateTimeInterface
+
+    public function getUser(): ?User
     {
-        return $this->endingAt;
+        return $this->user;
     }
 
-    public function setEndingAt(\DateTimeInterface $endingAt): self
+    public function setUser(User $user): self
     {
-        $this->endingAt = $endingAt;
+        $this->user = $user;
 
         return $this;
     }
-
-    public function getCancelled(): ?bool
+    /**
+     * @return \DateTime
+     */
+    public function getEndsAt()
     {
-        return $this->cancelled;
+        return $this->endsAt;
+    }
+    public function setEndsAt(\DateTime $endsAt = null)
+    {
+        $this->endsAt = $endsAt;
     }
 
-    public function setCancelled(?bool $cancelled): self
-    {
-        $this->cancelled = $cancelled;
+    /***********/
+    /*********** GESTION DE L'ABONNEMENT *************/
 
-        return $this;
+    /******
+     * @param Offers $offer
+     * @param $stripeSubscriptionId
+     * @param \DateTime $periodEnd
+     */
+    public function activateSubscription(Offers $offer, $stripeSubscriptionId, \DateTime $periodEnd)
+    {
+        $this->offer = $offer;
+        $this->stripeSubscriptionId = $stripeSubscriptionId;
+        $this->billingPeriodEndsAt = $periodEnd;
+        $this->endsAt = null;
     }
+
+    public function desactivateSubscription()
+    {
+        // paid through end of period
+        $this->endsAt = $this->billingPeriodEndsAt;
+        $this->billingPeriodEndsAt = null;
+    }
+
+    public function isActive()
+    {
+        return $this->endsAt === null || $this->endsAt > new \DateTime();
+    }
+    public function isCancelled()
+    {
+        return $this->endsAt !== null;
+    }
+
 }

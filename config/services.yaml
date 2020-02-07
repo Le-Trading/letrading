@@ -11,6 +11,8 @@ parameters:
         decimal: true
         premium_amount: 3000
         classic_amount: 50
+    # Mettre https en production
+    secure_channel: http
 
 services:
     # default configuration for services in *this* file
