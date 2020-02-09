@@ -12,6 +12,7 @@ use App\Service\GrantedService;
 use App\Repository\PostRepository;
 use App\Repository\ThreadRepository;
 use App\Repository\PostVoteRepository;
+use App\Service\MercureCookieGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -28,7 +29,7 @@ class ThreadController extends AbstractController
     /**
      * @Route("/thread/{slug}", name="thread_show")
      */
-    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo, MessageBusInterface $bus, SerializerInterface $serializer)
+    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo, MessageBusInterface $bus, SerializerInterface $serializer, MercureCookieGenerator $cookieGenerator)
     {
         $post = new Post();
 
@@ -92,17 +93,19 @@ class ThreadController extends AbstractController
             ]);
             $update = new Update("http://monsite.com/ping",
                 $updateContent,
-                ["http://monsite.com/user/{$post->getAuthor()->getId()}"]
+                ["http://monsite.com/user/{$post->getRespond()->getAuthor()->getId()}"]
             );
             $bus->dispatch($update);
 
             return $this->redirectToRoute('thread_show', ['slug' => $thread->getSlug(), 'withAlert' => true]);
         }
-         return $this->render('thread/index.html.twig', [
+         $response = $this->render('thread/index.html.twig', [
             'thread' => $thread,
             'form' => $form->createView(),
             'formReply' => $formReply->createView(),
         ]);
+        $response->headers->set('set-cookie', $cookieGenerator->generate($this->getUser()));
+        return $response;
     }
 
     /**

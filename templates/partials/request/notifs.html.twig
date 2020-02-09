@@ -95,7 +95,7 @@
             let message = data.fullName;
             const time = new Date(data.time.date);
             const link = "/thread/"+data.threadName+"#post"+data.idPost;
-            console.log(time);
+            console.log(data);
             if(data.type == "like"){
                 message += " a liké votre post <br><br> <small style='float:left;'><i class='fa fa-heart'></i> "+data.time+"</small>";
             }else if(data.type == "comment"){
