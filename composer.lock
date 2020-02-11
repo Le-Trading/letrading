@@ -2187,16 +2187,16 @@
         },
         {
             "name": "stripe/stripe-php",
-            "version": "v7.22.0",
+            "version": "v7.24.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "44021812c0c368ff37259f7b18155a2b3d4c15b3"
+                "reference": "98689fa7d69defe3d219c8578466108f40e584a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/44021812c0c368ff37259f7b18155a2b3d4c15b3",
-                "reference": "44021812c0c368ff37259f7b18155a2b3d4c15b3",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/98689fa7d69defe3d219c8578466108f40e584a7",
+                "reference": "98689fa7d69defe3d219c8578466108f40e584a7",
                 "shasum": ""
             },
             "require": {
@@ -2240,7 +2240,7 @@
                 "payment processing",
                 "stripe"
             ],
-            "time": "2020-01-31T18:06:21+00:00"
+            "time": "2020-02-10T22:09:18+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -4368,23 +4368,22 @@
         },
         {
             "name": "symfony/orm-pack",
-            "version": "v1.0.7",
+            "version": "v1.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/orm-pack.git",
-                "reference": "c57f5e05232ca40626eb9fa52a32bc8565e9231c"
+                "reference": "c9bcc08102061f406dc908192c0f33524a675666"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/orm-pack/zipball/c57f5e05232ca40626eb9fa52a32bc8565e9231c",
-                "reference": "c57f5e05232ca40626eb9fa52a32bc8565e9231c",
+                "url": "https://api.github.com/repos/symfony/orm-pack/zipball/c9bcc08102061f406dc908192c0f33524a675666",
+                "reference": "c9bcc08102061f406dc908192c0f33524a675666",
                 "shasum": ""
             },
             "require": {
-                "doctrine/doctrine-bundle": "^1.6.10|^2.0",
-                "doctrine/doctrine-migrations-bundle": "^1.3|^2.0",
-                "doctrine/orm": "^2.5.11",
-                "php": "^7.0"
+                "doctrine/doctrine-bundle": "*",
+                "doctrine/doctrine-migrations-bundle": "*",
+                "doctrine/orm": "*"
             },
             "type": "symfony-pack",
             "notification-url": "https://packagist.org/downloads/",
@@ -4392,7 +4391,7 @@
                 "MIT"
             ],
             "description": "A pack for the Doctrine ORM",
-            "time": "2019-10-18T05:41:09+00:00"
+            "time": "2020-02-10T18:03:48+00:00"
         },
         {
             "name": "symfony/polyfill-intl-grapheme",
@@ -6436,16 +6435,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v3.0.1",
+            "version": "v3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "28f856a4c57eeb24485916e8a68403f41a133616"
+                "reference": "5e6df0763a83dab0b73c1e803342fc0315f63ff5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/28f856a4c57eeb24485916e8a68403f41a133616",
-                "reference": "28f856a4c57eeb24485916e8a68403f41a133616",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/5e6df0763a83dab0b73c1e803342fc0315f63ff5",
+                "reference": "5e6df0763a83dab0b73c1e803342fc0315f63ff5",
                 "shasum": ""
             },
             "require": {
@@ -6494,20 +6493,20 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2019-12-28T07:17:28+00:00"
+            "time": "2020-02-11T06:03:57+00:00"
         },
         {
             "name": "vich/uploader-bundle",
-            "version": "1.13.0",
+            "version": "1.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dustin10/VichUploaderBundle.git",
-                "reference": "83be1a5fc9415826b28b2947623b876c6f028e59"
+                "reference": "282321173e8a01a295d04fa642658b6b10c3ec9a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/83be1a5fc9415826b28b2947623b876c6f028e59",
-                "reference": "83be1a5fc9415826b28b2947623b876c6f028e59",
+                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/282321173e8a01a295d04fa642658b6b10c3ec9a",
+                "reference": "282321173e8a01a295d04fa642658b6b10c3ec9a",
                 "shasum": ""
             },
             "require": {
@@ -6591,7 +6590,7 @@
                 "file uploads",
                 "upload"
             ],
-            "time": "2020-01-14T08:33:14+00:00"
+            "time": "2020-02-06T07:49:31+00:00"
         },
         {
             "name": "webmozart/assert",

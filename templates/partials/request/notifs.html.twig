@@ -77,13 +77,25 @@
     <div class="title"><b>Vos notifications</b></div>
     <ul class="notification-bar">
         <div class="card">
+            {% if notifs is empty %}
                 <li class="list-group-item text-center firstMessage">Vous n'avez pas encore de notification</li>
+            {% else %}
+                {% for notif in notifs %}
+                    <li class="list-group-item text-center firstMessage">
+                        {{ notif.sender.pseudo }} a {% if notif.type=="comment" %}répondu à {% elseif notif.type=="like" %}liké {% endif %}votre post <br><br>
+                        <small style="float:left;">
+                            {% if notif.type=="comment" %}<i class="fa fa-comment"></i>{% elseif notif.type=="like" %}<i class="fa fa-heart"></i>{% endif %} {{ notif.date|date("m/d/Y") }}
+                        </small>
+                    </li>
+                {% endfor %}
+            {% endif %}
         </div>
     </ul>
 </div>
 {% block javascripts %}
     <script src="/js/jquery.min.js"></script>
     <script>
+        //mercure instant notif script
         var nbNotif = 0;
         var compteur = 1;
         const url = new URL('http://127.0.0.1:3000/hub');
@@ -107,15 +119,24 @@
         }
 
         $('.notification-trigger').click(function() {
+            //remove notif count on click
             nbNotif = 0;
             $('.notifTrigger').removeClass('notification-num').html('');
             $('.panel').toggleClass('visible');
         });
 
+        //hide notif pannel when clicking outside
         $(document).mouseup(function(e) {
             var container = $(".panel");
             if (!container.is(e.target) && container.has(e.target).length === 0) {
                 $('.panel').removeClass('visible');
+            }
+        });
+
+        //display notifs number unread
+        $(document).ready(function () {
+            if({{ notifNonLu }} !== 0){
+                $('.notifTrigger').addClass('notification-num').html({{ notifNonLu }});
             }
         });
     </script>

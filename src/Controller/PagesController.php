@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Contact;
 use App\Form\ContactType;
+use App\Repository\NotifRepository;
 use App\Repository\OffersRepository;
 use App\Service\ContactService;
 use App\Repository\ThreadRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -68,7 +70,16 @@ class PagesController extends AbstractController
     /**
      * Recuperation des notifs
      */
-    public function getNotifs(){
-        return $this->render('partials/request/notifs.html.twig');
+    public function getNotifs(NotifRepository $repo){
+        $notifs = $repo->findBy([
+            'receiver' => $this->getUser()
+        ]);
+        $nbNonLu = $repo->findBy([
+            'receiver' => $this->getUser(),
+            'checked' => 0
+        ]);
+        return $this->render('partials/request/notifs.html.twig',
+            ['notifs' => $notifs, 'notifNonLu' => count($nbNonLu)]
+        );
     }
 }

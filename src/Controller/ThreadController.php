@@ -2,12 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Notif;
 use App\Entity\Post;
 use App\Entity\Thread;
 use App\Entity\User;
 use App\Form\PostType;
 use App\Entity\PostVote;
 use App\Form\ResponseType;
+use App\Repository\NotifRepository;
 use App\Service\GrantedService;
 use App\Repository\PostRepository;
 use App\Repository\ThreadRepository;
@@ -29,7 +31,7 @@ class ThreadController extends AbstractController
     /**
      * @Route("/thread/{slug}", name="thread_show")
      */
-    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo, MessageBusInterface $bus, SerializerInterface $serializer, MercureCookieGenerator $cookieGenerator)
+    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo, MessageBusInterface $bus, MercureCookieGenerator $cookieGenerator)
     {
         $post = new Post();
 
@@ -77,6 +79,16 @@ class ThreadController extends AbstractController
                 ->setContent($post->getContent());
             $post->setRespond($repo->find($idRespond));
             $manager->persist($post);
+
+            //envoi notif bdd
+            $notif = new Notif();
+            $notif->setSender($this->getUser())
+                ->setReceiver($post->getRespond()->getAuthor())
+                ->setIdPost($repo->find($idRespond))
+                ->setType('comment')
+                ->setChecked(0);
+            $manager->persist($notif);
+
             $manager->flush();
             $this->addFlash(
                 'success',
@@ -89,7 +101,7 @@ class ThreadController extends AbstractController
                 'fullName' => $post->getAuthor()->getFullName(),
                 'time' => $post->getCreatedAt(),
                 'threadName' => $post->getThread()->getSlug(),
-                'idPost' => $post->getId()
+                'idPost' => $post->getRespond()->getId()
             ]);
             $update = new Update("http://monsite.com/ping",
                 $updateContent,
@@ -149,7 +161,7 @@ class ThreadController extends AbstractController
      * @param PostVoteRepository $voteRepo
      * @return Response
      */
-    public function vote(Post $post, EntityManagerInterface $manager, PostVoteRepository $voteRepo, MessageBusInterface $bus, SerializerInterface $serializer): Response
+    public function vote(Post $post, EntityManagerInterface $manager, PostVoteRepository $voteRepo, NotifRepository $notifRepo, MessageBusInterface $bus): Response
     {
         $user = $this->getUser();
         if (!$user) return $this->json([
@@ -163,6 +175,16 @@ class ThreadController extends AbstractController
                 'user' => $user
             ]);
             $manager->remove($vote);
+
+            //suppression notif
+            $notif = $notifRepo->findOneBy([
+                'sender' => $user,
+                'receiver' => $post->getAuthor(),
+                'type' => 'like',
+                'post' => $post
+            ]);
+            $manager->remove($notif);
+
             $manager->flush();
             return $this->json(['code' => 200, 'message' => 'Like supprimé', 'votes' => $voteRepo->count(['post' => $post])], 200);
         }
@@ -170,6 +192,16 @@ class ThreadController extends AbstractController
         $vote->setPost($post)
             ->setUser($user);
         $manager->persist($vote);
+
+        //envoi notif bdd
+        $notif = new Notif();
+        $notif->setSender($user)
+            ->setReceiver($post->getAuthor())
+            ->setIdPost($post)
+            ->setType('like')
+            ->setChecked(0);
+        $manager->persist($notif);
+
         $manager->flush();
 
         //envoi notif mercure
