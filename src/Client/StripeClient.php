@@ -152,4 +152,13 @@ class StripeClient
         $this->manager->persist($souscription);
         $this->manager->flush();
     }
+
+    public function updateCustomerCard(User $user, $paymentToken)
+    {
+        $customer = \Stripe\Customer::retrieve($user->getStripeCustomerId());
+        $customer->source = $paymentToken;
+        $customer->save();
+
+        return $customer;
+    }
 }

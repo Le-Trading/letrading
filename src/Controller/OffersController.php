@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\PaiementCBType;
 use Stripe\Charge;
 use Stripe\Stripe;
 use App\Entity\Offers;
@@ -64,13 +65,8 @@ class OffersController extends AbstractController
             if (!$this->getUser()->ownThisOffer($offer)) {
 
 
-                $form = $this->get('form.factory')
-                    ->createNamedBuilder('payment-form')
-                    ->add('token', HiddenType::class, [
-                        'constraints' => [new NotBlank()],
-                    ])
-                    ->add('valider', SubmitType::class)
-                    ->getForm();
+                $form = $this->createForm(PaiementCBType::class);
+
 
                 if ($request->isMethod('POST')) {
                     $form->handleRequest($request);

@@ -55,26 +55,7 @@
 
 			<div class="tab-content">
 				<div class="tab-pane fade show active" id="nav-tab-card">
-					{{ form_start(form, {attr: {id: form.vars.id}}) }}
-						<div class="form-group">
-							<label for="card-element">
-								Numéro de carte bleue
-							</label>
-							<div id="example2-card-number" class="form-control col-xs-12"></div>
-							<br>
-							<label for="card-element">
-								Date d'expiration
-							</label>
-							<div id="example2-card-expiry" class="form-control col-xs-12"></div>
-							<br>
-							<label for="card-element">
-								Code de vérification
-							</label>
-							<div id="example2-card-cvc" class="form-control col-xs-12"></div>
-							<div id="card-errors" class="help-block col-xs-12" role="alert"></div>
-						</div>
-						{{ form_widget(form.token) }}
-					{{ form_end(form) }}
+					{% include('/partials/payment/_cardForm.html.twig') %}
 				</div>
 				{% if offer.type == "charge" %}
 					<div class="tab-pane fade" id="nav-tab-card-multiple">

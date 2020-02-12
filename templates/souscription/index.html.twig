@@ -1,7 +1,9 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Gestion des abonnements{% endblock %}
-
+{% block stylesheets %}
+    <link rel="stylesheet" href="/css/stripe.css">
+{% endblock %}
 {% block body %}
     {% set souscription = user.souscription %}
     <div class="container">
@@ -11,14 +13,14 @@
                 Vous avez actuellement <strong>{{ souscription | length }} abonnement</strong>
                 {% if souscription.isActive %}
                     en cours.
-                    {% else %}
+                {% else %}
                     arrêté.
                 {% endif %}
-                {% else %}
+            {% else %}
                 Vous n'avez aucun abonnement associé à votre compte.
             {% endif %}
         </div>
-        {% if souscription | length > 0%}
+        {% if souscription | length > 0 %}
             <table class="table table-hover align-items-center">
                 <thead class="table-secondary">
                 <tr>
@@ -47,7 +49,7 @@
                            class="btn btn-link">{{ souscription.offer.title }}</a>
                     </td>
                     <td>
-                        {{  user.souscription.billingPeriodEndsAt|date('d/m/Y') }}
+                        {{ user.souscription.billingPeriodEndsAt|date('d/m/Y') }}
                     </td>
                     <td>
                         {{ souscription.offer.price }} €
@@ -80,23 +82,158 @@
     </div>
     {% if user.hasActiveNonCancelledSubscription %}
 
-        <div class="nav-space">
-            <div class="container">
-                <div class="row">
-                    <div class="col-xs-6">
-                        <table class="table">
-                            <tbody>
-                            <tr>
-                                <th><i class="fas fa-clock"></i> Prochain paiement le:</th>
-                                <td>
-                                    {{ user.souscription.billingPeriodEndsAt|date('d/m/Y') }}
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <th><i class="fas fa-clock"></i> Prochain paiement le:</th>
+                            <td>
+                                {{ user.souscription.billingPeriodEndsAt|date('d/m/Y') }}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-6 text-right">
+                    <button data-toggle="modal" data-target="#update-card"
+                            class="btn btn-info pull-right js-open-credit-card-form">
+                        Mettre à jour la carte
+                    </button>
+                    <div class="modal fade" id="update-card" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content text-left">
+                                <div class="modal-header">
+                                    <h2 class="h4 modal-title">Mise à jour de la carte bancaire</h2>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {% include('/partials/payment/_cardForm.html.twig') %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+
     {% endif %}
+{% endblock %}
+{% block javascripts %}
+    <script>
+        var form = document.getElementById('{{ form.vars.id }}');
+        var errors = document.getElementById('card-errors');
+
+        var stripe = Stripe('{{ stripe_public_key }}');
+        var elements = stripe.elements();
+        var inputs = document.querySelectorAll('.cell.example.example2 .input');
+        Array.prototype.forEach.call(inputs, function (input) {
+            input.addEventListener('focus', function () {
+                input.classList.add('focused');
+            });
+            input.addEventListener('blur', function () {
+                input.classList.remove('focused');
+            });
+            input.addEventListener('keyup', function () {
+                if (input.value.length === 0) {
+                    input.classList.add('empty');
+                } else {
+                    input.classList.remove('empty');
+                }
+            });
+        });
+
+        var elementStyles = {
+            base: {
+                color: '#32325D',
+                fontWeight: 500,
+                fontFamily: 'Source Code Pro, Consolas, Menlo, monospace',
+                fontSize: '16px',
+                fontSmoothing: 'antialiased',
+
+                '::placeholder': {
+                    color: '#CFD7DF',
+                },
+                ':-webkit-autofill': {
+                    color: '#e39f48',
+                },
+            },
+            invalid: {
+                color: '#E25950',
+
+                '::placeholder': {
+                    color: '#FFCCA5',
+                },
+            },
+        };
+
+        var elementClasses = {
+            focus: 'focused',
+            empty: 'empty',
+            invalid: 'invalid',
+        };
+
+        var cardNumber = elements.create('cardNumber', {
+            style: elementStyles,
+            classes: elementClasses,
+        });
+        cardNumber.mount('#example2-card-number');
+        cardNumber.addEventListener('change', function (event) {
+            if (event.error) {
+                errors.textContent = event.error.message;
+                form.classList.add('has-error');
+            } else {
+                errors.textContent = '';
+                form.classList.remove('has-error');
+            }
+        });
+
+        var cardExpiry = elements.create('cardExpiry', {
+            style: elementStyles,
+            classes: elementClasses,
+        });
+        cardExpiry.mount('#example2-card-expiry');
+        cardExpiry.addEventListener('change', function (event) {
+            if (event.error) {
+                errors.textContent = event.error.message;
+                form.classList.add('has-error');
+            } else {
+                errors.textContent = '';
+                form.classList.remove('has-error');
+            }
+        });
+
+        var cardCvc = elements.create('cardCvc', {
+            style: elementStyles,
+            classes: elementClasses,
+        });
+        cardCvc.mount('#example2-card-cvc');
+        cardCvc.addEventListener('change', function (event) {
+            if (event.error) {
+                errors.textContent = event.error.message;
+                form.classList.add('has-error');
+            } else {
+                errors.textContent = '';
+                form.classList.remove('has-error');
+            }
+        });
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            stripe.createToken(cardNumber).then(function (result) {
+                if (result.error) {
+                    errors.textContent = result.error.message;
+                    form.classList.add('has-error');
+                } else {
+                    document.getElementById('{{ form.children.token.vars.id }}').setAttribute('value', result.token.id);
+                    form.submit();
+                }
+            });
+        });
+
+    </script>
 {% endblock %}
