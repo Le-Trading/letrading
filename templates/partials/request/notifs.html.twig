@@ -1,71 +1,5 @@
 {% block stylesheet %}
-<style>
-    .header {
-        height: 44px;
-        position: relative;
-        z-index: 3;
-    }
-    .notification-trigger {
-        color:#eee;
-        position: relative;
-        text-decoration: none;
-        float: right;
-        margin:8px 15px 0 0;
-        font-size: 20px;
-    }
-    .notification-trigger .notification-num {
-        width: 16px;
-        height: 16px;
-        position: absolute;
-        border-radius: 50px;
-        text-align: center;
-        line-height: 16px;
-        display: block;
-        background: #d9232b;
-        color: #fff;
-        top: -4px;
-        right: -11px;
-        font-size: 10px;
-    }
-    .panel {
-        position: absolute;
-        width: 100%;
-        top: 82px;
-        background-color: #f3f2ec;
-        display: none;
-        z-index: 2;
-    }
-    .panel.visible {
-        display: block;
-    }
-    .panel .title {
-        position: absolute;
-        background-color: #fff;
-        color: #484846;
-        padding: 10px;
-        text-align: center;
-        font-weight: 500;
-        border-bottom: 1px solid #ddd;
-        z-index: 3;
-        width: 100%;
-    }
-    @media screen and (min-width: 768px) {
-        .panel {
-            width: 300px;
-            right: 50px;
-            border: 1px solid #ddd;
-            box-shadow: 2px 2px 11px 0 rgba(0, 0, 0, .5);
-        }
-    }
-    ul.notification-bar {
-        list-style: none;
-        padding: 60px 10px 20px;
-        margin: 0;
-        position: relative;
-        z-index: 1;
-        height: 100%;
-    }
-</style>
+    <link rel="stylesheet" href="/css/notifPannel.css">
 {% endblock %}
 <div class="header">
     <a href="#" class="notification-trigger">
@@ -80,7 +14,7 @@
             {% if notifs is empty %}
                 <li class="list-group-item text-center firstMessage">Vous n'avez pas encore de notification</li>
             {% else %}
-                {% for notif in notifs %}
+                {% for notif in notifs|sort|reverse %}
                     <li class="list-group-item text-center firstMessage">
                         {{ notif.sender.pseudo }} a {% if notif.type=="comment" %}répondu à {% elseif notif.type=="like" %}liké {% endif %}votre post <br><br>
                         <small style="float:left;">
@@ -123,6 +57,21 @@
             nbNotif = 0;
             $('.notifTrigger').removeClass('notification-num').html('');
             $('.panel').toggleClass('visible');
+
+            //mettre notifs en lu
+            {% for notif in notifs %}
+                if(!"{{ notif.checked }}"){
+                    var idNotif = "{{ notif.id }}";
+                    $.ajax({
+                        method: "POST",
+                        url: "{{ path('notifs_update') }}",
+                        data: {id: idNotif},
+                        success: function(reponse){
+                            console.log(reponse);
+                        }
+                    });
+                }
+            {% endfor %}
         });
 
         //hide notif pannel when clicking outside

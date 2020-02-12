@@ -3,12 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Contact;
+use App\Entity\Notif;
 use App\Form\ContactType;
 use App\Repository\NotifRepository;
 use App\Repository\OffersRepository;
 use App\Service\ContactService;
 use App\Repository\ThreadRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -54,6 +56,27 @@ class PagesController extends AbstractController
         return $this->render('pages/contact.html.twig',[
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * Fonction qui met les notifs a lu
+     *
+     * @Route("/updateNotif", name="notifs_update")
+     */
+    public function updateNotif(EntityManagerInterface $manager, Request $request, NotifRepository $notifRepo){
+        if($request->isXmlHttpRequest()) {
+            $idNotif = $request->request->get('id');
+
+            $notif = $notifRepo->findOneBy([
+                'id' => $idNotif
+            ]);
+            $notif->setChecked(1);
+
+            $manager->persist($notif);
+            $manager->flush();
+
+            return $this->json(['code' => 200, 'message' => 'commentaire lu'], 200);
+        }
     }
 
     /**
