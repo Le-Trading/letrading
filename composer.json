@@ -6,6 +6,7 @@
     "ext-ctype": "*",
     "ext-iconv": "*",
     "ext-json": "^1.7",
+    "beberlei/doctrineextensions": "^1.2",
     "cocur/slugify": "^4.0",
     "friendsofsymfony/ckeditor-bundle": "^2.2",
     "fzaninotto/faker": "^1.9",
