@@ -7,6 +7,7 @@ use App\Form\PaiementCBType;
 use App\Repository\SouscriptionRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Stripe\Exception\ApiErrorException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -21,6 +22,7 @@ class SouscriptionController extends AbstractController
      * @param StripeClient $stripeClient
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @throws \Stripe\Exception\ApiErrorException
      */
     public function index(StripeClient $stripeClient, Request $request)
     {
@@ -52,7 +54,7 @@ class SouscriptionController extends AbstractController
         return $this->render('souscription/index.html.twig', [
             'form' => $form->createView(),
             'stripe_public_key' => $this->getParameter('stripe_public_key'),
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
@@ -84,5 +86,6 @@ class SouscriptionController extends AbstractController
         $this->addFlash('success', 'Votre abonnement a bien été réactivé.');
         return $this->redirectToRoute('manage_souscription');
     }
+
 
 }

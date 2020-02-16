@@ -2,14 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1ea15fbc-8c4a-4bfe-9750-932fd612b8f3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Form/PaiementCBType.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/partials/payment/_cardForm.html.twig" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Controller/WebhookController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Entity/StripeEventLog.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Migrations/Version20200215133227.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Migrations/Version20200215135436.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Repository/StripeEventLogRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/account/payments.html.twig" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/webhook/index.html.twig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/jquery.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/jquery.min.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/StripeClient.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/StripeClient.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/OffersController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/OffersController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/AccountController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/AccountController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Controller/SouscriptionController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/SouscriptionController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Service/ContactService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Service/ContactService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/offers/prepare.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/offers/prepare.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/partials/header.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/partials/header.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/partials/payment/_cardForm.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/partials/payment/_cardForm.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/partials/request/thread.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/partials/request/thread.html.twig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/souscription/index.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/souscription/index.html.twig" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -211,7 +220,9 @@
       <workItem from="1580943948214" duration="1684000" />
       <workItem from="1581082743868" duration="9627000" />
       <workItem from="1581368530242" duration="8896000" />
-      <workItem from="1581544870589" duration="3479000" />
+      <workItem from="1581544870589" duration="3555000" />
+      <workItem from="1581678462676" duration="14110000" />
+      <workItem from="1581849544358" duration="16047000" />
     </task>
     <servers />
   </component>
@@ -228,26 +239,30 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="449" y="141" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1536.824@0.0.1536.824" timestamp="1581544714899" />
-    <state x="499" y="168" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1581548639076">
+    <state x="499" y="159" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1581889153694">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="499" y="168" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.0.1536.824@0.0.1536.824" timestamp="1581548639076" />
-    <state x="337" y="110" key="SettingsEditor" timestamp="1581546019609">
+    <state x="499" y="159" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1536.824@0.0.1536.824" timestamp="1581889153694" />
+    <state x="499" y="168" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1581876926800">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="337" y="110" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1581546019609" />
+    <state x="499" y="168" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.0.1536.824@0.0.1536.824" timestamp="1581876926800" />
+    <state x="379" y="0" width="981" height="750" key="SettingsEditor" timestamp="1581678942746">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="379" y="0" width="981" height="750" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1581678942746" />
     <state x="361" y="142" key="Vcs.Push.Dialog.v2" timestamp="1581109718299">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="361" y="142" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1581109718299" />
-    <state x="465" y="238" key="com.intellij.ide.util.TipDialog" timestamp="1581545770969">
+    <state x="465" y="238" key="com.intellij.ide.util.TipDialog" timestamp="1581849555365">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="465" y="238" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1581545770969" />
-    <state x="453" y="128" width="629" height="568" key="find.popup" timestamp="1580767341765">
+    <state x="465" y="238" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1581849555365" />
+    <state x="453" y="128" width="631" height="568" key="find.popup" timestamp="1581776226576">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="453" y="128" width="629" height="568" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1580767341765" />
+    <state x="453" y="128" width="631" height="568" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1581776226576" />
     <state x="494" y="52" key="refactoring.ChangeSignatureDialog" timestamp="1580932326529">
       <screen x="0" y="0" width="1536" height="824" />
     </state>

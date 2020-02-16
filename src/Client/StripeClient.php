@@ -80,12 +80,19 @@ class StripeClient
     public function createCustomer(User $user, $token)
     {
         if (!$user->getStripeCustomerId()) {
-            $customer = \Stripe\Customer::create([
-                'source' => $token,
-                'description' => $user->getFullName(),
-                'name' => $user->getFullName(),
-                'email' => $user->getEmail()
-            ]);
+            try {
+                $customer = \Stripe\Customer::create([
+                    'source' => $token,
+                    'description' => $user->getFullName(),
+                    'name' => $user->getFullName(),
+                    'email' => $user->getEmail()
+                ]);
+            } catch (\Stripe\Error\Base $e) {
+                $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
+                throw $e;
+            } catch (ApiErrorException $e) {
+                $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
+            }
             $user->setStripeCustomerId($customer->id);
             $this->manager->persist($user);
             $this->manager->flush();
@@ -106,19 +113,24 @@ class StripeClient
                 'customer' => $user->getStripeCustomerId(),
                 'items' => [['plan' => $offer->getPlan()]]
             ]);
+        } catch (\Stripe\Error\Base $e) {
+            $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
+            throw $e;
         } catch (ApiErrorException $e) {
+            $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
         }
     }
 
     public function cancelSubscription(User $user)
     {
-        $sub = \Stripe\Subscription::retrieve(
+        $sub = $this->findSubscription(
             $user->getSouscription()->getStripeSubscriptionId()
         );
         try {
             $sub->cancel_at_period_end = true;
             $sub->save();
-        } catch (ApiErrorException $e) {
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+
         }
     }
 
@@ -126,7 +138,7 @@ class StripeClient
         if (!$user->hasActiveSubscription()) {
             throw new \LogicException("Vous ne pouvez réactiver votre souscription que si elle ne s'est pas terminée auparavant.");
         }
-        $souscription = \Stripe\Subscription::retrieve(
+        $souscription = $this->findSubscription(
             $user->getSouscription()->getStripeSubscriptionId()
         );
         $souscription->plan = $user->getSouscription()->getOffer()->getPlan();
@@ -160,5 +172,75 @@ class StripeClient
         $customer->save();
 
         return $customer;
+    }
+
+    public function findEvent($eventId){
+        try {
+            return \Stripe\Event::retrieve($eventId);
+        } catch (ApiErrorException $e) {
+            throw new \Exception('Aucun évènement trouvé : ' . $e);
+        }
+    }
+
+    public function fullyCancelSubscription(Souscription $subscription)
+    {
+        $subscription->desactivateSubscription();
+        $this->manager->persist($subscription);
+        $this->manager->flush();
+    }
+
+    public function handleSubscriptionPaid(Souscription $subscription, \Stripe\Subscription $stripeSubscription)
+    {
+        $newPeriodEnd = \DateTime::createFromFormat('U', $stripeSubscription->current_period_end);
+
+        $isRenewal = $newPeriodEnd > $subscription->getBillingPeriodEndsAt();
+
+        $subscription->setBillingPeriodEndsAt($newPeriodEnd);
+        $this->manager->persist($subscription);
+        $this->manager->flush();
+    }
+
+    public function findSubscription($stripeSubscriptionId)
+    {
+        try {
+            return \Stripe\Subscription::retrieve($stripeSubscriptionId);
+        } catch (\Stripe\Error\Base $e) {
+            $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
+
+            throw $e;
+        } catch (ApiErrorException $e) {
+            $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
+            throw $e;
+        }
+    }
+
+    /**
+     * @param $invoiceId
+     * @return \Stripe\Invoice
+     * @throws ApiErrorException
+     */
+    public function findInvoice($invoiceId)
+    {
+        return \Stripe\Invoice::retrieve($invoiceId);
+    }
+
+    /**
+     * @param User $user
+     * @return \Stripe\Invoice[]
+     * @throws ApiErrorException
+     */
+    public function findPaidInvoices(User $user)
+    {
+        $allInvoices = \Stripe\InvoiceItem::all([
+            'customer' => $user->getStripeCustomerId()
+        ]);
+        $iterator = $allInvoices->autoPagingIterator();
+        $invoices = [];
+        foreach ($iterator as $invoice) {
+            if ($invoice->paid) {
+                $invoices[] = $invoice;
+            }
+        }
+        return $invoices;
     }
 }

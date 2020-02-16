@@ -33,4 +33,8 @@ class ContactService{
         
                 $this->mailer->send($message);
     }
+
+    public function paymentConfirm(){
+
+    }
 }

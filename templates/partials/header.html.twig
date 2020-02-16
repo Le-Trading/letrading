@@ -9,15 +9,13 @@
 				<a class="nav-link" href="{{ path('homepage') }}">Accueil</a>
 			</li>
 			<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle {% if not app.user.hasActiveSubscription and app.user.payments | length == 0 %} disabled {% endif %}" href="#" data-toggle="dropdown">Discussions</a>
-				{% if app.user.hasActiveSubscription or app.user.payments | length > 0 %}
+				<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Discussions</a>
 				<ul class="dropdown-menu dropdown-menu-center">
 					{{ render(controller(
                             'App\\Controller\\PagesController::getThreads'
                         ))
                     }}
 				</ul>
-				{% endif %}
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" href="#">Live</a>

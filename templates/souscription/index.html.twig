@@ -49,7 +49,7 @@
                            class="btn btn-link">{{ souscription.offer.title }}</a>
                     </td>
                     <td>
-                        {{ user.souscription.billingPeriodEndsAt|date('d/m/Y') }}
+                        {{ user.souscription.endsAt|date('d/m/Y') }}
                     </td>
                     <td>
                         {{ souscription.offer.price }} €
