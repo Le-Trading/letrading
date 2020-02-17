@@ -1,0 +1,74 @@
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a href="{{ path('admin_dashboard') }}" class="brand-link">
+        <span class="brand-text text-center">Pannel d'administration</span>
+    </a>
+
+    <div class="sidebar">
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                {% if app.user.media %}
+                    <img src="{{ vich_uploader_asset(app.user.media, 'imageFile', 'App\\Entity\\Media') }}" class="img-circle elevation-2" alt="{{ app.user.fullName }}">
+                {% else %}
+                    <img src="{{ asset('images/image-user.png') }}" alt="Avatar de {{ app.user.pseudo }}" class="img-circle elevation-2"/>
+                {% endif %}
+            </div>
+            <div class="info">
+                <a class="d-block">{{ app.user.fullName }}</a>
+            </div>
+        </div>
+
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-item">
+                    <a href="{{ path('admin_dashboard') }}" class="nav-link">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>
+                            Dashboard
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ path('homepage') }}" class="nav-link">
+                        <i class="nav-icon fas fa-shopping-cart"></i>
+                        <p>
+                            Offres
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ path('homepage') }}" class="nav-link">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>
+                            Utilisateurs
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ path('admin_historic') }}" class="nav-link">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>
+                            Historique des trades
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ path('homepage') }}" class="nav-link">
+                        <i class="nav-icon fas fa-comments"></i>
+                        <p>
+                            Forums
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ path('homepage') }}" class="nav-link">
+                        <i class="nav-icon fas fa-graduation-cap"></i>
+                        <p>
+                            Formations
+                        </p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+</aside>

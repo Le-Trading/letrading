@@ -63,6 +63,11 @@
 						<a href="{{ path('account_logout') }}" class="dropdown-item">Déconnexion</a>
 					</div>
 				</li>
+                {% if is_granted('ROLE_ADMIN') %}
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('admin_dashboard') }}" target="_blank"><i class="fas fa-user-cog"></i> Administration</a>
+					</li>
+                {% endif %}
 			{% else %}
 				<li class="nav-item">
 					<a class="nav-link" href="{{ path('account_register') }}">Inscription</a>
