@@ -169,7 +169,7 @@ class ThreadController extends AbstractController
             'message' => 'Unauthorized'
         ], 403);
 
-        if ($post->isLikedByUser($user)) {
+        if ($post->isLikedByUser($user)){
             $vote = $voteRepo->findOneBy([
                 'post' => $post,
                 'user' => $user
