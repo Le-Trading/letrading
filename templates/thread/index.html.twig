@@ -7,18 +7,20 @@
 {% block body %}
 	<div class="container">
 		<h1 class="h4 text-center mb-5">Fil d'actualité du forum
-			{{thread.title}}</h1>
+			<b>{{thread.title}}</b><hr></h1>
 		<div class="row">
-			<div class="col-6 mb-5">
-				<div class="row mb-5">
-					<div class="col-12 rounded bg-light p-3">
-						<div class="mb-2">Postez votre message</div>
+			<div class="col-sm-7 mb-5 col-xs-12">
+				<button class="btn btn-info col-12 mb-3" type="button" data-toggle="collapse" data-target="#postNewMessage" aria-expanded="false" aria-controls="postNewMessage">
+					<h4 class="p-2"><i class="fas fa-arrow-right" style="vertical-align: middle"></i>  Postez votre message  <i class="fas fa-arrow-left" style="vertical-align: middle"></i></h4>
+				</button>
+				<div class="collapse row mb-5" id="postNewMessage">
+					<div class="col-12 rounded p-3" style="background: rgba(255, 255, 255, 0.85);border: 1px solid #ddd;">
 						{{form_start(form, { 'attr' : { 'id' : 'form-add-forum' }}
 						)}}
 						{{form_row(form.content)}}
 						{{form_row(form.media)}}
-						<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#paramTrade" aria-expanded="false" aria-controls="paramTrade">
-							<i class="fa fa-cogs"></i> Paramétrage trade
+						<button class="btn btn-dark mb-2" type="button" data-toggle="collapse" data-target="#paramTrade" aria-expanded="false" aria-controls="paramTrade">
+							Paramétrer un trade <i class="fa fa-cog"></i>
 						</button>
 						<div class="collapse" id="paramTrade">
 							{{ form_row(form.feeling) }}
@@ -31,20 +33,19 @@
 							</div>
 						</div>
 						{{form_errors(form)}}
-						<br><br>
-						<button class="btn btn-success mt-1" type="submit">Envoyer <i class="fa fa-comments"></i></button>
+						<br>
+                        {{form_row(form.isAdmin)}}
+						<button class="btn btn-info" type="submit">Envoyer <i class="fa fa-paper-plane"></i></button>
 						{{form_end(form)}}
 					</div>
-					<div id="form_response" class="hidden-form container p-3">
-						<hr class="bg-light">
-						<p class="text-center text-dark answer-form">Répondre à un message</p>
-
+					<div id="form_response" class="hidden-form container">
+						<hr>
 						{{form_start(formReply)}}
 						{{form_row(formReply.content)}}
 
 						{{form_row(formReply.media)}}
 						{{form_row(formReply.respond)}}
-						<button class="btn btn-dark mt-1" type="submit">Répondre</button>
+						<button class="btn btn-dark mb-2" type="submit">Répondre <i class="fas fa-paper-plane"></i></button>
 						{{form_end(formReply)}}
 
 					</div>
@@ -62,19 +63,21 @@
 
 				</div>
 			</div>
-			<div class="col-6 mb-5">
-				<h2 class="h4 text-center mb-5">Messages administrateur</h2>
-				<div class="row">
-					<div class="col-12">
-						{% set posts = thread.posts %}
-						{% for post in posts %}
-
-							{% if post.isAdmin %}
-								{% include 'post/_affichagePost.html.twig' with {'post' : post, 'thread' : thread} %}
+			<div class="col-sm-5 mb-5 col-xs-12">
+				<div class="card">
+					<h2 class="h4 text-center mb-2 card-header bg-primary text-white">Messages administrateur</h2>
+					{% set posts = thread.posts %}
+					{% set hasAdminPost = false %}
+					{% for post in posts %}
+						{% if post.isAdmin %}
+							{% set hasAdminPost = true %}
+							{% include 'post/_affichagePost.html.twig' with {'post' : post, 'thread' : thread} %}
+						{% else %}
+							{% if loop.last and hasAdminPost == false %}
+								<div class="card-body text-center">Aucun message administrateur pour ce forum</div>
 							{% endif %}
-						{% endfor %}
-					</div>
-
+						{% endif %}
+					{% endfor %}
 				</div>
 			</div>
 		</div>
@@ -102,6 +105,7 @@
 		function handleAnswering(id) {
 			CKEDITOR.instances.response_content.destroy();
 
+            var pseudo = $(id).data('target').substring(1);
 			var id = $(id).data('response');
 			$('#post' + id).after().append($('#form_response'));
 			$('#form_response').removeClass('hidden-form');
@@ -123,9 +127,12 @@
 				],
 				["About"]
 				],
-				"language": "fr"
+				"language": "fr",
+                'uiColor' : '#7b8a8b',
+                'height' : '10em'
 			});
-		}
+            CKEDITOR.instances.response_content.setData("@"+pseudo);
+        }
 	</script>
 	<script type="text/javascript">
 		function onClickBtnVote(event) {

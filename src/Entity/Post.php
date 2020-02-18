@@ -50,7 +50,7 @@ class Post
 
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\PostVote", mappedBy="post")
+     * @ORM\OneToMany(targetEntity="App\Entity\PostVote", mappedBy="post", orphanRemoval=true)
      */
     private $postVotes;
 

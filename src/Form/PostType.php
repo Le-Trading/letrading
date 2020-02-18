@@ -25,7 +25,9 @@ class PostType extends ApplicationType
     {
         $builder
             ->add('content', CKEditorType::class, ['required' => false, 'label' => false, 'config' => array(
-                'toolbar' => "basic"
+                'toolbar' => "basic",
+                'uiColor' => '#7b8a8b',
+                'height' => '10em'
             )])
             ->add('media', MediaType::class, [
                 'label' => false,
