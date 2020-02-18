@@ -1,0 +1,59 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Admin Offres{% endblock %}
+
+{% block body %}
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0 text-dark">Gestion des offres</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}">Accueil</a></li>
+                            <li class="breadcrumb-item active">Offres</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container-fluid">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Titre de l'offre</th>
+                        <th>Description</th>
+                        <th>Prix</th>
+                        <th>Nombre de paiements</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for offer in offers %}
+                        <tr>
+                            <td>{{ offer.title }}</td>
+                            <td>{{ offer.description|slice(0,120)|raw }} ...</td>
+                            <td>{{ offer.price }} € {% if offer.type == "subscription" %}/ mois{% endif %}</td>
+                            <td>{{ offer.payments|length }}</td>
+                            <td>
+                                <a data-toggle="tooltip" data-placement="left" title="Modifier" href="{{ path('admin_offer_edit', {'id' : offer.id}) }}" class="btn btn-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <a data-toggle="tooltip" data-placement="left" title="Apercu" href="{{ path('offers_show', {'title' : offer.title}) }}" class="btn btn-primary" target="_blank">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -66,6 +66,7 @@ class Post
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Post", inversedBy="responses")
+     * @ORM\JoinColumn(name="respond_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $respond;
 
