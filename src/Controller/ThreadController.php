@@ -84,7 +84,7 @@ class ThreadController extends AbstractController
             $notif = new Notif();
             $notif->setSender($this->getUser())
                 ->setReceiver($post->getRespond()->getAuthor())
-                ->setIdPost($repo->find($idRespond))
+                ->setPost($repo->find($idRespond))
                 ->setType('comment')
                 ->setChecked(0);
             $manager->persist($notif);
@@ -197,7 +197,7 @@ class ThreadController extends AbstractController
         $notif = new Notif();
         $notif->setSender($user)
             ->setReceiver($post->getAuthor())
-            ->setIdPost($post)
+            ->setPost($post)
             ->setType('like')
             ->setChecked(0);
         $manager->persist($notif);

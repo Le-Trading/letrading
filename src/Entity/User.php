@@ -106,6 +106,7 @@ class User implements UserInterface
         $this->postVotes = new ArrayCollection();
         $this->userRole = new ArrayCollection();
         $this->payments = new ArrayCollection();
+        $this->userReceiverNotif = new ArrayCollection();
     }
 
     /**
@@ -373,6 +374,11 @@ class User implements UserInterface
     protected $resetToken;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Notif", mappedBy="receiver", orphanRemoval=true)
+     */
+    private $userReceiverNotif;
+
+    /**
      * @return string
      */
     public function getResetToken(): string
@@ -396,6 +402,37 @@ class User implements UserInterface
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Notif[]
+     */
+    public function getUserReceiverNotif(): Collection
+    {
+        return $this->userReceiverNotif;
+    }
+
+    public function addUserReceiverNotif(Notif $userReceiverNotif): self
+    {
+        if (!$this->userReceiverNotif->contains($userReceiverNotif)) {
+            $this->userReceiverNotif[] = $userReceiverNotif;
+            $userReceiverNotif->setReceiver($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserReceiverNotif(Notif $userReceiverNotif): self
+    {
+        if ($this->userReceiverNotif->contains($userReceiverNotif)) {
+            $this->userReceiverNotif->removeElement($userReceiverNotif);
+            // set the owning side to null (unless already changed)
+            if ($userReceiverNotif->getReceiver() === $this) {
+                $userReceiverNotif->setReceiver(null);
+            }
+        }
 
         return $this;
     }

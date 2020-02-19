@@ -105,11 +105,17 @@ class Post
      */
     private $pair;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Notif", mappedBy="post", orphanRemoval=true)
+     */
+    private $postNotifs;
+
 
     public function __construct()
     {
         $this->postVotes = new ArrayCollection();
         $this->responses = new ArrayCollection();
+        $this->postNotifs = new ArrayCollection();
     }
 
 
@@ -374,6 +380,37 @@ class Post
     public function setPair(?string $pair): self
     {
         $this->pair = $pair;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Notif[]
+     */
+    public function getPostNotifs(): Collection
+    {
+        return $this->postNotifs;
+    }
+
+    public function addPostNotif(Notif $postNotif): self
+    {
+        if (!$this->postNotifs->contains($postNotif)) {
+            $this->postNotifs[] = $postNotif;
+            $postNotif->setPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removePostNotif(Notif $postNotif): self
+    {
+        if ($this->postNotifs->contains($postNotif)) {
+            $this->postNotifs->removeElement($postNotif);
+            // set the owning side to null (unless already changed)
+            if ($postNotif->getPost() === $this) {
+                $postNotif->setPost(null);
+            }
+        }
 
         return $this;
     }
