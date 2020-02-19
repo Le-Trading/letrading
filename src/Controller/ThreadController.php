@@ -111,8 +111,16 @@ class ThreadController extends AbstractController
 
             return $this->redirectToRoute('thread_show', ['slug' => $thread->getSlug(), 'withAlert' => true]);
         }
+
+        $users = $manager->createQuery(
+            'SELECT u.id, u.pseudo 
+                    FROM App\Entity\User u
+                    ')
+            ->getScalarResult();
+
          $response = $this->render('thread/index.html.twig', [
             'thread' => $thread,
+             'users' => $users,
             'form' => $form->createView(),
             'formReply' => $formReply->createView(),
         ]);
