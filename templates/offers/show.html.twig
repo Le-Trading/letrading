@@ -6,7 +6,6 @@
 {% block body %}
     <div class="container">
         <h1 class="h3 text-center my-5">Description de l'offre</h1>
-        {% for offer in offers %}
 
             <div class="card-deck mb-3 text-center">
 
@@ -28,13 +27,44 @@
                                 Vous possédez déjà cette offre.
                             </div>
                         {% else %}
-                            <a href="{{ path('order_prepare', {'title':offer.title}) }}"
-                               class="btn btn-lg btn-block btn-primary">Je m'abonne</a>
+                            <button
+                                    style="background-color:#6772E5;color:#FFF;padding:8px 12px;border:0;border-radius:4px;font-size:1em"
+                                    id="checkout-button-plan_Gi9oeeAXvfHGl1"
+                                    role="link"
+                            >
+                                Acheter
+                            </button>
+                            <div id="error-message"></div>
+
                         {% endif %}
 
                     </div>
                 </div>
             </div>
-        {% endfor %}
     </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    (function() {
+        var stripe = Stripe('{{ stripe_public_key }}');
+
+        var checkoutButton = document.getElementById('checkout-button-plan_Gi9oeeAXvfHGl1');
+        checkoutButton.addEventListener('click', function () {
+            // When the customer clicks on the button, redirect
+            // them to Checkout.
+            stripe.redirectToCheckout({
+                sessionId: '{{CHECKOUT_SESSION_ID}}'
+            })
+                .then(function (result) {
+                    if (result.error) {
+                        // If `redirectToCheckout` fails due to a browser or network
+                        // error, display the localized error message to your customer.
+                        var displayError = document.getElementById('error-message');
+                        displayError.textContent = result.error.message;
+                    }
+                });
+        });
+    })();
+</script>
 {% endblock %}

@@ -3,10 +3,14 @@
 namespace App\Controller;
 
 use App\Client\StripeClient;
+use App\Entity\Offers;
+use App\Entity\Payment;
 use App\Entity\Souscription;
 use App\Entity\StripeEventLog;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,10 +22,13 @@ class WebhookController extends AbstractController
      * @var EntityManagerInterface
      */
     private $entityManager;
+    private $logger;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
+        $this->logger = $logger;
+
     }
 
     /**
@@ -34,6 +41,8 @@ class WebhookController extends AbstractController
     public function stripeWebhook(Request $request, StripeClient $stripeClient)
     {
         $data = json_decode($request->getContent(), true);
+        $this->logger->info("info : ", ['data' => $data]);
+
         if ($data === null) {
             throw new Exception('Bad JSON body from Stripe ');
         }
@@ -50,14 +59,43 @@ class WebhookController extends AbstractController
 
 
         $event = $stripeClient->findEvent($eventId);
+        $object = $event->data->object;
         switch ($event->type) {
+            case 'checkout.session.completed':
+                $user = $this->findUserBy('stripeCustomerId', $object->customer) != null ?
+                    $this->findUserBy('stripeCustomerId', $object->customer) : $this->findUserBy('email', $object->customer_email);
+                if(!$user->getStripeCustomerId()){
+                    $user->setStripeCustomerId($object->customer);
+                }
+                $offer = isset($object->display_items[0]->custom->name) ?
+                    $this->findOfferBy('title', $object->display_items[0]->custom->name) : $this->findOfferBy('plan', $object->display_items[0]->plan->id);
+
+
+                if($offer->getType() == "charge"){
+                    $payment = new Payment();
+                    $payment->setUser($user)
+                        ->setOffer($offer)
+                        ->setChargeId($event->data->object->id)
+                        ->setCreatedAt(new \DateTime());
+                    $this->entityManager->persist($payment);
+                }
+                else{
+                    $stripeClient->addSubscriptionToUser(
+                        $object->subscription,
+                        $user,
+                        $offer
+                    );
+                }
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+                break;
             case 'customer.subscription.deleted':
                 $stripeSubscriptionId = $event->data->object->id;
                 $souscription = $this->findSubscription($stripeSubscriptionId);
                 $stripeClient->fullyCancelSubscription($souscription);
                 break;
             case 'invoice.payment_succeeded':
-                $stripeSubscriptionId = $event->data->object->subscription;
+                $stripeSubscriptionId = $object->subscription;
                 if ($stripeSubscriptionId) {
                     $subscription = $this->findSubscription($stripeSubscriptionId);
                     $stripeSubscription = $stripeClient->findSubscription($stripeSubscriptionId);
@@ -102,7 +140,35 @@ class WebhookController extends AbstractController
         }
         return $subscription;
     }
-
+    /**
+     * @param $stripeSubscriptionId
+     * @return User|object
+     * @throws Exception
+     */
+    private function findUserBy($column, $data)
+    {
+        $user = $this->entityManager
+            ->getRepository(User::class)
+            ->findOneBy([
+                $column => $data
+            ]);
+//        if (!$user) {
+//            throw new \Exception('Aucun utilisateur trouvé pour le paiement avec la column ' . $column . ' suivante : ' . $email);
+//        }
+        return $user;
+    }
+    private function findOfferBy($column, $data)
+    {
+        $offer = $this->entityManager
+            ->getRepository(Offers::class)
+            ->findOneBy([
+                $column => $data
+            ]);
+//        if (!$offer) {
+//            throw new \Exception('Aucune offre trouvé pour l\'offre avec le titre suivant : ' . $title);
+//        }
+        return $offer;
+    }
     private function existingLog($eventId)
     {
         $existingLog = $this->entityManager->getRepository(StripeEventLog::class)

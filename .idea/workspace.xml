@@ -2,23 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1ea15fbc-8c4a-4bfe-9750-932fd612b8f3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Controller/WebhookController.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Entity/StripeEventLog.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Migrations/Version20200215133227.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Migrations/Version20200215135436.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Repository/StripeEventLogRepository.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/account/payments.html.twig" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/webhook/index.html.twig" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/js/payment.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/pages/success.html.twig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/StripeClient.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/StripeClient.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/AccountController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/AccountController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/OffersController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/OffersController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/PagesController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/PagesController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Controller/SouscriptionController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/SouscriptionController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Service/ContactService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Service/ContactService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/WebhookController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/WebhookController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/offers/prepare.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/offers/prepare.html.twig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/partials/header.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/partials/header.html.twig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/partials/payment/_cardForm.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/partials/payment/_cardForm.html.twig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/partials/request/thread.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/partials/request/thread.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/offers/show.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/offers/show.html.twig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/souscription/index.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/souscription/index.html.twig" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -173,7 +166,7 @@
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/public/images" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/var/log" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.path.for.package.tslint" value="project" />
@@ -185,11 +178,12 @@
     <property name="settings.editor.splitter.proportion" value="0.24343434" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ytebb\Documents\Symfony\letrading\var\log" />
+      <recent name="C:\Users\ytebb\Documents\Symfony\letrading\public\images" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\ytebb\Documents\Symfony\letrading\templates\partials\payment" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\ytebb\Documents\Symfony\letrading\public\images" />
     </key>
   </component>
   <component name="SvnConfiguration">
@@ -222,7 +216,7 @@
       <workItem from="1581368530242" duration="8896000" />
       <workItem from="1581544870589" duration="3555000" />
       <workItem from="1581678462676" duration="14110000" />
-      <workItem from="1581849544358" duration="16047000" />
+      <workItem from="1581849544358" duration="58235000" />
     </task>
     <servers />
   </component>

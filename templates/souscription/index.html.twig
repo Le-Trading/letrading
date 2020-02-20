@@ -97,25 +97,12 @@
                     </table>
                 </div>
                 <div class="col-6 text-right">
-                    <button data-toggle="modal" data-target="#update-card"
+                    <button id="update-card-customer"
                             class="btn btn-info pull-right js-open-credit-card-form">
                         Mettre à jour la carte
                     </button>
-                    <div class="modal fade" id="update-card" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content text-left">
-                                <div class="modal-header">
-                                    <h2 class="h4 modal-title">Mise à jour de la carte bancaire</h2>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    {% include('/partials/payment/_cardForm.html.twig') %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div id="error-message"></div>
+
                 </div>
             </div>
         </div>
@@ -125,115 +112,26 @@
 {% endblock %}
 {% block javascripts %}
     <script>
-        var form = document.getElementById('{{ form.vars.id }}');
-        var errors = document.getElementById('card-errors');
+        (function () {
+            var stripe = Stripe('{{ stripe_public_key }}');
 
-        var stripe = Stripe('{{ stripe_public_key }}');
-        var elements = stripe.elements();
-        var inputs = document.querySelectorAll('.cell.example.example2 .input');
-        Array.prototype.forEach.call(inputs, function (input) {
-            input.addEventListener('focus', function () {
-                input.classList.add('focused');
+            var checkoutButton = document.getElementById('update-card-customer');
+            checkoutButton.addEventListener('click', function () {
+                // When the customer clicks on the button, redirect
+                // them to Checkout.
+                stripe.redirectToCheckout({
+                    sessionId: '{{ CHECKOUT_SESSION_ID }}'
+                })
+                    .then(function (result) {
+                        if (result.error) {
+                            // If `redirectToCheckout` fails due to a browser or network
+                            // error, display the localized error message to your customer.
+                            var displayError = document.getElementById('error-message');
+                            displayError.textContent = result.error.message;
+                        }
+                    });
             });
-            input.addEventListener('blur', function () {
-                input.classList.remove('focused');
-            });
-            input.addEventListener('keyup', function () {
-                if (input.value.length === 0) {
-                    input.classList.add('empty');
-                } else {
-                    input.classList.remove('empty');
-                }
-            });
-        });
-
-        var elementStyles = {
-            base: {
-                color: '#32325D',
-                fontWeight: 500,
-                fontFamily: 'Source Code Pro, Consolas, Menlo, monospace',
-                fontSize: '16px',
-                fontSmoothing: 'antialiased',
-
-                '::placeholder': {
-                    color: '#CFD7DF',
-                },
-                ':-webkit-autofill': {
-                    color: '#e39f48',
-                },
-            },
-            invalid: {
-                color: '#E25950',
-
-                '::placeholder': {
-                    color: '#FFCCA5',
-                },
-            },
-        };
-
-        var elementClasses = {
-            focus: 'focused',
-            empty: 'empty',
-            invalid: 'invalid',
-        };
-
-        var cardNumber = elements.create('cardNumber', {
-            style: elementStyles,
-            classes: elementClasses,
-        });
-        cardNumber.mount('#example2-card-number');
-        cardNumber.addEventListener('change', function (event) {
-            if (event.error) {
-                errors.textContent = event.error.message;
-                form.classList.add('has-error');
-            } else {
-                errors.textContent = '';
-                form.classList.remove('has-error');
-            }
-        });
-
-        var cardExpiry = elements.create('cardExpiry', {
-            style: elementStyles,
-            classes: elementClasses,
-        });
-        cardExpiry.mount('#example2-card-expiry');
-        cardExpiry.addEventListener('change', function (event) {
-            if (event.error) {
-                errors.textContent = event.error.message;
-                form.classList.add('has-error');
-            } else {
-                errors.textContent = '';
-                form.classList.remove('has-error');
-            }
-        });
-
-        var cardCvc = elements.create('cardCvc', {
-            style: elementStyles,
-            classes: elementClasses,
-        });
-        cardCvc.mount('#example2-card-cvc');
-        cardCvc.addEventListener('change', function (event) {
-            if (event.error) {
-                errors.textContent = event.error.message;
-                form.classList.add('has-error');
-            } else {
-                errors.textContent = '';
-                form.classList.remove('has-error');
-            }
-        });
-
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-            stripe.createToken(cardNumber).then(function (result) {
-                if (result.error) {
-                    errors.textContent = result.error.message;
-                    form.classList.add('has-error');
-                } else {
-                    document.getElementById('{{ form.children.token.vars.id }}').setAttribute('value', result.token.id);
-                    form.submit();
-                }
-            });
-        });
-
+        })();
     </script>
+
 {% endblock %}

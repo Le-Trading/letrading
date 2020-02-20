@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Client\StripeClient;
 use App\Entity\Contact;
 use App\Form\ContactType;
 use App\Service\ContactService;
@@ -59,5 +60,25 @@ class PagesController extends AbstractController
         return $this->render('pages/contact.html.twig',[
             'form' => $form->createView()
         ]);
+    }
+    /**
+     * @Route("/success", name="success_page")
+     */
+    public function success()
+    {
+
+        return $this->render('/pages/success.html.twig');
+    }
+
+    /**
+     * @Route("/success/{checkout_session_id}", name="success_page_parameter")
+     * @param $checkout_session_id
+     * @param StripeClient $stripeClient
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function successParameter($checkout_session_id, StripeClient $stripeClient)
+    {
+        $stripeClient->handleChangementCardSession($checkout_session_id, $this->getUser());
+        return $this->redirectToRoute('manage_souscription');
     }
 }

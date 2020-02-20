@@ -71,143 +71,54 @@
 			</div>
 		</div>
 	</div>
+
 {% endblock %}
 
 {% block javascripts %}
 	<script>
-		var form = document.getElementById('{{ form.vars.id }}');
-		var errors = document.getElementById('card-errors');
+		<!-- Load Stripe.js on your website. -->
+		<script src="https://js.stripe.com/v3"></script>
 
+<!-- Create a button that your customers click to complete their purchase. Customize the styling to suit your branding. -->
+<button
+		style="background-color:#6772E5;color:#FFF;padding:8px 12px;border:0;border-radius:4px;font-size:1em"
+		id="checkout-button-plan_Gi9oeeAXvfHGl1"
+		role="link"
+>
+	Checkout
+</button>
+
+<div id="error-message"></div>
+
+<script>
+	(function() {
 		var stripe = Stripe('{{ stripe_public_key }}');
-		var elements = stripe.elements();
-		var inputs = document.querySelectorAll('.cell.example.example2 .input');
-		Array.prototype.forEach.call(inputs, function(input) {
-			input.addEventListener('focus', function() {
-			input.classList.add('focused');
-			});
-			input.addEventListener('blur', function() {
-			input.classList.remove('focused');
-			});
-			input.addEventListener('keyup', function() {
-			if (input.value.length === 0) {
-				input.classList.add('empty');
-			} else {
-				input.classList.remove('empty');
-			}
-			});
+
+		var checkoutButton = document.getElementById('checkout-button-plan_Gi9oeeAXvfHGl1');
+		checkoutButton.addEventListener('click', function () {
+			// When the customer clicks on the button, redirect
+			// them to Checkout.
+			stripe.redirectToCheckout({
+				items: [{plan: '{{ offer.plan }}', quantity: 1}],
+
+				// Do not rely on the redirect to the successUrl for fulfilling
+				// purchases, customers may not always reach the success_url after
+				// a successful payment.
+				// Instead use one of the strategies described in
+				// https://stripe.com/docs/payments/checkout/fulfillment
+				successUrl: '{{ path('homepage', {'session_id' : {{ CHECKOUT_SESSION_ID}}} ) }}',
+				cancelUrl: 'http://localhost:8000/login',
+			})
+					.then(function (result) {
+						if (result.error) {
+							// If `redirectToCheckout` fails due to a browser or network
+							// error, display the localized error message to your customer.
+							var displayError = document.getElementById('error-message');
+							displayError.textContent = result.error.message;
+						}
+					});
 		});
-
-		var elementStyles = {
-			base: {
-				color: '#32325D',
-				fontWeight: 500,
-				fontFamily: 'Source Code Pro, Consolas, Menlo, monospace',
-				fontSize: '16px',
-				fontSmoothing: 'antialiased',
-
-				'::placeholder': {
-					color: '#CFD7DF',
-				},
-				':-webkit-autofill': {
-					color: '#e39f48',
-				},
-				},
-				invalid: {
-				color: '#E25950',
-
-				'::placeholder': {
-					color: '#FFCCA5',
-				},
-			},
-		};
-
-		var elementClasses = {
-			focus: 'focused',
-			empty: 'empty',
-			invalid: 'invalid',
-		};
-		
-		var cardNumber = elements.create('card', {
-			style: elementStyles,
-			classes: elementClasses,
-		});
-  		card.mount('#card-element');
-		card.addEventListener('change', ({error}) => {
-			const displayError = document.getElementById('card-errors');
-			if (error) {
-				displayError.textContent = error.message;
-			} else {
-				displayError.textContent = '';
-			}
-		});
-
-		{#var cardExpiry = elements.create('cardExpiry', {#}
-		{#	style: elementStyles,#}
-		{#	classes: elementClasses,#}
-		{#});#}
-		{#cardExpiry.mount('#example2-card-expiry');#}
-		{#cardExpiry.addEventListener('change', function (event) {#}
-		{#	if (event.error) {#}
-		{#		errors.textContent = event.error.message;#}
-		{#		form.classList.add('has-error');#}
-		{#	} else {#}
-		{#		errors.textContent = '';#}
-		{#		form.classList.remove('has-error');#}
-		{#	}#}
-		{#});#}
-
-		{#var cardCvc = elements.create('cardCvc', {#}
-		{#	style: elementStyles,#}
-		{#	classes: elementClasses,#}
-		{#});#}
-		{#cardCvc.mount('#example2-card-cvc');#}
-		{#cardCvc.addEventListener('change', function (event) {#}
-		{#	if (event.error) {#}
-		{#		errors.textContent = event.error.message;#}
-		{#		form.classList.add('has-error');#}
-		{#	} else {#}
-		{#		errors.textContent = '';#}
-		{#		form.classList.remove('has-error');#}
-		{#	}#}
-		{#});#}
-		
-		{#form.addEventListener('submit', function (event) {#}
-		{#	event.preventDefault();#}
-		{#	stripe.createToken(cardNumber).then(function (result) {#}
-		{#		if (result.error) {#}
-		{#			errors.textContent = result.error.message;#}
-		{#			form.classList.add('has-error');#}
-		{#		} else {#}
-		{#			document.getElementById('{{ form.children.token.vars.id }}').setAttribute('value', result.token.id);#}
-		{#			form.submit();#}
-		{#		}#}
-		{#	});#}
-		{#});#}
-
-		form.addEventListener('submit', function(ev) {
-			ev.preventDefault();
-			stripe.confirmCardPayment(clientSecret, {
-				payment_method: {
-					card: card,
-					billing_details: {
-						name: 'Jenny Rosen'
-					}
-				}
-			}).then(function(result) {
-				if (result.error) {
-					// Show error to your customer (e.g., insufficient funds)
-					console.log(result.error.message);
-				} else {
-					// The payment has been processed!
-					if (result.paymentIntent.status === 'succeeded') {
-						// Show a success message to your customer
-						// There's a risk of the customer closing the window before callback
-						// execution. Set up a webhook or plugin to listen for the
-						// payment_intent.succeeded event that handles any business critical
-						// post-payment actions.
-					}
-				}
-			});
-		});
+	})();
+</script>
 	</script>
 {% endblock %}

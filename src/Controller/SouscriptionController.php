@@ -27,33 +27,11 @@ class SouscriptionController extends AbstractController
     public function index(StripeClient $stripeClient, Request $request)
     {
         $user = $this->getUser();
-        $form = $this->createForm(PaiementCBType::class);
-
-        if ($request->isMethod('POST')) {
-            $form->handleRequest($request);
-
-            if ($form->isValid()) {
-                try {
-                    $stripeClient->updateCustomerCard($this->getUser(), $form->get('token')->getData());
-                    $this->addFlash(
-                        'success',
-                        "Votre carte a bien été modifiée."
-                    );
-                } catch (\Stripe\Error\Card $e) {
-                    $this->addFlash(
-                        'warning',
-                        "Il y a eu un problème avec l'enregistrement de votre nouvelle carte."
-                    );
-                }
-                finally {
-                    return $this->redirectToRoute('manage_souscription');
-                }
-            }
-        }
+        $updateCard = $stripeClient->updateCustomerCard($user);
 
         return $this->render('souscription/index.html.twig', [
-            'form' => $form->createView(),
             'stripe_public_key' => $this->getParameter('stripe_public_key'),
+            'CHECKOUT_SESSION_ID' => $updateCard->id,
             'user' => $user,
         ]);
     }
@@ -82,7 +60,7 @@ class SouscriptionController extends AbstractController
      */
     public function reactivateSubscription(StripeClient $stripeClient){
         $stripeSouscription = $stripeClient->reactivateSubscription($this->getUser());
-        $stripeClient->addSubscriptionToUser($stripeSouscription, $this->getUser(), $this->getUser()->getSouscription()->getOffer());
+        $stripeClient->addSubscriptionToUser($stripeSouscription->id, $this->getUser(), $this->getUser()->getSouscription()->getOffer());
         $this->addFlash('success', 'Votre abonnement a bien été réactivé.');
         return $this->redirectToRoute('manage_souscription');
     }

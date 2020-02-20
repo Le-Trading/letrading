@@ -4,6 +4,7 @@ namespace App\Client;
 
 use Doctrine\Persistence\ObjectManager;
 use Stripe\Charge;
+use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Stripe;
 use App\Entity\User;
@@ -15,149 +16,188 @@ use App\Entity\Payment;
 use Stripe\Subscription;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class StripeClient
 {
     private $config;
     private $manager;
     private $logger;
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $router;
 
-    public function __construct($secretKey, array $config, EntityManagerInterface $manager, LoggerInterface $logger)
+    public function __construct($secretKey, array $config, EntityManagerInterface $manager, LoggerInterface $logger, UrlGeneratorInterface $router)
     {
         \Stripe\Stripe::setApiKey($secretKey);
         $this->config = $config;
         $this->manager = $manager;
         $this->logger = $logger;
+        $this->router = $router;
+
     }
 
-    public function createPremiumCharge(User $user, $token, Offers $offer)
-    {
-        $payment = new Payment();
-        try {
-            $customer = $this->createCustomer($user, $token);
+    /**
+     * @param Offers $offer
+     * @param User $user
+     * @return Session
+     * @throws ApiErrorException
+     */
+    public function createCheckoutForCharge(Offers $offer, User $user){
+        $urlHome = $this->router->generate(
+            'homepage',[], UrlGeneratorInterface::ABSOLUTE_URL
+        );
+        $urlSuccess = $this->router->generate(
+            'success_page',[], UrlGeneratorInterface::ABSOLUTE_URL
+        );
 
-            $charge = \Stripe\Charge::create([
-                'amount' => $this->config['decimal'] ? $this->config['premium_amount'] * 100 : $this->config['premium_amount'],
-                'currency' => $this->config['currency'],
-                'customer' => $customer->id,
-                'description' => 'Paiement de la formation premium'
-            ]);
-
-            $payment->setUser($user);
-            $payment->setOffer($offer);
-            $payment->setChargeId($charge->id);
-            $this->manager->persist($payment);
-            $this->manager->flush();
-
-        } catch (\Stripe\Error\Base $e) {
-            $this->logger->error(sprintf('%s exception encountered when creating a premium payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
-
-            throw $e;
-        }
-    }
-
-    public function createClassicSubscription(User $user, $token, Offers $offer)
-    {
-
-        try {
-            $customer = $this->createCustomer($user, $token);
-            $createSouscription = $this->createSubscription($user, $offer);
-            $this->addSubscriptionToUser(
-                $createSouscription,
-                $user,
-                $offer
-            );
-
-        } catch (\Stripe\Error\Base $e) {
-            $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
-
-            throw $e;
-        } catch (ApiErrorException $e) {
-            $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
-        }
-    }
-
-    public function createCustomer(User $user, $token)
-    {
-        if (!$user->getStripeCustomerId()) {
-            try {
-                $customer = \Stripe\Customer::create([
-                    'source' => $token,
-                    'description' => $user->getFullName(),
-                    'name' => $user->getFullName(),
-                    'email' => $user->getEmail()
-                ]);
-            } catch (\Stripe\Error\Base $e) {
-                $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
-                throw $e;
-            } catch (ApiErrorException $e) {
-                $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
-            }
-            $user->setStripeCustomerId($customer->id);
-            $this->manager->persist($user);
-            $this->manager->flush();
-            return $customer;
-        } else {
-            $customer = \Stripe\Customer::retrieve($user->getStripeCustomerId());
-            $customer->source = $token;
-            $customer->save();
-            return $customer;
-        }
-    }
-
-    public function createSubscription(User $user, Offers $offer)
-    {
-
-        try {
-            return \Stripe\Subscription::create([
+        if ($user->getStripeCustomerId())
+            $session = Session::create([
                 'customer' => $user->getStripeCustomerId(),
-                'items' => [['plan' => $offer->getPlan()]]
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'name' => $offer->getTitle(),
+                    'amount' => $offer->getPrice(),
+                    'currency' => 'eur',
+                    'quantity' => 1,
+                ]],
+                'success_url' => $urlSuccess. '/{CHECKOUT_SESSION_ID}',
+                'cancel_url' => $urlHome,
             ]);
-        } catch (\Stripe\Error\Base $e) {
-            $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
-            throw $e;
-        } catch (ApiErrorException $e) {
-            $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
-        }
+        else
+            $session = Session::create([
+                'customer_email' => $user->getEmail(),
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'name' => $offer->getTitle(),
+                    'amount' => $offer->getPrice(),
+                    'currency' => 'eur',
+                    'quantity' => 1,
+                ]],
+                'success_url' => $urlSuccess. '/{CHECKOUT_SESSION_ID}',
+                'cancel_url' => $urlHome,
+            ]);
+        return $session;
     }
 
+    /**
+     * @param Offers $offer
+     * @param User $user
+     * @return Session
+     * @throws ApiErrorException
+     */
+    public function createCheckoutForSubscription(Offers $offer, User $user)
+    {
+        $urlHome = $this->router->generate(
+            'homepage',[], UrlGeneratorInterface::ABSOLUTE_URL
+        );
+        $urlSuccess = $this->router->generate(
+            'success_page',[], UrlGeneratorInterface::ABSOLUTE_URL
+        );
+        if ($user->getStripeCustomerId())
+            $session = Session::create([
+                'customer' => $user->getStripeCustomerId(),
+                'payment_method_types' => ['card'],
+                'subscription_data' => [
+                    'items' => [[
+                        'plan' => $offer->getPlan(),
+                    ]],
+                ],
+                'success_url' => $urlSuccess. '/{CHECKOUT_SESSION_ID}',
+                'cancel_url' => $urlHome,
+            ]);
+        else
+            $session = Session::create([
+                'customer_email' => $user->getEmail(),
+                'payment_method_types' => ['card'],
+                'subscription_data' => [
+                    'items' => [[
+                        'plan' => $offer->getPlan(),
+                    ]],
+                ],
+                'success_url' => $urlSuccess. '/{CHECKOUT_SESSION_ID}',
+                'cancel_url' => $urlHome,
+            ]);
+        return $session;
+    }
+
+    /**
+     * @param User $user
+     * @throws ApiErrorException
+     */
     public function cancelSubscription(User $user)
     {
         $sub = $this->findSubscription(
             $user->getSouscription()->getStripeSubscriptionId()
         );
         try {
-            $sub->cancel_at_period_end = true;
-            $sub->save();
+            \Stripe\Subscription::update(
+                $user->getSouscription()->getStripeSubscriptionId(),
+                [
+                    'cancel_at_period_end' => true,
+                ]
+            );
         } catch (\Stripe\Exception\ApiErrorException $e) {
 
         }
     }
 
+    /**
+     * @param User $user
+     * @return Subscription
+     */
     public function reactivateSubscription (User $user){
         if (!$user->hasActiveSubscription()) {
             throw new \LogicException("Vous ne pouvez réactiver votre souscription que si elle ne s'est pas terminée auparavant.");
         }
-        $souscription = $this->findSubscription(
-            $user->getSouscription()->getStripeSubscriptionId()
-        );
-        $souscription->plan = $user->getSouscription()->getOffer()->getPlan();
-        $souscription->cancel_at_period_end = false;
+        $stripeSubscriptionId = $user->getSouscription()->getStripeSubscriptionId();
+        try {
+            $subscription = \Stripe\Subscription::retrieve($stripeSubscriptionId);
+        } catch (ApiErrorException $e) {
+            $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
 
-        $souscription->save();
-        return $souscription;
+        }
+        try {
+            \Stripe\Subscription::update($stripeSubscriptionId, [
+                'cancel_at_period_end' => false,
+                'items' => [
+                    [
+                        'id' => $subscription->items->data[0]->id,
+                        'plan' => $user->getSouscription()->getOffer()->getPlan(),
+                    ],
+                ],
+            ]);
+        } catch (ApiErrorException $e) {
+            $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
+        }
+        return $subscription;
     }
 
-    public function addSubscriptionToUser(\Stripe\Subscription $stripeSubscription, User $user, Offers $offer){
+    /**
+     * @param $idSubscriptionStripe
+     * @param User $user
+     * @param Offers $offer
+     * @throws \Exception
+     */
+    public function addSubscriptionToUser($idSubscriptionStripe, User $user, Offers $offer){
         $souscription = $user->getSouscription();
         if (!$souscription || $souscription == null) {
             $souscription = new Souscription();
             $souscription->setUser($user);
+            $periodEnd = new \DateTime();
         }
-        $periodEnd = \DateTime::createFromFormat('U', $stripeSubscription->current_period_end);
+        else {
+            try {
+                $periodEnd = \DateTime::createFromFormat('U', $this->findCurrentPeriodEnd($idSubscriptionStripe));
+            } catch (ApiErrorException $e) {
+                $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
+            }
+        }
         $souscription->activateSubscription(
             $offer,
-            $stripeSubscription->id,
+            $idSubscriptionStripe,
             $periodEnd
         );
 
@@ -165,15 +205,11 @@ class StripeClient
         $this->manager->flush();
     }
 
-    public function updateCustomerCard(User $user, $paymentToken)
-    {
-        $customer = \Stripe\Customer::retrieve($user->getStripeCustomerId());
-        $customer->source = $paymentToken;
-        $customer->save();
-
-        return $customer;
-    }
-
+    /**
+     * @param $eventId
+     * @return \Stripe\Event
+     * @throws \Exception
+     */
     public function findEvent($eventId){
         try {
             return \Stripe\Event::retrieve($eventId);
@@ -182,6 +218,9 @@ class StripeClient
         }
     }
 
+    /**
+     * @param Souscription $subscription
+     */
     public function fullyCancelSubscription(Souscription $subscription)
     {
         $subscription->desactivateSubscription();
@@ -200,10 +239,17 @@ class StripeClient
         $this->manager->flush();
     }
 
+    /**
+     * @param $stripeSubscriptionId
+     * @return int
+     * @throws ApiErrorException
+     */
     public function findSubscription($stripeSubscriptionId)
     {
         try {
-            return \Stripe\Subscription::retrieve($stripeSubscriptionId);
+            $sub = \Stripe\Subscription::retrieve($stripeSubscriptionId);
+            dump($sub);
+            return $sub->current_period_end;
         } catch (\Stripe\Error\Base $e) {
             $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
 
@@ -214,6 +260,16 @@ class StripeClient
         }
     }
 
+    /**
+     * @param $stripeSubscriptionId
+     * @return int
+     * @throws ApiErrorException
+     */
+    public function findCurrentPeriodEnd($stripeSubscriptionId){
+        $sub = \Stripe\Subscription::retrieve($stripeSubscriptionId);
+        dump($sub);
+        return $sub->current_period_end;
+    }
     /**
      * @param $invoiceId
      * @return \Stripe\Invoice
@@ -242,5 +298,54 @@ class StripeClient
             }
         }
         return $invoices;
+    }
+
+    /**
+     * @param User $user
+     * @return Session
+     * @throws ApiErrorException
+     */
+    function updateCustomerCard(User $user){
+        $urlHome = $this->router->generate(
+            'manage_souscription',[], UrlGeneratorInterface::ABSOLUTE_URL
+        );
+        $session = Session::create([
+            'customer_email' => $user->getEmail(),
+            'payment_method_types' => ['card'],
+            'mode' => 'setup',
+            'setup_intent_data' => [
+                'metadata' => [
+                    'customer_id' => $user->getStripeCustomerId(),
+                    'subscription_id' => $user->getSouscription()->getStripeSubscriptionId(),
+                ],
+            ],
+            'success_url' => 'http://localhost:8000/success' . '/{CHECKOUT_SESSION_ID}',
+            'cancel_url' => $urlHome,
+        ]);
+        return $session;
+    }
+
+    /**
+     * @param $id
+     * @param User $user
+     * @throws ApiErrorException
+     */
+    public function handleChangementCardSession($id, User $user){
+        $retrieve = Session::retrieve($id);
+        $setupIntent = \Stripe\SetupIntent::retrieve($retrieve->setup_intent);
+        $payment_method = \Stripe\PaymentMethod::retrieve($setupIntent->payment_method);
+        $payment_method->attach(['customer' => $user->getStripeCustomerId()]);
+        \Stripe\Customer::update(
+            $user->getStripeCustomerId(),
+            [
+                'invoice_settings' => ['default_payment_method' => $setupIntent->payment_method],
+            ]
+        );
+        \Stripe\Subscription::update(
+            $user->getSouscription()->getStripeSubscriptionId(),
+            [
+                'default_payment_method' => $setupIntent->payment_method,
+            ]
+        );
     }
 }
