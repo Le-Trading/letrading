@@ -2,16 +2,28 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1ea15fbc-8c4a-4bfe-9750-932fd612b8f3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/public/js/payment.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/pages/success.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/StripeClient.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/StripeClient.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/OffersController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/OffersController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/PagesController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/PagesController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Controller/SouscriptionController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/SouscriptionController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/WebhookController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/WebhookController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/offers/prepare.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/offers/prepare.html.twig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/offers/show.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/offers/show.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200131181956.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Migrations/Version20200220002915.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200201150405.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200201231308.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200202140151.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200202150538.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200202151534.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200203213112.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200203215641.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200203220244.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200204083319.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200205175558.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200205230622.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200211143232.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200211143437.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200215133227.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200215135436.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Migrations/Version20200218143106.php" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/souscription/index.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/souscription/index.html.twig" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,6 +62,7 @@
       <path value="$PROJECT_DIR$/vendor/symfony/debug-bundle" />
       <path value="$PROJECT_DIR$/vendor/symfony/routing" />
       <path value="$PROJECT_DIR$/vendor/symfony/event-dispatcher" />
+      <path value="$PROJECT_DIR$/vendor/symfony/flex" />
       <path value="$PROJECT_DIR$/vendor/symfony/cache-contracts" />
       <path value="$PROJECT_DIR$/vendor/symfony/debug-pack" />
       <path value="$PROJECT_DIR$/vendor/symfony/property-info" />
@@ -150,7 +163,13 @@
       <path value="$PROJECT_DIR$/vendor/symfony/error-handler" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-intl-normalizer" />
       <path value="$PROJECT_DIR$/vendor/stripe/stripe-php" />
-      <path value="$PROJECT_DIR$/vendor/symfony/flex" />
+      <path value="$PROJECT_DIR$/vendor/friendsofsymfony/user-bundle" />
+      <path value="$PROJECT_DIR$/vendor/symfony/templating" />
+      <path value="$PROJECT_DIR$/vendor/lcobucci/jwt" />
+      <path value="$PROJECT_DIR$/vendor/symfony/messenger" />
+      <path value="$PROJECT_DIR$/vendor/symfony/mercure" />
+      <path value="$PROJECT_DIR$/vendor/symfony/mercure-bundle" />
+      <path value="$PROJECT_DIR$/vendor/beberlei/doctrineextensions" />
     </include_path>
   </component>
   <component name="ProjectId" id="1XFiI1dmTw7IQno3rRpnwyGaiJY" />
@@ -217,6 +236,7 @@
       <workItem from="1581544870589" duration="3555000" />
       <workItem from="1581678462676" duration="14110000" />
       <workItem from="1581849544358" duration="58235000" />
+      <workItem from="1582159036000" duration="1460000" />
     </task>
     <servers />
   </component>
@@ -249,10 +269,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="361" y="142" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1581109718299" />
-    <state x="465" y="238" key="com.intellij.ide.util.TipDialog" timestamp="1581849555365">
+    <state x="465" y="238" key="com.intellij.ide.util.TipDialog" timestamp="1582159038550">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="465" y="238" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1581849555365" />
+    <state x="465" y="238" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1582159038550" />
     <state x="453" y="128" width="631" height="568" key="find.popup" timestamp="1581776226576">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -261,5 +281,9 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="494" y="52" key="refactoring.ChangeSignatureDialog/0.0.1536.824@0.0.1536.824" timestamp="1580932326529" />
+    <state x="425" y="187" key="run.anything.popup" timestamp="1582158964346">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="425" y="187" key="run.anything.popup/0.0.1536.824@0.0.1536.824" timestamp="1582158964346" />
   </component>
 </project>

@@ -27,14 +27,24 @@ class SouscriptionController extends AbstractController
     public function index(StripeClient $stripeClient, Request $request)
     {
         $user = $this->getUser();
-        $updateCard = $stripeClient->updateCustomerCard($user);
+        if ($user->hasActiveNonCancelledSubscription()) {
+            $updateCard = $stripeClient->updateCustomerCard($user);
 
-        return $this->render('souscription/index.html.twig', [
-            'stripe_public_key' => $this->getParameter('stripe_public_key'),
-            'CHECKOUT_SESSION_ID' => $updateCard->id,
-            'user' => $user,
-        ]);
+            return $this->render('souscription/index.html.twig', [
+                'stripe_public_key' => $this->getParameter('stripe_public_key'),
+                'CHECKOUT_SESSION_ID' => $updateCard->id,
+                'user' => $user,
+            ]);
+        }
+        else{
+            return $this->render('souscription/index.html.twig', [
+                'stripe_public_key' => $this->getParameter('stripe_public_key'),
+                'user' => $user,
+            ]);
+        }
     }
+
+
 
     /**
      * @Route("/account/souscription/cancel", name="cancel_souscription")

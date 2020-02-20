@@ -45,12 +45,13 @@ class StripeClient
      * @return Session
      * @throws ApiErrorException
      */
-    public function createCheckoutForCharge(Offers $offer, User $user){
+    public function createCheckoutForCharge(Offers $offer, User $user)
+    {
         $urlHome = $this->router->generate(
-            'homepage',[], UrlGeneratorInterface::ABSOLUTE_URL
+            'homepage', [], UrlGeneratorInterface::ABSOLUTE_URL
         );
         $urlSuccess = $this->router->generate(
-            'success_page',[], UrlGeneratorInterface::ABSOLUTE_URL
+            'success_page', [], UrlGeneratorInterface::ABSOLUTE_URL
         );
 
         if ($user->getStripeCustomerId())
@@ -63,7 +64,7 @@ class StripeClient
                     'currency' => 'eur',
                     'quantity' => 1,
                 ]],
-                'success_url' => $urlSuccess. '/{CHECKOUT_SESSION_ID}',
+                'success_url' => $urlHome,
                 'cancel_url' => $urlHome,
             ]);
         else
@@ -76,7 +77,7 @@ class StripeClient
                     'currency' => 'eur',
                     'quantity' => 1,
                 ]],
-                'success_url' => $urlSuccess. '/{CHECKOUT_SESSION_ID}',
+                'success_url' => $urlHome,
                 'cancel_url' => $urlHome,
             ]);
         return $session;
@@ -91,10 +92,10 @@ class StripeClient
     public function createCheckoutForSubscription(Offers $offer, User $user)
     {
         $urlHome = $this->router->generate(
-            'homepage',[], UrlGeneratorInterface::ABSOLUTE_URL
+            'homepage', [], UrlGeneratorInterface::ABSOLUTE_URL
         );
         $urlSuccess = $this->router->generate(
-            'success_page',[], UrlGeneratorInterface::ABSOLUTE_URL
+            'success_page', [], UrlGeneratorInterface::ABSOLUTE_URL
         );
         if ($user->getStripeCustomerId())
             $session = Session::create([
@@ -105,7 +106,7 @@ class StripeClient
                         'plan' => $offer->getPlan(),
                     ]],
                 ],
-                'success_url' => $urlSuccess. '/{CHECKOUT_SESSION_ID}',
+                'success_url' => $urlHome,
                 'cancel_url' => $urlHome,
             ]);
         else
@@ -117,7 +118,7 @@ class StripeClient
                         'plan' => $offer->getPlan(),
                     ]],
                 ],
-                'success_url' => $urlSuccess. '/{CHECKOUT_SESSION_ID}',
+                'success_url' => $urlHome,
                 'cancel_url' => $urlHome,
             ]);
         return $session;
@@ -148,7 +149,8 @@ class StripeClient
      * @param User $user
      * @return Subscription
      */
-    public function reactivateSubscription (User $user){
+    public function reactivateSubscription(User $user)
+    {
         if (!$user->hasActiveSubscription()) {
             throw new \LogicException("Vous ne pouvez réactiver votre souscription que si elle ne s'est pas terminée auparavant.");
         }
@@ -181,19 +183,17 @@ class StripeClient
      * @param Offers $offer
      * @throws \Exception
      */
-    public function addSubscriptionToUser($idSubscriptionStripe, User $user, Offers $offer){
+    public function addSubscriptionToUser($idSubscriptionStripe, User $user, Offers $offer)
+    {
         $souscription = $user->getSouscription();
         if (!$souscription || $souscription == null) {
             $souscription = new Souscription();
             $souscription->setUser($user);
-            $periodEnd = new \DateTime();
         }
-        else {
-            try {
-                $periodEnd = \DateTime::createFromFormat('U', $this->findCurrentPeriodEnd($idSubscriptionStripe));
-            } catch (ApiErrorException $e) {
-                $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
-            }
+        try {
+            $periodEnd = \DateTime::createFromFormat('U', $this->findCurrentPeriodEnd($idSubscriptionStripe));
+        } catch (ApiErrorException $e) {
+            $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
         }
         $souscription->activateSubscription(
             $offer,
@@ -210,7 +210,8 @@ class StripeClient
      * @return \Stripe\Event
      * @throws \Exception
      */
-    public function findEvent($eventId){
+    public function findEvent($eventId)
+    {
         try {
             return \Stripe\Event::retrieve($eventId);
         } catch (ApiErrorException $e) {
@@ -265,11 +266,13 @@ class StripeClient
      * @return int
      * @throws ApiErrorException
      */
-    public function findCurrentPeriodEnd($stripeSubscriptionId){
+    public function findCurrentPeriodEnd($stripeSubscriptionId)
+    {
         $sub = \Stripe\Subscription::retrieve($stripeSubscriptionId);
         dump($sub);
         return $sub->current_period_end;
     }
+
     /**
      * @param $invoiceId
      * @return \Stripe\Invoice
@@ -305,9 +308,10 @@ class StripeClient
      * @return Session
      * @throws ApiErrorException
      */
-    function updateCustomerCard(User $user){
+    function updateCustomerCard(User $user)
+    {
         $urlHome = $this->router->generate(
-            'manage_souscription',[], UrlGeneratorInterface::ABSOLUTE_URL
+            'manage_souscription', [], UrlGeneratorInterface::ABSOLUTE_URL
         );
         $session = Session::create([
             'customer_email' => $user->getEmail(),
@@ -330,7 +334,8 @@ class StripeClient
      * @param User $user
      * @throws ApiErrorException
      */
-    public function handleChangementCardSession($id, User $user){
+    public function handleChangementCardSession($id, User $user)
+    {
         $retrieve = Session::retrieve($id);
         $setupIntent = \Stripe\SetupIntent::retrieve($retrieve->setup_intent);
         $payment_method = \Stripe\PaymentMethod::retrieve($setupIntent->payment_method);

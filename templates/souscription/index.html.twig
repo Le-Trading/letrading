@@ -111,6 +111,8 @@
     {% endif %}
 {% endblock %}
 {% block javascripts %}
+    {% if user.hasActiveNonCancelledSubscription %}
+
     <script>
         (function () {
             var stripe = Stripe('{{ stripe_public_key }}');
@@ -133,5 +135,6 @@
             });
         })();
     </script>
+    {% endif %}
 
 {% endblock %}
