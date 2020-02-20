@@ -14,7 +14,7 @@ class MediaType extends AbstractType
     {
         $builder
             ->add('imageFile', VichImageType::class, [
-                'label' => "Choisissez votre fichier",
+                'label' => "Choisissez une pièce jointe (optionnel)",
                 'attr' => ['placeholder' => 'Choisissez votre fichier'],
                 'required' => false
             ]);

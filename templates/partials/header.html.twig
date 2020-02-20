@@ -21,7 +21,7 @@
 				<a class="nav-link" href="#">Live</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="#">Historiques</a>
+				<a class="nav-link" href="{{ path('historic_index') }}">Historique</a>
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" href="{{ path('offers_index') }}">Offres</a>
@@ -41,6 +41,10 @@
 		</ul>
 		<ul class="navbar-nav ml-auto">
 			{% if app.user %}
+                {{ render(controller(
+                    'App\\Controller\\PagesController::getNotifs'
+                	))
+                }}
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#">
 						{% if app.user.media %}
@@ -59,6 +63,11 @@
 						<a href="{{ path('account_logout') }}" class="dropdown-item">Déconnexion</a>
 					</div>
 				</li>
+                {% if is_granted('ROLE_ADMIN') %}
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('admin_dashboard') }}" target="_blank"><i class="fas fa-user-cog"></i> Administration</a>
+					</li>
+                {% endif %}
 			{% else %}
 				<li class="nav-item">
 					<a class="nav-link" href="{{ path('account_register') }}">Inscription</a>
@@ -79,3 +88,7 @@
 		</div>
 	</div>
 {% endfor %}
+
+{% block javascripts %}
+
+{% endblock %}

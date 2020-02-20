@@ -7,10 +7,10 @@ use Cocur\Slugify\Slugify;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -71,12 +71,12 @@ class User implements UserInterface
     private $slug;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Post", mappedBy="author")
+     * @ORM\OneToMany(targetEntity="App\Entity\Post", mappedBy="author", orphanRemoval=true)
      */
     private $posts;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\PostVote", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="App\Entity\PostVote", mappedBy="user", orphanRemoval=true)
      */
     private $postVotes;
 
@@ -85,17 +85,20 @@ class User implements UserInterface
      */
     private $userRole;
 
-
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\Media", mappedBy="user", cascade={"persist", "remove"})
      */
     private $media;
 
-
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Payment", mappedBy="User")
      */
     private $payments;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
 
     public function __construct()
     {
@@ -118,6 +121,9 @@ class User implements UserInterface
         if (empty($this->slug)) {
             $slugify = new Slugify();
             $this->slug = $slugify->slugify($this->firstName . ' ' . $this->lastName);
+        }
+        if (empty($this->createdAt)) {
+            $this->createdAt = new \DateTime();
         }
     }
 
@@ -380,5 +386,17 @@ class User implements UserInterface
     public function setResetToken(?string $resetToken): void
     {
         $this->resetToken = $resetToken;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 }

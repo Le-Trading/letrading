@@ -96,3 +96,19 @@ li.dropdown:hover > .dropdown-menu {
   text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
   transition-duration: 1s;
 }
+
+#tableHistoric1_filter, #tableHistoric2_filter{
+  display: none;
+}
+
+.bg-post-admin{
+  background-color: #bce0f3;
+}
+
+#post_media > fieldset{
+  margin: 0!important;
+}
+
+#form_response fieldset{
+  margin: 0!important;
+}

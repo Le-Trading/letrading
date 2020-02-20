@@ -35,3 +35,11 @@ services:
     App\Client\StripeClient:
         class: App\Client\StripeClient
         arguments: ['%stripe_secret_key%', '%payment%', '@doctrine.orm.entity_manager', '@logger']
+
+    App\Service\MercureCookieGenerator:
+        arguments:
+            $secret: '%env(MERCURE_JWT_KEY)%'
+
+    App\Service\JwtProvider:
+        arguments:
+            $secret: '%env(MERCURE_JWT_KEY)%'

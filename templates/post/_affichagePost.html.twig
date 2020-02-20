@@ -1,6 +1,6 @@
 {% set author = post.author %}
 
-<div class="card mb-2 {% if post.respond != null %} ml-5 {% endif %} {% if isGranted.isGranted(author, 'ROLE_ADMIN') or post.isAdmin %} bg-primary {% endif %}" id="post{{post.id}}">
+<div class="card mb-2 {% if post.respond != null %} ml-5 {% endif %} {% if isGranted.isGranted(author, 'ROLE_ADMIN') or post.isAdmin %} bg-post-admin {% endif %}" id="post{{post.id}}">
 	<div class="card-body">
 		<div class="row">
 			<div class="col-md-2">
@@ -26,9 +26,41 @@
 				</p>
 
 				<div class="clearfix"></div>
-				<div class="{% if isGranted.isGranted(author, 'ROLE_ADMIN') or post.isAdmin %} text-white {% endif %}">
+				<div>
 
 					{{post.content | raw}}
+
+					{#Paramétrage trade - affichage#}
+                    {% if post.feeling %}
+						<div class="alert {% if post.feeling == "vente" %} alert-danger {% elseif post.feeling == "achat" %} alert-success {% endif %}">
+							{% if post.feeling == "vente" %}
+								<i class="fas fa-arrow-down"></i> {{ post.feeling }}
+							{% elseif post.feeling == "achat" %}
+								<i class="fas fa-arrow-up"></i> {{ post.feeling }}
+							{% endif %}
+
+							{% if post.startPrice %}
+								Prix d'entrée {{ post.startPrice }}
+							{% endif %}
+
+							{% if post.stopPrice %}
+								Stop de protection {{ post.startPrice }}
+							{% endif %}
+
+							{% if post.tp1 %}
+								TP1 {{ post.tp1 }}
+							{% endif %}
+
+							{% if post.tp2 %}
+								TP2 {{ post.tp2 }}
+							{% endif %}
+
+							{% if post.pair %}
+								{{ post.pair }}
+							{% endif %}
+						</div>
+                    {% endif %}
+					{#Fin Paramétrage trade - affichage#}
 
 					{% if post.media %}
 
@@ -88,12 +120,10 @@
 <p class="text-right">
 	<a href="#collapse{{post.id}}" class="btn btn-secondary text-right" role="button" data-toggle="collapse" aria-expanded="false">
 		<strong>{{ post.responses | length }}
-			réponses à ce commentaire</strong>
+			réponse{% if post.responses | length > 1 %}s{% endif %} à ce commentaire</strong>
 	</a>
 </p>
 <div class="collapse" id="collapse{{post.id}}">
-
-
 	{% for response in post.responses %}
 		{% include 'post/_affichagePost.html.twig' with {'post' : response} %}
 	{% endfor %}
