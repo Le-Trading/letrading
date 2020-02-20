@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Client\StripeClient;
 use App\Entity\User;
 use App\Form\AccountType;
 use App\Entity\PasswordUpdate;
 use App\Form\RegistrationType;
 use App\Form\PasswordUpdateType;
+use Stripe\Exception\ApiErrorException;
 use Symfony\Component\Form\FormError;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -88,6 +90,8 @@ class AccountController extends AbstractController
      * @Route("/account/profile", name="account_profile")
      * @IsGranted("ROLE_USER")
      *
+     * @param Request $request
+     * @param EntityManagerInterface $manager
      * @return Response
      */
     public function profile(Request $request, EntityManagerInterface $manager)
@@ -175,6 +179,11 @@ class AccountController extends AbstractController
     /**
      * Permet de reset son mot de passe
      * @Route("/forgottenPassword", name="app_forgotten_password")
+     * @param Request $request
+     * @param UserPasswordEncoderInterface $encoder
+     * @param \Swift_Mailer $mailer
+     * @param TokenGeneratorInterface $tokenGenerator
+     * @return Response
      */
     public function forgottenPassword(
         Request $request,
@@ -255,4 +264,23 @@ class AccountController extends AbstractController
         }
 
     }
+
+    /**
+     * @Route("/account/payments", name="account_payments")
+     * @param StripeClient $stripeClient
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function payments(StripeClient $stripeClient){
+        try {
+            $invoices = $stripeClient->findPaidInvoices($this->getUser());
+            dump($invoices);
+            exit();
+        } catch (ApiErrorException $e) {
+
+        }
+        return $this->render('account/payments.html.twig', [
+            'invoices' => $invoices
+        ]);
+    }
+
 }

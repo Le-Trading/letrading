@@ -1,13 +1,15 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-	{{thread.title}}
+    {{ thread.title }}
 {% endblock %}
 
 {% block body %}
 	<div class="container">
 		<h1 class="h4 text-center mb-5">Fil d'actualité du forum
 			<b>{{thread.title}}</b><hr></h1>
+		{% if app.user.hasActiveSubscription or app.user.payments | length > 0 %}
+
 		<div class="row">
 			<div class="col-sm-7 mb-5 col-xs-12">
 				<button class="btn btn-info col-12 mb-3" type="button" data-toggle="collapse" data-target="#postNewMessage" aria-expanded="false" aria-controls="postNewMessage">
@@ -81,6 +83,12 @@
 				</div>
 			</div>
 		</div>
+		{% else %}
+			<div class="alert alert-danger">
+				Vous n'avez pas d'abonnement
+			</div>
+
+		{% endif %}
 	</div>
 {% endblock %}
 {% block javascripts %}

@@ -100,6 +100,27 @@ class User implements UserInterface
      */
     private $createdAt;
 
+    /**
+     * @ORM\Column(type="string", unique=true, nullable=true)
+     */
+    private $stripeCustomerId;
+
+    /**
+     * @return mixed
+     */
+    public function getStripeCustomerId()
+    {
+        return $this->stripeCustomerId;
+    }
+
+    /**
+     * @param mixed $stripeCustomerId
+     */
+    public function setStripeCustomerId($stripeCustomerId): void
+    {
+        $this->stripeCustomerId = $stripeCustomerId;
+    }
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -373,6 +394,11 @@ class User implements UserInterface
     protected $resetToken;
 
     /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Souscription", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $souscription;
+
+    /**
      * @return string
      */
     public function getResetToken(): string
@@ -399,4 +425,44 @@ class User implements UserInterface
 
         return $this;
     }
+
+    public function getSouscription(): ?Souscription
+    {
+        return $this->souscription;
+    }
+
+    public function setSouscription(Souscription $souscription): self
+    {
+        $this->souscription = $souscription;
+
+        // set the owning side of the relation if necessary
+        if ($souscription->getUser() !== $this) {
+            $souscription->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function hasActiveSubscription()
+    {
+        return $this->getSouscription() && $this->getSouscription()->isActive();
+    }
+
+    public function hasActiveNonCancelledSubscription()
+    {
+        return $this->hasActiveSubscription() && !$this->getSouscription()->isCancelled();
+    }
+
+    public function ownThisOffer(Offers $offer){
+        if($offer->getType() == "subscription" && $this->hasActiveSubscription()){
+            return true;
+        }
+        foreach ($this->getPayments() as $payment ){
+            if ($payment->getOffer() === $offer)
+                return true;
+        }
+        return false;
+    }
+
+
 }

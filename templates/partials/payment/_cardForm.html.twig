@@ -1,0 +1,25 @@
+{{ form_start(form, {attr: {id: form.vars.id}}) }}
+{#<div class="form-group">#}
+{#    <label for="card-element">#}
+{#        Numéro de carte bleue#}
+{#    </label>#}
+{#    <div id="example2-card-number" class="form-control col-xs-12"></div>#}
+{#    <br>#}
+{#    <label for="card-element">#}
+{#        Date d'expiration#}
+{#    </label>#}
+{#    <div id="example2-card-expiry" class="form-control col-xs-12"></div>#}
+{#    <br>#}
+{#    <label for="card-element">#}
+{#        Code de vérification#}
+{#    </label>#}
+{#    <div id="example2-card-cvc" class="form-control col-xs-12"></div>#}
+
+    <div id="card-element">
+        <!-- Elements will create input elements here -->
+    </div>
+    <div id="card-errors" class="help-block col-xs-12" role="alert"></div>
+{#</div>#}
+{{ form_widget(form.token) }}
+{{ form_end(form) }}
+

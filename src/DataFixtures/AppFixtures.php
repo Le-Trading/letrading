@@ -85,7 +85,8 @@ class AppFixtures extends Fixture
         $offers->setTitle('classic')
                 ->setDescription($descriptionOffer)
                 ->setPrice(50)
-                ->setType('subscription');
+                ->setType('subscription')
+                ->setPlan('premium');
         $manager->persist($offers);
 
         //offre 2
@@ -93,7 +94,8 @@ class AppFixtures extends Fixture
         $offers->setTitle('premium')
                 ->setDescription($descriptionOffer)
                 ->setPrice(3000)
-                ->setType('charge');
+                ->setType('charge')
+                ->setPlan('charge');
         $manager->persist($offers);
 
         // FIN CREATION DES OFFRES

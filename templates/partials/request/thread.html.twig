@@ -3,7 +3,8 @@
 		{% if app.user == null %}
 			<a href="{{ path('account_login') }}" class="dropdown-item text-capitalize">{{thread.slug}}</a>
 		{% else %}
-			<a href="{{ path('thread_show', {'slug':thread.slug}) }}" class="dropdown-item text-capitalize">{{thread.slug}}</a>
+
+			<a href="{{ path('thread_show', {'slug':thread.slug}) }}" class="dropdown-item text-capitalize {% if not app.user.hasActiveSubscription and app.user.payments | length == 0 %} disabled {% endif %} ">{{thread.slug}}</a>
 		{% endif %}
 	</li>
 {% endfor %}

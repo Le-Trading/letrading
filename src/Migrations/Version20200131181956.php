@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20200129190443 extends AbstractMigration
+final class Version20200131181956 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -29,6 +29,7 @@ final class Version20200129190443 extends AbstractMigration
         $this->addSql('CREATE TABLE post_vote (id INT AUTO_INCREMENT NOT NULL, post_id INT NOT NULL, user_id INT NOT NULL, INDEX IDX_9345E26F4B89032C (post_id), INDEX IDX_9345E26FA76ED395 (user_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE role (id INT AUTO_INCREMENT NOT NULL, title VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE role_user (role_id INT NOT NULL, user_id INT NOT NULL, INDEX IDX_332CA4DDD60322AC (role_id), INDEX IDX_332CA4DDA76ED395 (user_id), PRIMARY KEY(role_id, user_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE souscription (id INT AUTO_INCREMENT NOT NULL, user_id INT NOT NULL, offer_id INT NOT NULL, beginning_at DATETIME NOT NULL, ending_at DATETIME NOT NULL, cancelled TINYINT(1) DEFAULT NULL, INDEX IDX_2AED620DA76ED395 (user_id), INDEX IDX_2AED620D53C674EE (offer_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE thread (id INT AUTO_INCREMENT NOT NULL, slug VARCHAR(255) NOT NULL, title VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, first_name VARCHAR(255) NOT NULL, last_name VARCHAR(255) NOT NULL, pseudo VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, hash VARCHAR(255) NOT NULL, slug VARCHAR(255) NOT NULL, reset_token VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE media ADD CONSTRAINT FK_6A2CA10CA76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
@@ -42,6 +43,8 @@ final class Version20200129190443 extends AbstractMigration
         $this->addSql('ALTER TABLE post_vote ADD CONSTRAINT FK_9345E26FA76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
         $this->addSql('ALTER TABLE role_user ADD CONSTRAINT FK_332CA4DDD60322AC FOREIGN KEY (role_id) REFERENCES role (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE role_user ADD CONSTRAINT FK_332CA4DDA76ED395 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE souscription ADD CONSTRAINT FK_2AED620DA76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
+        $this->addSql('ALTER TABLE souscription ADD CONSTRAINT FK_2AED620D53C674EE FOREIGN KEY (offer_id) REFERENCES offers (id)');
     }
 
     public function down(Schema $schema) : void
@@ -50,6 +53,7 @@ final class Version20200129190443 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE payment DROP FOREIGN KEY FK_6D28840D53C674EE');
+        $this->addSql('ALTER TABLE souscription DROP FOREIGN KEY FK_2AED620D53C674EE');
         $this->addSql('ALTER TABLE media DROP FOREIGN KEY FK_6A2CA10C4B89032C');
         $this->addSql('ALTER TABLE post DROP FOREIGN KEY FK_5A8A6C8D3B91B7B5');
         $this->addSql('ALTER TABLE post_vote DROP FOREIGN KEY FK_9345E26F4B89032C');
@@ -60,6 +64,7 @@ final class Version20200129190443 extends AbstractMigration
         $this->addSql('ALTER TABLE post DROP FOREIGN KEY FK_5A8A6C8DF675F31B');
         $this->addSql('ALTER TABLE post_vote DROP FOREIGN KEY FK_9345E26FA76ED395');
         $this->addSql('ALTER TABLE role_user DROP FOREIGN KEY FK_332CA4DDA76ED395');
+        $this->addSql('ALTER TABLE souscription DROP FOREIGN KEY FK_2AED620DA76ED395');
         $this->addSql('DROP TABLE media');
         $this->addSql('DROP TABLE offers');
         $this->addSql('DROP TABLE payment');
@@ -67,6 +72,7 @@ final class Version20200129190443 extends AbstractMigration
         $this->addSql('DROP TABLE post_vote');
         $this->addSql('DROP TABLE role');
         $this->addSql('DROP TABLE role_user');
+        $this->addSql('DROP TABLE souscription');
         $this->addSql('DROP TABLE thread');
         $this->addSql('DROP TABLE user');
     }
