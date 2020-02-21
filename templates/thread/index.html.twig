@@ -95,195 +95,13 @@
 {% endblock %}
 {% block javascripts %}
     <script src="https://unpkg.com/axios@0.19.2/dist/axios.min.js"></script>
-	{#<script>
-        var PLACEHOLDERS = {{ users|json_encode|raw }};
-
-        CKEDITOR.instances.post_content.destroy();
-        CKEDITOR.replace('post_content', {
-            plugins: 'autocomplete,textmatch,toolbar,wysiwygarea,basicstyles,link,undo,placeholder',
-            "language": "fr",
-            'uiColor' : '#7b8a8b',
-            'height' : '10em',
-            on: {
-                instanceReady: function(evt) {
-                    var itemTemplate = '<li data-id="{id}">' +
-                        '<div><strong class="item-title">{pseudo}</strong></div>' +
-                        '</li>',
-                        outputTemplate = '@{pseudo}<span>&nbsp;</span>';
-
-                    var autocomplete = new CKEDITOR.plugins.autocomplete(evt.editor, {
-                        textTestCallback: textTestCallback,
-                        dataCallback: dataCallback,
-                        itemTemplate: itemTemplate,
-                        outputTemplate: outputTemplate
-                    });
-
-                    autocomplete.getHtmlToInsert = function(item) {
-                        return this.outputTemplate.output(item);
-                    }
-                }
-            }
-        });
-
-        function textTestCallback(range) {
-            if (!range.collapsed) {
-                return null;
-            }
-            return CKEDITOR.plugins.textMatch.match(range, matchCallback);
-        }
-
-        function matchCallback(text, offset) {
-            var pattern = /\(([A-z]|\))*$/,
-                match = text.slice(0, offset)
-                    .match(pattern);
-
-            if (!match) {
-                return null;
-            }
-
-            return {
-                start: match.index,
-                end: offset
-            };
-        }
-
-        function dataCallback(matchInfo, callback) {
-            var data = PLACEHOLDERS.filter(function(item) {
-                var itemName = '(' + item.pseudo + ')';
-                return itemName.indexOf(matchInfo.query.toLowerCase()) == 0;
-            });
-            callback(data);
-        }
-	</script>#}
 	<script>
-		var users = [{
-					id: 1,
-					avatar: 'm_1',
-					fullname: 'Charles Flores',
-					username: 'cflores'
-				},
-					{
-						id: 2,
-						avatar: 'm_2',
-						fullname: 'Gerald Jackson',
-						username: 'gjackson'
-					},
-					{
-						id: 3,
-						avatar: 'm_3',
-						fullname: 'Wayne Reed',
-						username: 'wreed'
-					},
-					{
-						id: 4,
-						avatar: 'm_4',
-						fullname: 'Louis Garcia',
-						username: 'lgarcia'
-					},
-					{
-						id: 5,
-						avatar: 'm_5',
-						fullname: 'Roy Wilson',
-						username: 'rwilson'
-					},
-					{
-						id: 6,
-						avatar: 'm_6',
-						fullname: 'Matthew Nelson',
-						username: 'mnelson'
-					},
-					{
-						id: 7,
-						avatar: 'm_7',
-						fullname: 'Randy Williams',
-						username: 'rwilliams'
-					},
-					{
-						id: 8,
-						avatar: 'm_8',
-						fullname: 'Albert Johnson',
-						username: 'ajohnson'
-					},
-					{
-						id: 9,
-						avatar: 'm_9',
-						fullname: 'Steve Roberts',
-						username: 'sroberts'
-					},
-					{
-						id: 10,
-						avatar: 'm_10',
-						fullname: 'Kevin Evans',
-						username: 'kevans'
-					},
-
-					{
-						id: 11,
-						avatar: 'w_1',
-						fullname: 'Mildred Wilson',
-						username: 'mwilson'
-					},
-					{
-						id: 12,
-						avatar: 'w_2',
-						fullname: 'Melissa Nelson',
-						username: 'mnelson'
-					},
-					{
-						id: 13,
-						avatar: 'w_3',
-						fullname: 'Kathleen Allen',
-						username: 'kallen'
-					},
-					{
-						id: 14,
-						avatar: 'w_4',
-						fullname: 'Mary Young',
-						username: 'myoung'
-					},
-					{
-						id: 15,
-						avatar: 'w_5',
-						fullname: 'Ashley Rogers',
-						username: 'arogers'
-					},
-					{
-						id: 16,
-						avatar: 'w_6',
-						fullname: 'Debra Griffin',
-						username: 'dgriffin'
-					},
-					{
-						id: 17,
-						avatar: 'w_7',
-						fullname: 'Denise Williams',
-						username: 'dwilliams'
-					},
-					{
-						id: 18,
-						avatar: 'w_8',
-						fullname: 'Amy James',
-						username: 'ajames'
-					},
-					{
-						id: 19,
-						avatar: 'w_9',
-						fullname: 'Ruby Anderson',
-						username: 'randerson'
-					},
-					{
-						id: 20,
-						avatar: 'w_10',
-						fullname: 'Wanda Lee',
-						username: 'wlee'
-					}
-				];
+		var users = {{ users|json_encode|raw }};
 		CKEDITOR.instances.post_content.destroy();
 		CKEDITOR.replace('post_content', {
-			plugins: 'mentions,emoji,basicstyles,undo,link,wysiwygarea,toolbar',
+			plugins: 'mentions,emoji,undo,link,wysiwygarea,toolbar',
 			contentsCss: [
-				'http://cdn.ckeditor.com/4.13.1/full-all/contents.css',
-				'https://ckeditor.com/docs/vendors/4.13.1/ckeditor/assets/mentions/contents.css'
+				'http://cdn.ckeditor.com/4.13.1/full-all/contents.css'
 			],
 			height: 150,
 			toolbar: [{
@@ -302,18 +120,17 @@
 			mentions: [{
 				feed: dataFeed,
 				itemTemplate: '<li data-id="{id}">' +
-						'<img class="photo" src="assets/mentions/img/{avatar}.jpg" />' +
-						'<strong class="username">{username}</strong>' +
-						'<span class="fullname">{fullname}</span>' +
+						'<strong class="username">{pseudo}</strong>' +
+						'<span class="fullname"> {firstName} {lastName}</span>' +
 						'</li>',
-				outputTemplate: '<a href="mailto:{username}@example.com">@{username}</a><span>&nbsp;</span>',
+				outputTemplate: '<a href="mailto:{username}@example.com">@{pseudo}</a><span>&nbsp;</span>',
 				minChars: 0
 			}
 			]
 		});
 
 		function dataFeed(opts, callback) {
-			var matchProperty = 'username',
+			var matchProperty = 'pseudo',
 					data = users.filter(function(item) {
 						return item[matchProperty].indexOf(opts.query.toLowerCase()) == 0;
 					});

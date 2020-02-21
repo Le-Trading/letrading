@@ -113,7 +113,7 @@ class ThreadController extends AbstractController
         }
 
         $users = $manager->createQuery(
-            'SELECT u.id, u.pseudo 
+            'SELECT u.id, u.pseudo, u.firstName, u.lastName 
                     FROM App\Entity\User u
                     ')
             ->getScalarResult();
