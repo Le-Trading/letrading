@@ -24,21 +24,9 @@ class Notif
     private $sender;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $receiver;
-
-    /**
      * @ORM\Column(type="string", length=255)
      */
     private $type;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Post")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $post;
 
     /**
      * @ORM\Column(type="boolean")
@@ -49,6 +37,18 @@ class Notif
      * @ORM\Column(type="datetime")
      */
     private $date;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Post", inversedBy="postNotifs")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $post;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="userReceiverNotif")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $receiver;
 
     /**
      * Callback appelé à chaque création de notif
@@ -81,18 +81,6 @@ class Notif
         return $this;
     }
 
-    public function getReceiver(): ?User
-    {
-        return $this->receiver;
-    }
-
-    public function setReceiver(?User $receiver): self
-    {
-        $this->receiver = $receiver;
-
-        return $this;
-    }
-
     public function getType(): ?string
     {
         return $this->type;
@@ -101,18 +89,6 @@ class Notif
     public function setType(string $type): self
     {
         $this->type = $type;
-
-        return $this;
-    }
-
-    public function getPost(): ?Post
-    {
-        return $this->post;
-    }
-
-    public function setIdPost(?Post $post): self
-    {
-        $this->post = $post;
 
         return $this;
     }
@@ -137,6 +113,30 @@ class Notif
     public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    public function getPost(): ?Post
+    {
+        return $this->post;
+    }
+
+    public function setPost(?Post $post): self
+    {
+        $this->post = $post;
+
+        return $this;
+    }
+
+    public function getReceiver(): ?User
+    {
+        return $this->receiver;
+    }
+
+    public function setReceiver(?User $receiver): self
+    {
+        $this->receiver = $receiver;
 
         return $this;
     }

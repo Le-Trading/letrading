@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {{ thread.title }}
+	{{thread.title}}
 {% endblock %}
 
 {% block body %}
@@ -39,6 +39,16 @@
 						{% if isGranted.isGranted(app.user, 'ROLE_ADMIN') %}
                         	{{form_row(form.isAdmin)}}
 						{% endif %}
+
+						{#commande vocal#}
+						<main>
+							<div class="controls">
+								<button type="button" id="mic">Get Microphone</button>
+								<button type="button" id="record" hidden>Record</button>
+							</div>
+							<ul id="recordings"></ul>
+						</main>
+
 						<button class="btn btn-info" type="submit">Envoyer <i class="fa fa-paper-plane"></i></button>
 						{{form_end(form)}}
 					</div>
@@ -94,8 +104,127 @@
 	</div>
 {% endblock %}
 {% block javascripts %}
-	<script src="https://unpkg.com/axios@0.19.2/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/axios@0.19.2/dist/axios.min.js"></script>
+	<script>
+		var users = {{ users|json_encode|raw }};
+		CKEDITOR.instances.post_content.destroy();
+		CKEDITOR.replace('post_content', {
+			plugins: 'mentions,emoji,undo,link,wysiwygarea,toolbar',
+			contentsCss: [
+				'http://cdn.ckeditor.com/4.13.1/full-all/contents.css'
+			],
+			height: 150,
+			toolbar: [{
+				name: 'document',
+				items: ['Undo', 'Redo']
+			},
+				{
+					name: 'basicstyles',
+					items: ['Bold', 'Italic', 'Strike']
+				},
+				{
+					name: 'links',
+					items: ['EmojiPanel', 'Link', 'Unlink']
+				}
+			],
+			mentions: [{
+				feed: dataFeed,
+				itemTemplate: '<li data-id="{id}">' +
+						'<strong class="username">{pseudo}</strong>' +
+						'<span class="fullname"> {firstName} {lastName}</span>' +
+						'</li>',
+				outputTemplate: '<a href="mailto:{username}@example.com">@{pseudo}</a><span>&nbsp;</span>',
+				minChars: 0
+			}
+			]
+		});
 
+		function dataFeed(opts, callback) {
+			var matchProperty = 'pseudo',
+					data = users.filter(function(item) {
+						return item[matchProperty].indexOf(opts.query.toLowerCase()) == 0;
+					});
+
+			data = data.sort(function(a, b) {
+				return a[matchProperty].localeCompare(b[matchProperty], undefined, {
+					sensitivity: 'accent'
+				});
+			});
+
+			callback(data);
+		}
+	</script>
+	<script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const getMic = document.getElementById('mic');
+            const recordButton = document.getElementById('record');
+            const list = document.getElementById('recordings');
+            if ('MediaRecorder' in window) {
+                getMic.addEventListener('click', async () => {
+                    getMic.setAttribute('hidden', 'hidden');
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({
+                            audio: true,
+                            video: false
+                        });
+                        const mimeType = 'audio/webm';
+                        let chunks = [];
+                        const recorder = new MediaRecorder(stream, { type: mimeType });
+                        recorder.addEventListener('dataavailable', event => {
+                            if (typeof event.data === 'undefined') return;
+                            if (event.data.size === 0) return;
+                            chunks.push(event.data);
+                        });
+                        recorder.addEventListener('stop', () => {
+                            const recording = new Blob(chunks, {
+                                type: mimeType
+                            });
+                            renderRecording(recording, list);
+                            chunks = [];
+                        });
+                        recordButton.removeAttribute('hidden');
+                        recordButton.addEventListener('click', () => {
+                            if (recorder.state === 'inactive') {
+                                recorder.start();
+                                recordButton.innerText = 'Stop';
+                            } else {
+                                recorder.stop();
+                                recordButton.innerText = 'Record';
+                            }
+                        });
+                    } catch {
+                        renderError(
+                            'You denied access to the microphone so this demo will not work.'
+                        );
+                    }
+                });
+            } else {
+                renderError("Sorry, your browser doesn't support the MediaRecorder API, so this demo will not work.");
+            }
+        });
+        function renderError(message) {
+            const main = document.querySelector('main');
+            main.innerHTML = `<div class="error"><p>${message}</p></div>`;
+        }
+        function renderRecording(blob, list) {
+            const blobUrl = URL.createObjectURL(blob);
+            const li = document.createElement('li');
+            const audio = document.createElement('audio');
+            const anchor = document.createElement('a');
+            anchor.setAttribute('href', blobUrl);
+            const now = new Date();
+            anchor.setAttribute(
+                'download',
+                `recording-${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDay().toString().padStart(2, '0')}--${now.getHours().toString().padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}-${now.getSeconds().toString().padStart(2, '0')}.webm`
+            );
+            anchor.innerText = 'Download';
+            audio.setAttribute('src', blobUrl);
+            audio.setAttribute('controls', 'controls');
+            li.appendChild(audio);
+            li.appendChild(anchor);
+            list.appendChild(li);
+        }
+	</script>
 	<script>
 		$(function() {
 			$("select").change(function(){

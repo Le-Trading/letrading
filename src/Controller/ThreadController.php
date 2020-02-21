@@ -84,7 +84,7 @@ class ThreadController extends AbstractController
             $notif = new Notif();
             $notif->setSender($this->getUser())
                 ->setReceiver($post->getRespond()->getAuthor())
-                ->setIdPost($repo->find($idRespond))
+                ->setPost($repo->find($idRespond))
                 ->setType('comment')
                 ->setChecked(0);
             $manager->persist($notif);
@@ -111,8 +111,16 @@ class ThreadController extends AbstractController
 
             return $this->redirectToRoute('thread_show', ['slug' => $thread->getSlug(), 'withAlert' => true]);
         }
+
+        $users = $manager->createQuery(
+            'SELECT u.id, u.pseudo, u.firstName, u.lastName 
+                    FROM App\Entity\User u
+                    ')
+            ->getScalarResult();
+
          $response = $this->render('thread/index.html.twig', [
             'thread' => $thread,
+             'users' => $users,
             'form' => $form->createView(),
             'formReply' => $formReply->createView(),
         ]);
@@ -197,7 +205,7 @@ class ThreadController extends AbstractController
         $notif = new Notif();
         $notif->setSender($user)
             ->setReceiver($post->getAuthor())
-            ->setIdPost($post)
+            ->setPost($post)
             ->setType('like')
             ->setChecked(0);
         $manager->persist($notif);

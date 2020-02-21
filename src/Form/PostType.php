@@ -24,11 +24,7 @@ class PostType extends ApplicationType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('content', CKEditorType::class, ['required' => false, 'label' => false, 'config' => array(
-                'toolbar' => "basic",
-                'uiColor' => '#7b8a8b',
-                'height' => '10em'
-            )])
+            ->add('content', CKEditorType::class, ['required' => false, 'label' => false])
             ->add('media', MediaType::class, [
                 'label' => false,
                 'attr' => ['placeholder' => 'Choisissez votre fichier'],
