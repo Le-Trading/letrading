@@ -36,7 +36,9 @@
 						</div>
 						{{form_errors(form)}}
 						<br>
-                        {{form_row(form.isAdmin)}}
+						{% if isGranted.isGranted(app.user, 'ROLE_ADMIN') %}
+                        	{{form_row(form.isAdmin)}}
+						{% endif %}
 						<button class="btn btn-info" type="submit">Envoyer <i class="fa fa-paper-plane"></i></button>
 						{{form_end(form)}}
 					</div>
