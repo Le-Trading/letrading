@@ -10,6 +10,7 @@ use App\Form\PostType;
 use App\Entity\PostVote;
 use App\Form\ResponseType;
 use App\Repository\NotifRepository;
+use App\Repository\UserRepository;
 use App\Service\GrantedService;
 use App\Repository\PostRepository;
 use App\Repository\ThreadRepository;
@@ -31,7 +32,7 @@ class ThreadController extends AbstractController
     /**
      * @Route("/thread/{slug}", name="thread_show")
      */
-    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo, MessageBusInterface $bus, MercureCookieGenerator $cookieGenerator)
+    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo, UserRepository $repoUser, MessageBusInterface $bus, MercureCookieGenerator $cookieGenerator)
     {
         $post = new Post();
 
@@ -59,11 +60,54 @@ class ThreadController extends AbstractController
                     $post->setIsAdmin($isAdmin);
                 }
                 $manager->persist($post);
+
+                //envoi notif a tt le monde si message admin
+                if($post->getIsAdmin() == true){
+                    $forumUsers = $repoUser->findAll();
+                    foreach ($forumUsers as $forumUser) {
+                        $notif = new Notif();
+                        $notif->setSender($this->getUser())
+                            ->setReceiver($forumUser)
+                            ->setPost($post)
+                            ->setType('admin')
+                            ->setChecked(0);
+                        $manager->persist($notif);
+                    }
+                }else{
+                    //envoi notif si mention
+                    $notifContent = explode("mentionId", $post->getContent());
+                    foreach($notifContent as $notifIdUser) {
+                        if(is_numeric($notifIdUser)){
+                            $notif = new Notif();
+                            $notif->setSender($this->getUser())
+                                ->setReceiver($repoUser->find($notifIdUser))
+                                ->setPost($post)
+                                ->setType('comment')
+                                ->setChecked(0);
+                            $manager->persist($notif);
+
+                            //envoi notif mercure
+                            $updateContent = json_encode([
+                                'type' => 'comment',
+                                'fullName' => $post->getAuthor()->getFullName(),
+                                'time' => $post->getCreatedAt(),
+                                'threadName' => $post->getThread()->getSlug()
+                            ]);
+                            $update = new Update("http://monsite.com/ping",
+                                $updateContent,
+                                ["http://monsite.com/user/{$notifIdUser}"]
+                            );
+                            $bus->dispatch($update);
+                        }
+                    }
+                }
+
                 $manager->flush();
                 $this->addFlash(
                     'success',
                     "Votre message a bien été enregistré"
                 );
+
                 return $this->redirectToRoute('thread_show', ['slug' => $thread->getSlug(), 'withAlert' => true]);
             }
         }
