@@ -13,7 +13,7 @@
 			</div>
 			<div class="col-md-10">
 				<p>
-					<a class="float-left" href="#">
+					<a class="float-left" href="{{ path('user_show', {'pseudo': author.pseudo}) }}">
 						<strong {% if isGranted.isGranted(author, 'ROLE_ADMIN') or post.isAdmin %} class="text-danger" {% endif %}>
 							{{author.pseudo}}
 						</strong>
