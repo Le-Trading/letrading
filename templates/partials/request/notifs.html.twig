@@ -15,11 +15,18 @@
                 <li class="list-group-item text-center firstMessage">Vous n'avez pas encore de notification</li>
             {% else %}
                 {% for notif in notifs|sort|reverse %}
-                    <li class="list-group-item text-center firstMessage">
-                        {{ notif.sender.pseudo }} a {% if notif.type=="comment" %}répondu à {% elseif notif.type=="like" %}liké {% endif %}votre post <br><br>
-                        <small style="float:left;">
-                            {% if notif.type=="comment" %}<i class="fa fa-comment"></i>{% elseif notif.type=="like" %}<i class="fa fa-heart"></i>{% endif %} {{ notif.date|date("m/d/Y") }}
-                        </small>
+                    <li class="list-group-item text-center">
+                        {% if notif.type=="admin" %}
+                            <b>Message Important <i class="fas fa-exclamation-triangle"></i></b> <br><br> {{ notif.post.content |raw }}
+                            <small style="float:left;">
+                                <i class="fa fa-comment"></i> {{ notif.date|date("m/d/Y") }}
+                            </small>
+                        {% else %}
+                            {{ notif.sender.pseudo }} a {% if notif.type=="comment" %}répondu à {% elseif notif.type=="like" %}liké {% endif %}votre post <br><br>
+                            <small style="float:left;">
+                                {% if notif.type=="comment" %}<i class="fa fa-comment"></i>{% elseif notif.type=="like" %}<i class="fa fa-heart"></i>{% endif %} {{ notif.date|date("m/d/Y") }}
+                            </small>
+                        {% endif %}
                     </li>
                 {% endfor %}
             {% endif %}
