@@ -72,9 +72,11 @@ class PagesController extends AbstractController
      * @param $checkout_session_id
      * @param StripeClient $stripeClient
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Stripe\Exception\ApiErrorException
      */
     public function successParameter($checkout_session_id, StripeClient $stripeClient)
     {
+
         $stripeClient->handleChangementCardSession($checkout_session_id, $this->getUser());
         return $this->redirectToRoute('manage_souscription');
     }

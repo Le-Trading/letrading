@@ -29,12 +29,12 @@
                         </td>
                         <td>
                             {% if invoice.id %}
-                                {{ invoice.id }}
+                                {{ invoice.number }}
                             {% endif %}
                         </td>
                         <td>
                             {% if invoice.amount_due %}
-                                {{ invoice.amount_due }} €
+                                {{ invoice.amount_due/100 }} €
                             {% endif %}
                         </td>
                         <td>

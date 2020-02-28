@@ -290,7 +290,7 @@ class StripeClient
      */
     public function findPaidInvoices(User $user)
     {
-        $allInvoices = \Stripe\InvoiceItem::all([
+        $allInvoices = \Stripe\Invoice::all([
             'customer' => $user->getStripeCustomerId()
         ]);
         $iterator = $allInvoices->autoPagingIterator();
@@ -300,6 +300,7 @@ class StripeClient
                 $invoices[] = $invoice;
             }
         }
+        dump($invoices);
         return $invoices;
     }
 

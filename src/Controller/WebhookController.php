@@ -94,6 +94,7 @@ class WebhookController extends AbstractController
                 $souscription = $this->findSubscription($stripeSubscriptionId);
                 $stripeClient->fullyCancelSubscription($souscription);
                 break;
+
             case 'invoice.payment_succeeded':
                 $stripeSubscriptionId = $object->subscription;
                 if ($stripeSubscriptionId) {

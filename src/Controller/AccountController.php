@@ -273,8 +273,7 @@ class AccountController extends AbstractController
     public function payments(StripeClient $stripeClient){
         try {
             $invoices = $stripeClient->findPaidInvoices($this->getUser());
-            dump($invoices);
-            exit();
+
         } catch (ApiErrorException $e) {
 
         }
