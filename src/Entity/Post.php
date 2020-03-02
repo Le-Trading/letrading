@@ -44,13 +44,13 @@ class Post
     private $createdAt;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      */
     private $content;
 
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\PostVote", mappedBy="post")
+     * @ORM\OneToMany(targetEntity="App\Entity\PostVote", mappedBy="post", orphanRemoval=true)
      */
     private $postVotes;
 
@@ -66,6 +66,7 @@ class Post
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Post", inversedBy="responses")
+     * @ORM\JoinColumn(name="respond_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $respond;
 
@@ -74,11 +75,47 @@ class Post
      */
     private $responses;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $feeling;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $startPrice;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $stopPrice;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $tp1;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $tp2;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $pair;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Notif", mappedBy="post", orphanRemoval=true)
+     */
+    private $postNotifs;
+
 
     public function __construct()
     {
         $this->postVotes = new ArrayCollection();
         $this->responses = new ArrayCollection();
+        $this->postNotifs = new ArrayCollection();
     }
 
 
@@ -148,7 +185,7 @@ class Post
         return $this->content;
     }
 
-    public function setContent(string $content): self
+    public function setContent(?string $content): self
     {
         $this->content = $content;
 
@@ -273,5 +310,108 @@ class Post
         }
 
         return false;
+    }
+
+    public function getFeeling(): ?string
+    {
+        return $this->feeling;
+    }
+
+    public function setFeeling(?string $feeling): self
+    {
+        $this->feeling = $feeling;
+
+        return $this;
+    }
+
+    public function getStartPrice(): ?float
+    {
+        return $this->startPrice;
+    }
+
+    public function setStartPrice(?float $startPrice): self
+    {
+        $this->startPrice = $startPrice;
+
+        return $this;
+    }
+
+    public function getStopPrice(): ?float
+    {
+        return $this->stopPrice;
+    }
+
+    public function setStopPrice(?float $stopPrice): self
+    {
+        $this->stopPrice = $stopPrice;
+
+        return $this;
+    }
+
+    public function getTp1(): ?float
+    {
+        return $this->tp1;
+    }
+
+    public function setTp1(?float $tp1): self
+    {
+        $this->tp1 = $tp1;
+
+        return $this;
+    }
+
+    public function getTp2(): ?float
+    {
+        return $this->tp2;
+    }
+
+    public function setTp2(?float $tp2): self
+    {
+        $this->tp2 = $tp2;
+
+        return $this;
+    }
+
+    public function getPair(): ?string
+    {
+        return $this->pair;
+    }
+
+    public function setPair(?string $pair): self
+    {
+        $this->pair = $pair;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Notif[]
+     */
+    public function getPostNotifs(): Collection
+    {
+        return $this->postNotifs;
+    }
+
+    public function addPostNotif(Notif $postNotif): self
+    {
+        if (!$this->postNotifs->contains($postNotif)) {
+            $this->postNotifs[] = $postNotif;
+            $postNotif->setPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removePostNotif(Notif $postNotif): self
+    {
+        if ($this->postNotifs->contains($postNotif)) {
+            $this->postNotifs->removeElement($postNotif);
+            // set the owning side to null (unless already changed)
+            if ($postNotif->getPost() === $this) {
+                $postNotif->setPost(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -1,53 +1,124 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+	<link rel="stylesheet" href="/css/stripe.css">
+{% endblock %}
+
 {% block body %}
 	<div class="container">
-		{{ form_start(form, {attr: {id: form.vars.id}}) }}
-		<div class="form-group">
-			<label for="card-element">
-				Credit or Debit Card
-			</label>
-			<div id="card-element" class="form-control"></div>
-			<div id="card-errors" class="help-block" role="alert"></div>
+		<h2 class="text-center">Offre séléctionnée <i class="fas fa-check"></i></h2>
+		<hr>
+		<div class="card mb-4 box-shadow">
+			<div class="card-body">
+				<ul>
+					<li>
+						<h4 class="my-0 font-weight-normal">Offre "{{offer.title}}"</h4>
+					</li>
+					<br>
+					<li>
+						<h4 class="card-title pricing-card-title">
+							Prix de l'offre : {{offer.price}}€ 
+							{% if offer.type == "subscription" %}
+								<small class="text-muted">/ mois</small>
+							{% endif %}
+						</h4>
+					</li>
+					<li>
+						<h4 class="card-title pricing-card-title">
+							Description :
+						</h4>
+						<h5>{{offer.description | raw}}</h5>
+					</li>
+				</ul>
+			</div>
 		</div>
-		{{ form_widget(form.token) }}
-		{{ form_end(form) }}
+		<br>
+		<h2 class="text-center">Choisissez votre moyen de paiement <i class="fas fa-wallet"></i></h2>
+		<hr>
+		<div class="card-body p-5">
+			<ul class="nav bg-light nav-pills rounded nav-fill mb-3" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link active" data-toggle="pill" href="#nav-tab-card">
+					<i class="fa fa-credit-card"></i> Par carte bleue</a>
+				</li>
+				{% if offer.type == "charge" %}
+					<li class="nav-item">
+						<a class="nav-link" data-toggle="pill" href="#nav-tab-card-multiple">
+						<i class="fa fa-money-bill-alt"></i>  3 fois sans frais</a>
+					</li>
+				{% endif %}
+				<li class="nav-item">
+					<a class="nav-link" data-toggle="pill" href="#nav-tab-paypal">
+					<i class="fab fa-paypal"></i>  Paypal</a>
+				</li>
+			</ul>
+
+			<div class="tab-content">
+				<div class="tab-pane fade show active" id="nav-tab-card">
+					{% include('/partials/payment/_cardForm.html.twig') %}
+				</div>
+				{% if offer.type == "charge" %}
+					<div class="tab-pane fade" id="nav-tab-card-multiple">
+						<p>Yoyo</p>
+					</div>
+				{% endif %}
+				<div class="tab-pane fade" id="nav-tab-paypal">
+					<p>Paypal is easiest way to pay online</p>
+					<button type="button" class="btn btn-primary"> <i class="fab fa-paypal"></i> Log in my Paypal </button>
+					<p><strong>Note:</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+					tempor incididunt ut labore et dolore magna aliqua. </p>
+				</div>
+			</div>
+		</div>
 	</div>
+
 {% endblock %}
 
 {% block javascripts %}
 	<script>
-		var form = document.getElementById('{{ form.vars.id }}');
-var errors = document.getElementById('card-errors');
+		<!-- Load Stripe.js on your website. -->
+		<script src="https://js.stripe.com/v3"></script>
 
-var stripe = Stripe('{{ stripe_public_key }}');
-var elements = stripe.elements();
-var card = elements.create('card');
+<!-- Create a button that your customers click to complete their purchase. Customize the styling to suit your branding. -->
+<button
+		style="background-color:#6772E5;color:#FFF;padding:8px 12px;border:0;border-radius:4px;font-size:1em"
+		id="checkout-button-plan_Gi9oeeAXvfHGl1"
+		role="link"
+>
+	Checkout
+</button>
 
-card.mount('#card-element');
-card.addEventListener('change', function (event) {
-if (event.error) {
-errors.textContent = event.error.message;
-form.classList.add('has-error');
-} else {
-errors.textContent = '';
-form.classList.remove('has-error');
-}
-});
+<div id="error-message"></div>
 
-form.addEventListener('submit', function (event) {
-event.preventDefault();
+<script>
+	(function() {
+		var stripe = Stripe('{{ stripe_public_key }}');
 
-stripe.createToken(card).then(function (result) {
-if (result.error) {
-errors.textContent = result.error.message;
-form.classList.add('has-error');
-} else {
-document.getElementById('{{ form.children.token.vars.id }}').setAttribute('value', result.token.id);
-form.submit();
-}
-});
-});
+		var checkoutButton = document.getElementById('checkout-button-plan_Gi9oeeAXvfHGl1');
+		checkoutButton.addEventListener('click', function () {
+			// When the customer clicks on the button, redirect
+			// them to Checkout.
+			stripe.redirectToCheckout({
+				items: [{plan: '{{ offer.plan }}', quantity: 1}],
+
+				// Do not rely on the redirect to the successUrl for fulfilling
+				// purchases, customers may not always reach the success_url after
+				// a successful payment.
+				// Instead use one of the strategies described in
+				// https://stripe.com/docs/payments/checkout/fulfillment
+				successUrl: '{{ path('homepage', {'session_id' : {{ CHECKOUT_SESSION_ID}}} ) }}',
+				cancelUrl: 'http://localhost:8000/login',
+			})
+					.then(function (result) {
+						if (result.error) {
+							// If `redirectToCheckout` fails due to a browser or network
+							// error, display the localized error message to your customer.
+							var displayError = document.getElementById('error-message');
+							displayError.textContent = result.error.message;
+						}
+					});
+		});
+	})();
+</script>
 	</script>
-
 {% endblock %}

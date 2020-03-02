@@ -7,30 +7,59 @@
 {% block body %}
 	<div class="container">
 		<h1 class="h4 text-center mb-5">Fil d'actualité du forum
-			{{thread.title}}</h1>
+			<b>{{thread.title}}</b><hr></h1>
+		{% if app.user.hasActiveSubscription or app.user.payments | length > 0 %}
+
 		<div class="row">
-			<div class="col-6 mb-5">
-				<div class="row mb-5">
-					<div class="col-12 rounded bg-light p-3">
-						<div class="mb-2">Postez votre message</div>
+			<div class="col-sm-7 mb-5 col-xs-12">
+				<button class="btn btn-info col-12 mb-3" type="button" data-toggle="collapse" data-target="#postNewMessage" aria-expanded="false" aria-controls="postNewMessage">
+					<h4 class="p-2"><i class="fas fa-arrow-right" style="vertical-align: middle"></i>  Postez votre message  <i class="fas fa-arrow-left" style="vertical-align: middle"></i></h4>
+				</button>
+				<div class="collapse row mb-5" id="postNewMessage">
+					<div class="col-12 rounded p-3" style="background: rgba(255, 255, 255, 0.85);border: 1px solid #ddd;">
 						{{form_start(form, { 'attr' : { 'id' : 'form-add-forum' }}
 						)}}
 						{{form_row(form.content)}}
 						{{form_row(form.media)}}
+						<button class="btn btn-dark mb-2" type="button" data-toggle="collapse" data-target="#paramTrade" aria-expanded="false" aria-controls="paramTrade">
+							Paramétrer un trade <i class="fa fa-cog"></i>
+						</button>
+						<div class="collapse" id="paramTrade">
+							{{ form_row(form.feeling) }}
+							<div class="triggerFeeling">
+								{{form_row(form.startPrice)}}
+								{{form_row(form.stopPrice)}}
+								{{form_row(form.tp1)}}
+								{{form_row(form.tp2)}}
+								{{form_row(form.pair)}}
+							</div>
+						</div>
 						{{form_errors(form)}}
-						<button class="btn btn-primary mt-1" type="submit">Ajouter son message</button>
+						<br>
+						{% if isGranted.isGranted(app.user, 'ROLE_ADMIN') %}
+                        	{{form_row(form.isAdmin)}}
+						{% endif %}
+
+						{#commande vocal#}
+						<main>
+							<div class="controls">
+								<button type="button" id="mic">Get Microphone</button>
+								<button type="button" id="record" hidden>Record</button>
+							</div>
+							<ul id="recordings"></ul>
+						</main>
+
+						<button class="btn btn-info" type="submit">Envoyer <i class="fa fa-paper-plane"></i></button>
 						{{form_end(form)}}
 					</div>
-					<div id="form_response" class="hidden-form container p-3">
-						<hr class="bg-light">
-						<p class="text-center text-dark answer-form">Répondre à un message</p>
-
+					<div id="form_response" class="hidden-form container">
+						<hr>
 						{{form_start(formReply)}}
 						{{form_row(formReply.content)}}
 
 						{{form_row(formReply.media)}}
 						{{form_row(formReply.respond)}}
-						<button class="btn btn-dark mt-1" type="submit">Répondre</button>
+						<button class="btn btn-dark mb-2" type="submit">Répondre <i class="fas fa-paper-plane"></i></button>
 						{{form_end(formReply)}}
 
 					</div>
@@ -39,66 +68,210 @@
 				<div class="row">
 					<div class="col-12">
 						{% set posts = thread.posts %}
-						{% for post in posts %}
+						{% for post in posts|sort|reverse %}
 							{% if not post.isAdmin and post.respond == null %}
-
 								{% include 'post/_affichagePost.html.twig' with {'post' : post} %}
 							{% endif %}
-
 						{% endfor %}
 					</div>
 
 				</div>
 			</div>
-			<div class="col-6 mb-5">
-				<h2 class="h4 text-center mb-5">Messages administrateur</h2>
-				<div class="row">
-					<div class="col-12">
-						{% set posts = thread.posts %}
-						{% for post in posts %}
-
-							{% if post.isAdmin %}
-								{% include 'post/_affichagePost.html.twig' with {'post' : post, 'thread' : thread} %}
+			<div class="col-sm-5 mb-5 col-xs-12">
+				<div class="card">
+					<h2 class="h4 text-center mb-2 card-header bg-primary text-white">Messages administrateur</h2>
+					{% set posts = thread.posts %}
+					{% set hasAdminPost = false %}
+					{% for post in posts %}
+						{% if post.isAdmin %}
+							{% set hasAdminPost = true %}
+							{% include 'post/_affichagePost.html.twig' with {'post' : post, 'thread' : thread} %}
+						{% else %}
+							{% if loop.last and hasAdminPost == false %}
+								<div class="card-body text-center">Aucun message administrateur pour ce forum</div>
 							{% endif %}
-						{% endfor %}
-					</div>
-
+						{% endif %}
+					{% endfor %}
 				</div>
 			</div>
 		</div>
+		{% else %}
+			<div class="alert alert-danger">
+				Vous n'avez pas d'abonnement
+			</div>
+
+		{% endif %}
 	</div>
 {% endblock %}
 {% block javascripts %}
-	<script src="https://unpkg.com/axios@0.19.2/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/axios@0.19.2/dist/axios.min.js"></script>
+	<script>
+		var users = {{ users|json_encode|raw }};
+		CKEDITOR.instances.post_content.destroy();
+		CKEDITOR.replace('post_content', {
+			plugins: 'mentions,emoji,undo,link,wysiwygarea,toolbar',
+			contentsCss: [
+				'http://cdn.ckeditor.com/4.13.1/full-all/contents.css'
+			],
+			height: 150,
+			toolbar: [{
+				name: 'document',
+				items: ['Undo', 'Redo']
+			},
+				{
+					name: 'basicstyles',
+					items: ['Bold', 'Italic', 'Strike']
+				},
+				{
+					name: 'links',
+					items: ['EmojiPanel', 'Link', 'Unlink']
+				}
+			],
+			mentions: [{
+				feed: dataFeed,
+				itemTemplate: '<li data-id="{id}">' +
+						'<strong class="username">{pseudo}</strong>' +
+						'<span class="fullname"> {firstName} {lastName}</span>' +
+						'</li>',
+				outputTemplate: '<a href="/user/{pseudo}" id="mentionId{id}mentionId">@{pseudo}</a><span>&nbsp;</span>',
+				minChars: 0
+			}
+			]
+		});
+
+		function dataFeed(opts, callback) {
+			var matchProperty = 'pseudo',
+					data = users.filter(function(item) {
+						return item[matchProperty].indexOf(opts.query.toLowerCase()) == 0;
+					});
+
+			data = data.sort(function(a, b) {
+				return a[matchProperty].localeCompare(b[matchProperty], undefined, {
+					sensitivity: 'accent'
+				});
+			});
+
+			callback(data);
+		}
+	</script>
+	<script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const getMic = document.getElementById('mic');
+            const recordButton = document.getElementById('record');
+            const list = document.getElementById('recordings');
+            if ('MediaRecorder' in window) {
+                getMic.addEventListener('click', async () => {
+                    getMic.setAttribute('hidden', 'hidden');
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({
+                            audio: true,
+                            video: false
+                        });
+                        const mimeType = 'audio/webm';
+                        let chunks = [];
+                        const recorder = new MediaRecorder(stream, { type: mimeType });
+                        recorder.addEventListener('dataavailable', event => {
+                            if (typeof event.data === 'undefined') return;
+                            if (event.data.size === 0) return;
+                            chunks.push(event.data);
+                        });
+                        recorder.addEventListener('stop', () => {
+                            const recording = new Blob(chunks, {
+                                type: mimeType
+                            });
+                            renderRecording(recording, list);
+                            chunks = [];
+                        });
+                        recordButton.removeAttribute('hidden');
+                        recordButton.addEventListener('click', () => {
+                            if (recorder.state === 'inactive') {
+                                recorder.start();
+                                recordButton.innerText = 'Stop';
+                            } else {
+                                recorder.stop();
+                                recordButton.innerText = 'Record';
+                            }
+                        });
+                    } catch {
+                        renderError(
+                            'You denied access to the microphone so this demo will not work.'
+                        );
+                    }
+                });
+            } else {
+                renderError("Sorry, your browser doesn't support the MediaRecorder API, so this demo will not work.");
+            }
+        });
+        function renderError(message) {
+            const main = document.querySelector('main');
+            main.innerHTML = `<div class="error"><p>${message}</p></div>`;
+        }
+        function renderRecording(blob, list) {
+            const blobUrl = URL.createObjectURL(blob);
+            const li = document.createElement('li');
+            const audio = document.createElement('audio');
+            const anchor = document.createElement('a');
+            anchor.setAttribute('href', blobUrl);
+            const now = new Date();
+            anchor.setAttribute(
+                'download',
+                `recording-${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDay().toString().padStart(2, '0')}--${now.getHours().toString().padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}-${now.getSeconds().toString().padStart(2, '0')}.webm`
+            );
+            anchor.innerText = 'Download';
+            audio.setAttribute('src', blobUrl);
+            audio.setAttribute('controls', 'controls');
+            li.appendChild(audio);
+            li.appendChild(anchor);
+            list.appendChild(li);
+        }
+	</script>
+	<script>
+		$(function() {
+			$("select").change(function(){
+				$(this).find("option:selected").each(function(){
+					var optionValue = $(this).attr("value");
+					if(optionValue){
+						$(".triggerFeeling").show();
+					} else{
+						$(".triggerFeeling").hide();
+					}
+				});
+			}).change();
+		});
+	</script>
+
 	<script>
 		function handleAnswering(id) {
-CKEDITOR.instances.response_content.destroy();
+			CKEDITOR.instances.response_content.destroy();
 
-var id = $(id).data('response');
-$('#post' + id).after().append($('#form_response'));
-$('#form_response').removeClass('hidden-form');
-$('#response_respond').val(id);
-CKEDITOR.replace('response_content', {
-"toolbar": [
-[
-"Bold", "Italic"
-],
-[
-"NumberedList",
-"BulletedList",
-"-",
-"Outdent",
-"Indent"
-],
-[
-"Link", "Unlink"
-],
-["About"]
-],
-"language": "fr"
-});
-
-}
+            var pseudo = $(id).data('target').substring(1);
+			var id = $(id).data('response');
+			$('#post' + id).after().append($('#form_response'));
+			$('#form_response').removeClass('hidden-form');
+			$('#response_respond').val(id);
+			CKEDITOR.replace('response_content', {
+				"toolbar": [
+				[
+				"Bold", "Italic"
+				],
+				[
+				"NumberedList",
+				"BulletedList",
+				"-",
+				"Outdent",
+				"Indent"
+				],
+				[
+				"Link", "Unlink"
+				],
+				["About"]
+				],
+				"language": "fr",
+                'uiColor' : '#7b8a8b',
+                'height' : '10em'
+			});
+            CKEDITOR.instances.response_content.setData("@"+pseudo);
+        }
 	</script>
 	<script type="text/javascript">
 		function onClickBtnVote(event) {

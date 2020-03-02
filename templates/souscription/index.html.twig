@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des abonnements{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="/css/stripe.css">
+{% endblock %}
+{% block body %}
+    {% set souscription = user.souscription %}
+    <div class="container">
+        <h1 class="h3 text-center mb-5 mt-5">Gestion de vos abonnements</h1>
+        <div class="alert alert-primary">
+            {% if souscription | length > 0 %}
+                Vous avez actuellement <strong>{{ souscription | length }} abonnement</strong>
+                {% if souscription.isActive %}
+                    en cours.
+                {% else %}
+                    arrêté.
+                {% endif %}
+            {% else %}
+                Vous n'avez aucun abonnement associé à votre compte.
+            {% endif %}
+        </div>
+        {% if souscription | length > 0 %}
+            <table class="table table-hover align-items-center">
+                <thead class="table-secondary">
+                <tr>
+                    <td class="ml-2">
+                        Offre
+                    </td>
+                    <td>
+                        Date fin
+                    </td>
+                    <td>
+                        Prix
+                    </td>
+                    <td>
+                        Statut
+                    </td>
+                    <td class="text-center">
+                        Gérer l'abonnement
+                    </td>
+                </tr>
+                </thead>
+                <tbody class="bg-light">
+
+                <tr>
+                    <td>
+                        <a href="{{ path('offers_show', {'title' : souscription.offer.title}) }}"
+                           class="btn btn-link">{{ souscription.offer.title }}</a>
+                    </td>
+                    <td>
+                        {{ user.souscription.endsAt|date('d/m/Y') }}
+                    </td>
+                    <td>
+                        {{ souscription.offer.price }} €
+                    </td>
+                    <td>
+                        {% if souscription.cancelled %}
+                            <span class="badge badge-danger">Arrêté</span>
+                        {% else %}
+                            <span class="badge badge-success">En cours</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if user.hasActiveSubscription %}
+                            {% if user.souscription.isCancelled %}
+                                <a href="{{ path('reactivate_souscription') }}" class="btn btn-success">
+                                    <i class="fas fa-sync"></i> Reprendre l'abonnement
+                                </a>
+                            {% else %}
+                                <a href="{{ path('cancel_souscription') }}" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Arrêter
+                                </a>
+                            {% endif %}
+
+                        {% endif %}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+    {% if user.hasActiveNonCancelledSubscription %}
+
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <th><i class="fas fa-clock"></i> Prochain paiement le:</th>
+                            <td>
+                                {{ user.souscription.billingPeriodEndsAt|date('d/m/Y') }}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-6 text-right">
+                    <button id="update-card-customer"
+                            class="btn btn-info pull-right js-open-credit-card-form">
+                        Mettre à jour la carte
+                    </button>
+                    <div id="error-message"></div>
+
+                </div>
+            </div>
+        </div>
+
+
+    {% endif %}
+{% endblock %}
+{% block javascripts %}
+    {% if user.hasActiveNonCancelledSubscription %}
+
+    <script>
+        (function () {
+            var stripe = Stripe('{{ stripe_public_key }}');
+
+            var checkoutButton = document.getElementById('update-card-customer');
+            checkoutButton.addEventListener('click', function () {
+                // When the customer clicks on the button, redirect
+                // them to Checkout.
+                stripe.redirectToCheckout({
+                    sessionId: '{{ CHECKOUT_SESSION_ID }}'
+                })
+                    .then(function (result) {
+                        if (result.error) {
+                            // If `redirectToCheckout` fails due to a browser or network
+                            // error, display the localized error message to your customer.
+                            var displayError = document.getElementById('error-message');
+                            displayError.textContent = result.error.message;
+                        }
+                    });
+            });
+        })();
+    </script>
+    {% endif %}
+
+{% endblock %}

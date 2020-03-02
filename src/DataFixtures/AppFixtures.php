@@ -6,6 +6,7 @@ use Faker\Factory;
 use App\Entity\Post;
 use App\Entity\Role;
 use App\Entity\User;
+use App\Entity\Offers;
 use App\Entity\Thread;
 use App\Entity\PostVote;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -46,11 +47,6 @@ class AppFixtures extends Fixture
                 $user->addRole($superAdminRole);
             $genre = $faker->randomElement($genres);
 
-            $picture = 'https://randomuser.me/portraits/';
-            $pictureId = $faker->numberBetween(1, 99) . '.jpg';
-
-            if ($genre == "male") $picture = $picture . 'men/' . $pictureId;
-            else $picture = $picture . 'women/' . $pictureId;
 
             $hash = $this->encoder->encodePassword($user, 'password');
 
@@ -58,20 +54,68 @@ class AppFixtures extends Fixture
                 ->setLastName($faker->lastname)
                 ->setPseudo($faker->userName)
                 ->setEmail($faker->email)
-                ->setHash($hash)
-                ->setPicture($picture);
+                ->setHash($hash);
 
             $manager->persist($user);
             $users[] = $user;
         }
+
+        //creations users fixes
+        $usersMail = [
+            'piquardanthony@gmail.com',
+            'tebboune.yacine83@gmail.com'
+        ];
+        for ($i = 0; $i <= 1; $i++) {
+            $user = new User();
+            $hash = $this->encoder->encodePassword($user, 'password');
+            $user->addRole($superAdminRole)
+                ->setFirstName($faker->firstname('male'))
+                ->setLastName($faker->lastname)
+                ->setPseudo($faker->userName)
+                ->setEmail($usersMail[$i])
+                ->setHash($hash);
+            $manager->persist($user);
+        }
         // FIN DE CREATION DES UTILISATEURS
 
+        // CREATION DES OFFRES
+        $descriptionOffer = '<p>' . join('</p><p>', $faker->paragraphs(mt_rand(1, 2))) . '</p>';
+        // offre 1
+        $offers = new Offers();
+        $offers->setTitle('classic')
+                ->setDescription($descriptionOffer)
+                ->setPrice(50)
+                ->setType('subscription')
+                ->setPlan('premium');
+        $manager->persist($offers);
+
+        //offre 2
+        $offers = new Offers();
+        $offers->setTitle('premium')
+                ->setDescription($descriptionOffer)
+                ->setPrice(3000)
+                ->setType('charge')
+                ->setPlan('charge');
+        $manager->persist($offers);
+
+        // FIN CREATION DES OFFRES
+
         /********** CREATION DE THREADS  ***********/
+        $threadSlug = [
+            'indices',
+            'forex',
+            'action'
+        ];
+        $threadTitle = [
+            'Indice boursier',
+            'Forex',
+            'Action'
+        ];
         for ($i = 0; $i <= 2; $i++) {
             $thread = new Thread();
 
-            $thread->setTitle($faker->sentence());
-
+            $thread->setSlug($threadSlug[$i])
+                    ->setTitle($threadTitle[$i]);
 
             /****** CREATION DE POSTS *************/
             for ($j = 0; $j <= mt_rand(0, 15); $j++) {
@@ -93,7 +137,6 @@ class AppFixtures extends Fixture
             }
             $manager->persist($thread);
         }
-
         $manager->flush();
     }
 }

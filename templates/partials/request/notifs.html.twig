@@ -1,0 +1,99 @@
+{% block stylesheet %}
+    <link rel="stylesheet" href="/css/notifPannel.css">
+{% endblock %}
+<div class="header">
+    <a href="#" class="notification-trigger">
+        <i class="far fa-bell fa-lg"></i>
+        <div class="notifTrigger"></div>
+    </a>
+</div>
+<div class="panel">
+    <div class="title"><b>Vos notifications</b></div>
+    <ul class="notification-bar">
+        <div class="card">
+            {% if notifs is empty %}
+                <li class="list-group-item text-center firstMessage">Vous n'avez pas encore de notification</li>
+            {% else %}
+                {% for notif in notifs|sort|reverse %}
+                    <li class="list-group-item text-center">
+                        {% if notif.type=="admin" %}
+                            <b>Message Important <i class="fas fa-exclamation-triangle"></i></b> <br><br> {{ notif.post.content |raw }}
+                            <small style="float:left;">
+                                <i class="fa fa-comment"></i> {{ notif.date|date("m/d/Y") }}
+                            </small>
+                        {% else %}
+                            {{ notif.sender.pseudo }} a {% if notif.type=="comment" %}répondu à {% elseif notif.type=="like" %}liké {% endif %}votre post <br><br>
+                            <small style="float:left;">
+                                {% if notif.type=="comment" %}<i class="fa fa-comment"></i>{% elseif notif.type=="like" %}<i class="fa fa-heart"></i>{% endif %} {{ notif.date|date("m/d/Y") }}
+                            </small>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </ul>
+</div>
+{% block javascripts %}
+    <script src="/js/jquery.min.js"></script>
+    <script>
+        //mercure instant notif script
+        var nbNotif = 0;
+        var compteur = 1;
+        const url = new URL('http://127.0.0.1:3000/hub');
+        url.searchParams.append('topic', 'http://monsite.com/ping');
+        const eventSource = new EventSource(url, {withCredentials: true});
+        eventSource.onmessage = e => {
+            nbNotif+=compteur;
+            const data = JSON.parse(e.data);
+            let message = data.fullName;
+            const time = new Date(data.time.date);
+            const link = "/thread/"+data.threadName+"#post"+data.idPost;
+            console.log(data);
+            if(data.type == "like"){
+                message += " a liké votre post <br><br> <small style='float:left;'><i class='fa fa-heart'></i> "+data.time+"</small>";
+            }else if(data.type == "comment"){
+                message += " a répondu à votre post <br><br> <small style='float:left;'><i class='fa fa-comment'></i> "+time + "</small>";
+            }
+            $('.firstMessage').remove();
+            $('.notification-bar .card').append('<li class="list-group-item text-center"><a href='+link+'>'+message+'</a></li>');
+            $('.notifTrigger').addClass('notification-num').html(nbNotif);
+        }
+
+        $('.notification-trigger').click(function() {
+            //remove notif count on click
+            nbNotif = 0;
+            $('.notifTrigger').removeClass('notification-num').html('');
+            $('.panel').toggleClass('visible');
+
+            //mettre notifs en lu
+            {% for notif in notifs %}
+                if(!"{{ notif.checked }}"){
+                    var idNotif = "{{ notif.id }}";
+                    $.ajax({
+                        method: "POST",
+                        url: "{{ path('notifs_update') }}",
+                        data: {id: idNotif},
+                        success: function(reponse){
+                            console.log(reponse);
+                        }
+                    });
+                }
+            {% endfor %}
+        });
+
+        //hide notif pannel when clicking outside
+        $(document).mouseup(function(e) {
+            var container = $(".panel");
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+                $('.panel').removeClass('visible');
+            }
+        });
+
+        //display notifs number unread
+        $(document).ready(function () {
+            if({{ notifNonLu }} !== 0){
+                $('.notifTrigger').addClass('notification-num').html({{ notifNonLu }});
+            }
+        });
+    </script>
+{% endblock %}

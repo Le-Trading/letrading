@@ -2,29 +2,37 @@
 
 namespace App\Controller;
 
+use App\Entity\Notif;
 use App\Entity\Post;
 use App\Entity\Thread;
+use App\Entity\User;
 use App\Form\PostType;
 use App\Entity\PostVote;
 use App\Form\ResponseType;
+use App\Repository\NotifRepository;
+use App\Repository\UserRepository;
 use App\Service\GrantedService;
 use App\Repository\PostRepository;
 use App\Repository\ThreadRepository;
 use App\Repository\PostVoteRepository;
+use App\Service\MercureCookieGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mercure\Update;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class ThreadController extends AbstractController
 {
     /**
      * @Route("/thread/{slug}", name="thread_show")
      */
-    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo)
+    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo, UserRepository $repoUser, MessageBusInterface $bus, MercureCookieGenerator $cookieGenerator)
     {
         $post = new Post();
 
@@ -33,26 +41,75 @@ class ThreadController extends AbstractController
         $form = $this->createForm(PostType::class, $post, ['isAdmin' => $grantedService->isGranted($this->getUser(), 'ROLE_ADMIN')]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-
-            $post->setAuthor($this->getUser())
-                ->setThread($thread)
-                ->setContent($post->getContent());
-            if ($grantedService->isGranted($this->getUser(), 'ROLE_ADMIN')) {
-                if (empty($post->getIsAdmin())) {
-                    $isAdmin = false;
-                } else {
-                    $isAdmin = true;
+            //verification si contenu existe
+            if($post->getContent() == null && $post->getMedia() == null && $post->getFeeling()== null){
+                $this->addFlash(
+                    'danger',
+                    "Votre message ne possède pas de contenu"
+                );
+            }else{
+                $post->setAuthor($this->getUser())
+                    ->setThread($thread)
+                    ->setContent($post->getContent());
+                if ($grantedService->isGranted($this->getUser(), 'ROLE_ADMIN')) {
+                    if (empty($post->getIsAdmin())) {
+                        $isAdmin = false;
+                    } else {
+                        $isAdmin = true;
+                    }
+                    $post->setIsAdmin($isAdmin);
                 }
-                $post->setIsAdmin($isAdmin);
-            }
-            $manager->persist($post);
-            $manager->flush();
-            $this->addFlash(
-                'success',
-                "Votre message a bien été enregistré"
-            );
+                $manager->persist($post);
 
-            return $this->redirectToRoute('thread_show', ['slug' => $thread->getSlug(), 'withAlert' => true]);
+                //envoi notif a tt le monde si message admin
+                if($post->getIsAdmin() == true){
+                    $forumUsers = $repoUser->findAll();
+                    foreach ($forumUsers as $forumUser) {
+                        $notif = new Notif();
+                        $notif->setSender($this->getUser())
+                            ->setReceiver($forumUser)
+                            ->setPost($post)
+                            ->setType('admin')
+                            ->setChecked(0);
+                        $manager->persist($notif);
+                    }
+                }else{
+                    //envoi notif si mention
+                    $notifContent = explode("mentionId", $post->getContent());
+                    foreach($notifContent as $notifIdUser) {
+                        if(is_numeric($notifIdUser)){
+                            $notif = new Notif();
+                            $notif->setSender($this->getUser())
+                                ->setReceiver($repoUser->find($notifIdUser))
+                                ->setPost($post)
+                                ->setType('comment')
+                                ->setChecked(0);
+                            $manager->persist($notif);
+
+                            //envoi notif mercure
+                            $updateContent = json_encode([
+                                'type' => 'comment',
+                                'fullName' => $post->getAuthor()->getFullName(),
+                                'time' => $post->getCreatedAt(),
+                                'threadName' => $post->getThread()->getSlug()
+                            ]);
+                            $update = new Update("http://monsite.com/ping",
+                                $updateContent,
+                                ["http://monsite.com/user/{$notifIdUser}"]
+                            );
+                            $bus->dispatch($update);
+                        }
+                    }
+                }
+
+                $manager->flush();
+                $this->addFlash(
+                    'success',
+                    "Votre message a bien été enregistré"
+                );
+
+                return $this->redirectToRoute('thread_show', ['slug' => $thread->getSlug(), 'withAlert' => true]);
+            }
         }
 
         /**************** FORMULAIRE POUR UNE REPONSE A UN POST *********************/
@@ -66,20 +123,53 @@ class ThreadController extends AbstractController
                 ->setContent($post->getContent());
             $post->setRespond($repo->find($idRespond));
             $manager->persist($post);
+
+            //envoi notif bdd
+            $notif = new Notif();
+            $notif->setSender($this->getUser())
+                ->setReceiver($post->getRespond()->getAuthor())
+                ->setPost($repo->find($idRespond))
+                ->setType('comment')
+                ->setChecked(0);
+            $manager->persist($notif);
+
             $manager->flush();
             $this->addFlash(
                 'success',
                 "Votre message a bien été enregistré"
             );
 
+            //envoi notif mercure
+            $updateContent = json_encode([
+                'type' => 'comment',
+                'fullName' => $post->getAuthor()->getFullName(),
+                'time' => $post->getCreatedAt(),
+                'threadName' => $post->getThread()->getSlug(),
+                'idPost' => $post->getRespond()->getId()
+            ]);
+            $update = new Update("http://monsite.com/ping",
+                $updateContent,
+                ["http://monsite.com/user/{$post->getRespond()->getAuthor()->getId()}"]
+            );
+            $bus->dispatch($update);
+
             return $this->redirectToRoute('thread_show', ['slug' => $thread->getSlug(), 'withAlert' => true]);
         }
-        return $this->render('thread/index.html.twig', [
+
+        $users = $manager->createQuery(
+            'SELECT u.id, u.pseudo, u.firstName, u.lastName 
+                    FROM App\Entity\User u
+                    ')
+            ->getScalarResult();
+
+         $response = $this->render('thread/index.html.twig', [
             'thread' => $thread,
+             'users' => $users,
             'form' => $form->createView(),
             'formReply' => $formReply->createView(),
-
         ]);
+        $response->headers->set('set-cookie', $cookieGenerator->generate($this->getUser()));
+        return $response;
     }
 
     /**
@@ -123,7 +213,7 @@ class ThreadController extends AbstractController
      * @param PostVoteRepository $voteRepo
      * @return Response
      */
-    public function vote(Post $post, EntityManagerInterface $manager, PostVoteRepository $voteRepo): Response
+    public function vote(Post $post, EntityManagerInterface $manager, PostVoteRepository $voteRepo, NotifRepository $notifRepo, MessageBusInterface $bus): Response
     {
         $user = $this->getUser();
         if (!$user) return $this->json([
@@ -131,12 +221,22 @@ class ThreadController extends AbstractController
             'message' => 'Unauthorized'
         ], 403);
 
-        if ($post->isLikedByUser($user)) {
+        if ($post->isLikedByUser($user)){
             $vote = $voteRepo->findOneBy([
                 'post' => $post,
                 'user' => $user
             ]);
             $manager->remove($vote);
+
+            //suppression notif
+            $notif = $notifRepo->findOneBy([
+                'sender' => $user,
+                'receiver' => $post->getAuthor(),
+                'type' => 'like',
+                'post' => $post
+            ]);
+            $manager->remove($notif);
+
             $manager->flush();
             return $this->json(['code' => 200, 'message' => 'Like supprimé', 'votes' => $voteRepo->count(['post' => $post])], 200);
         }
@@ -144,8 +244,31 @@ class ThreadController extends AbstractController
         $vote->setPost($post)
             ->setUser($user);
         $manager->persist($vote);
+
+        //envoi notif bdd
+        $notif = new Notif();
+        $notif->setSender($user)
+            ->setReceiver($post->getAuthor())
+            ->setPost($post)
+            ->setType('like')
+            ->setChecked(0);
+        $manager->persist($notif);
+
         $manager->flush();
 
+        //envoi notif mercure
+        $updateContent = json_encode([
+            'type' => 'like',
+            'fullName' => $user->getFullName(),
+            'time' => 'Maintenant',
+            'threadName' => $post->getThread()->getSlug(),
+            'idPost' => $post->getId()
+        ]);
+        $update = new Update("http://monsite.com/ping",
+            $updateContent,
+            ["http://monsite.com/user/{$post->getAuthor()->getId()}"]
+        );
+        $bus->dispatch($update);
 
         return $this->json(['code' => 200, 'message' => 'Liké', 'votes' => $voteRepo->count(['post' => $post])], 200);
     }

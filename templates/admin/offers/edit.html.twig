@@ -1,0 +1,33 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Admin Modification Offre{% endblock %}
+
+{% block body %}
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0 text-dark">Modification de l'offre {{ offer.title }}</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}">Accueil</a></li>
+                            <li class="breadcrumb-item"><a href="{{ path('admin_offer') }}">Offres</a></li>
+                            <li class="breadcrumb-item active">Modification</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container-fluid">
+                {{ form_start(form) }}
+
+                {{ form_widget(form) }}
+                <button type="submit" class="btn btn-primary">Enregistrer les modifications <i class="fas fa-check"></i></button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

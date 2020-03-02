@@ -1,24 +1,30 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-	<a class="navbar-brand" href="{{path('homepage')}}">Le Trading</a>
+	<a href="{{ path('homepage') }}"><img src="\images\logo-letrading.png"></a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
 	</button>
 	<div class="collapse navbar-collapse" id="navbarColor01">
 		<ul class="navbar-nav mr-auto">
 			<li class="nav-item">
-				<a class="nav-link" href="{{path('homepage')}}">Accueil</a>
+				<a class="nav-link" href="{{ path('homepage') }}">Accueil</a>
 			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="#">Discussions</a>
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Discussions</a>
+				<ul class="dropdown-menu dropdown-menu-center">
+					{{ render(controller(
+                            'App\\Controller\\PagesController::getThreads'
+                        ))
+                    }}
+				</ul>
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" href="#">Live</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="#">Historiques</a>
+				<a class="nav-link" href="{{ path('historic_index') }}">Historique</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="{{path('offers_index')}}">Offres</a>
+				<a class="nav-link" href="{{ path('offers_index') }}">Offres</a>
 			</li>
 			<li class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle" href="#">Divers</a>
@@ -29,42 +35,61 @@
 					<a href="#" class="dropdown-item">Parrainage</a>
 					<a href="#" class="dropdown-item">Affiliation</a>
 					<div class="dropdown-divider"></div>
-					<a href="{{path('pages_contact')}}" class="dropdown-item">Contactez nous</a>
+					<a href="{{ path('pages_contact') }}" class="dropdown-item">Contactez nous</a>
 				</div>
 			</li>
 		</ul>
 		<ul class="navbar-nav ml-auto">
 			{% if app.user %}
+                {{ render(controller(
+                    'App\\Controller\\PagesController::getNotifs'
+                	))
+                }}
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#">
-						<img src="{{app.user.picture}}" class="avatar avatar-mini" alt="{{app.user.fullName}}">
-						{{app.user.fullName}}
+						{% if app.user.media %}
+							<img src="{{ vich_uploader_asset(app.user.media, 'imageFile', 'App\\Entity\\Media') }}" class="avatar avatar-mini" alt="{{ app.user.fullName }}">
+							{{ app.user.fullName }}
+						{% else %}
+							<img src="{{ asset('images/image-user.png') }}" alt="Avatar de {{ app.user.pseudo }}" class="avatar avatar-mini"/>
+							{{ app.user.fullName }}
+						{% endif %}
 					</a>
+
 					<div class="dropdown-menu dropdown-menu-right">
-						<a href="{{path('account_index')}}" class="dropdown-item">Mon compte</a>
-						<a href="#" class="dropdown-item">Mes abonnements</a>
+						<a href="{{ path('account_index') }}" class="dropdown-item">Mon compte</a>
+						<a href="{{ path('manage_souscription') }}" class="dropdown-item">Mes abonnements</a>
+						<a href="{{ path('account_payments') }}" class="dropdown-item">Mes paiements</a>
 						<div class="dropdown-divider"></div>
-						<a href="{{path('account_logout')}}" class="dropdown-item">Déconnexion</a>
+						<a href="{{ path('account_logout') }}" class="dropdown-item">Déconnexion</a>
 					</div>
 				</li>
+                {% if is_granted('ROLE_ADMIN') %}
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('admin_dashboard') }}" target="_blank"><i class="fas fa-user-cog"></i> Administration</a>
+					</li>
+                {% endif %}
 			{% else %}
 				<li class="nav-item">
-					<a class="nav-link" href="{{path('account_register')}}">Inscription</a>
+					<a class="nav-link" href="{{ path('account_register') }}">Inscription</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="{{path('account_login')}}">Connexion</a>
+					<a class="nav-link" href="{{ path('account_login') }}">Connexion</a>
 				</li>
 			{% endif %}
 		</ul>
 	</div>
 </nav>
-
 {% for label, messages in app.flashes %}
 	<div class="container">
-		<div class="alert alert-{{label}}">
+		<div class="alert alert-{{ label }}">
 			{% for message in messages %}
-				<p>{{message | raw}}</p>
+				<p>{{ message | raw }}</p>
 			{% endfor %}
 		</div>
 	</div>
 {% endfor %}
+
+{% block javascripts %}
+
+{% endblock %}

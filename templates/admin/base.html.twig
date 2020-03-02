@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Le Trading Admin -
+        {% block title %}Bienvenue
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css" integrity="sha384-REHJTs1r2ErKBuJB0fCK99gCYsVjwxHrSU0N7I1zl9vZbggVJXRMsv/sLlOAGb4M" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/admin/adminlte.min.css">
+    <link rel="stylesheet" href="/css/app.css">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+<div class="wrapper">
+    {% include 'admin/partials/header.html.twig' %}
+    {% include 'admin/partials/sidebar.html.twig' %}
+    {% block body %}{% endblock %}
+    {% include 'admin/partials/footer.html.twig' %}
+</div>
+<script src="/js/admin/jquery.min.js"></script>
+<script src="/js/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/admin/adminlte.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+
+        var url = window.location;
+
+        $('ul.nav-sidebar a').filter(function() {
+            return this.href == url;
+        }).addClass('active');
+
+        $('ul.nav-treeview a').filter(function() {
+            return this.href == url;
+        }).parentsUntil(".nav-sidebar > .nav-treeview").addClass('menu-open').prev('a').addClass('active');
+    });
+</script>
+{% block javascripts %}
+{% endblock %}
+</body>
+</html>

@@ -7,10 +7,10 @@ use Cocur\Slugify\Slugify;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -53,11 +53,6 @@ class User implements UserInterface
      */
     private $email;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Assert\Url(message="Veuillez donner une URL valide")
-     */
-    private $picture;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -76,12 +71,12 @@ class User implements UserInterface
     private $slug;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Post", mappedBy="author")
+     * @ORM\OneToMany(targetEntity="App\Entity\Post", mappedBy="author", orphanRemoval=true)
      */
     private $posts;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\PostVote", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="App\Entity\PostVote", mappedBy="user", orphanRemoval=true)
      */
     private $postVotes;
 
@@ -90,17 +85,41 @@ class User implements UserInterface
      */
     private $userRole;
 
-
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\Media", mappedBy="user", cascade={"persist", "remove"})
      */
     private $media;
 
-
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Payment", mappedBy="User")
      */
     private $payments;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(type="string", unique=true, nullable=true)
+     */
+    private $stripeCustomerId;
+
+    /**
+     * @return mixed
+     */
+    public function getStripeCustomerId()
+    {
+        return $this->stripeCustomerId;
+    }
+
+    /**
+     * @param mixed $stripeCustomerId
+     */
+    public function setStripeCustomerId($stripeCustomerId): void
+    {
+        $this->stripeCustomerId = $stripeCustomerId;
+    }
 
     public function __construct()
     {
@@ -108,6 +127,7 @@ class User implements UserInterface
         $this->postVotes = new ArrayCollection();
         $this->userRole = new ArrayCollection();
         $this->payments = new ArrayCollection();
+        $this->userReceiverNotif = new ArrayCollection();
     }
 
     /**
@@ -123,6 +143,9 @@ class User implements UserInterface
         if (empty($this->slug)) {
             $slugify = new Slugify();
             $this->slug = $slugify->slugify($this->firstName . ' ' . $this->lastName);
+        }
+        if (empty($this->createdAt)) {
+            $this->createdAt = new \DateTime();
         }
     }
 
@@ -180,18 +203,6 @@ class User implements UserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
-
-        return $this;
-    }
-
-    public function getPicture(): ?string
-    {
-        return $this->picture;
-    }
-
-    public function setPicture(?string $picture): self
-    {
-        $this->picture = $picture;
 
         return $this;
     }
@@ -377,4 +388,118 @@ class User implements UserInterface
 
         return $this;
     }
+    /**
+     * @var string le token qui servira lors de l'oubli de mot de passe
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $resetToken;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Souscription", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $souscription;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Notif", mappedBy="receiver", orphanRemoval=true)
+     */
+    private $userReceiverNotif;
+
+    /**
+     * @return string
+     */
+    public function getResetToken(): string
+    {
+        return $this->resetToken;
+    }
+
+    /**
+     * @param string $resetToken
+     */
+    public function setResetToken(?string $resetToken): void
+    {
+        $this->resetToken = $resetToken;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Notif[]
+     */
+    public function getUserReceiverNotif(): Collection
+    {
+        return $this->userReceiverNotif;
+    }
+
+    public function addUserReceiverNotif(Notif $userReceiverNotif): self
+    {
+        if (!$this->userReceiverNotif->contains($userReceiverNotif)) {
+            $this->userReceiverNotif[] = $userReceiverNotif;
+            $userReceiverNotif->setReceiver($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserReceiverNotif(Notif $userReceiverNotif): self
+    {
+        if ($this->userReceiverNotif->contains($userReceiverNotif)) {
+            $this->userReceiverNotif->removeElement($userReceiverNotif);
+            // set the owning side to null (unless already changed)
+            if ($userReceiverNotif->getReceiver() === $this) {
+                $userReceiverNotif->setReceiver(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getSouscription(): ?Souscription
+    {
+        return $this->souscription;
+    }
+
+    public function setSouscription(Souscription $souscription): self
+    {
+        $this->souscription = $souscription;
+
+        // set the owning side of the relation if necessary
+        if ($souscription->getUser() !== $this) {
+            $souscription->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function hasActiveSubscription()
+    {
+        return $this->getSouscription() && $this->getSouscription()->isActive();
+    }
+
+    public function hasActiveNonCancelledSubscription()
+    {
+        return $this->hasActiveSubscription() && !$this->getSouscription()->isCancelled();
+    }
+
+    public function ownThisOffer(Offers $offer){
+        if($offer->getType() == "subscription" && $this->hasActiveSubscription()){
+            return true;
+        }
+        foreach ($this->getPayments() as $payment ){
+            if ($payment->getOffer() === $offer)
+                return true;
+        }
+        return false;
+    }
+
+
 }
