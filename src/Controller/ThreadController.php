@@ -16,6 +16,7 @@ use App\Repository\PostRepository;
 use App\Repository\ThreadRepository;
 use App\Repository\PostVoteRepository;
 use App\Service\MercureCookieGenerator;
+use App\Service\RequestService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -32,7 +33,16 @@ class ThreadController extends AbstractController
     /**
      * @Route("/thread/{slug}", name="thread_show")
      */
-    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo, UserRepository $repoUser, MessageBusInterface $bus, MercureCookieGenerator $cookieGenerator)
+    public function index(
+        Thread $thread,
+        EntityManagerInterface $manager,
+        Request $request,
+        GrantedService $grantedService,
+        RequestService $requestService,
+        PostRepository $repo,
+        UserRepository $repoUser,
+        MessageBusInterface $bus,
+        MercureCookieGenerator $cookieGenerator)
     {
         $post = new Post();
 
@@ -74,6 +84,31 @@ class ThreadController extends AbstractController
                         $manager->persist($notif);
                     }
                 }else{
+                    //envoi notif aux abonnés
+                    $followers = $requestService->getFollowers();
+                    foreach ($followers as $follower){
+                        $notif = new Notif();
+                        $notif->setSender($this->getUser())
+                            ->setReceiver($repoUser->find($follower))
+                            ->setPost($post)
+                            ->setType('comment')
+                            ->setChecked(0);
+                        $manager->persist($notif);
+
+                        //envoi notif mercure
+                        $updateContent = json_encode([
+                            'type' => 'comment',
+                            'fullName' => $post->getAuthor()->getFullName(),
+                            'time' => $post->getCreatedAt(),
+                            'threadName' => $post->getThread()->getSlug()
+                        ]);
+                        $update = new Update("http://monsite.com/ping",
+                            $updateContent,
+                            ["http://monsite.com/user/{$follower}"]
+                        );
+                        $bus->dispatch($update);
+                    }
+
                     //envoi notif si mention
                     $notifContent = explode("mentionId", $post->getContent());
                     foreach($notifContent as $notifIdUser) {
