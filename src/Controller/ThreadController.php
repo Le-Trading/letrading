@@ -15,6 +15,7 @@ use App\Service\GrantedService;
 use App\Repository\PostRepository;
 use App\Repository\ThreadRepository;
 use App\Repository\PostVoteRepository;
+use App\Service\MailingService;
 use App\Service\MercureCookieGenerator;
 use App\Service\RequestService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,7 +43,9 @@ class ThreadController extends AbstractController
         PostRepository $repo,
         UserRepository $repoUser,
         MessageBusInterface $bus,
-        MercureCookieGenerator $cookieGenerator)
+        MercureCookieGenerator $cookieGenerator,
+        MailingService $mailingService
+    )
     {
         $post = new Post();
 
@@ -109,10 +112,11 @@ class ThreadController extends AbstractController
                         $bus->dispatch($update);
                     }
 
-                    //envoi notif si mention
+                    //check si mention @user
                     $notifContent = explode("mentionId", $post->getContent());
                     foreach($notifContent as $notifIdUser) {
                         if(is_numeric($notifIdUser)){
+                            //envoi notif
                             $notif = new Notif();
                             $notif->setSender($this->getUser())
                                 ->setReceiver($repoUser->find($notifIdUser))
@@ -120,6 +124,9 @@ class ThreadController extends AbstractController
                                 ->setType('comment')
                                 ->setChecked(0);
                             $manager->persist($notif);
+
+                            //envoi mail
+                            $mailingService->notifSend($this->getUser(),$repoUser->find($notifIdUser));
 
                             //envoi notif mercure
                             $updateContent = json_encode([
