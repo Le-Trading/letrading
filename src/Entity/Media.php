@@ -66,6 +66,11 @@ class Media implements \Serializable
     private $post;
 
     /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Message", mappedBy="media", cascade={"persist", "remove"})
+     */
+    private $message;
+
+    /**
      * Permet d'init le slug
      * 
      * @ORM\PrePersist
@@ -170,6 +175,24 @@ class Media implements \Serializable
     public function setPost(?Post $post): self
     {
         $this->post = $post;
+
+        return $this;
+    }
+
+    public function getMessage(): ?Message
+    {
+        return $this->message;
+    }
+
+    public function setMessage(?Message $message): self
+    {
+        $this->message = $message;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newMedia = null === $message ? null : $this;
+        if ($message->getMedia() !== $newMedia) {
+            $message->setMedia($newMedia);
+        }
 
         return $this;
     }

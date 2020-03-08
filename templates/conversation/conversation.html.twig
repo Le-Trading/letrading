@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+    Conversation
+{% endblock %}
+{% block body %}
+    <div class="container">
+        <h4><a href="{{ path("user_conversations") }}">Conversation</a></h4>
+        <div class="col m5 offset-s2 block">
+            {% for key,message in messages %}
+                {% set prevAuthor = messages[key - 1].author|default(messages[0].author) %}
+                {% set author = message.author %}
+                <div class="message-box">
+                    {% if author.pseudo != prevAuthor.pseudo or key == 0 %}
+                        <a href="">
+                            <div class="user-icon" style="">
+                            </div>
+                        </a>
+                        <div class="author">{{ message.author.pseudo }}</div>
+                    {% endif %}
+                    <div id="msg-{{ message.id }}"
+                         class="message {% if message.isRead == 0 and message.author != app.user %}unread{% endif %}">
+                        <div class="created"> {{ message.createdAt|date }}</div>
+                        <span>{{ message.content|raw }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+
+

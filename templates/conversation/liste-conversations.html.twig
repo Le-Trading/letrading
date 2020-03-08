@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+
+{% endblock %}
+
+
+{% block body %}
+    <div class="container">
+        <h4>Liste des conversations</h4>
+        <div class="col m5 offset-s2 block">
+            {% for conversation in conversations %}
+                <div class="conversation-row">
+                    {% set users = conversation.getParticipants() %}
+                    <div class="conversation-title"><b>
+                            {% for user in users %}
+                                {% if user.id != app.user.id %}
+                                    <a href="">
+                                        <div class="user-icon" style="">
+                                        </div>
+                                    </a>
+                                    {{ user.pseudo }}
+                                {% endif %}
+                            {% endfor %}
+                        </b></div>
+                    {% set lastMessage = conversation.getMessages() %}
+                    {% for message in conversation.getMessages() %}
+                        {% if loop.last %}
+                            <div class="conversation-last-message "><a href="{{ path("show_conversation", {'idConversation':conversation.id }) }}">{{ message.content }}</a></div>
+                            <i class="message-remove material-icons">clear</i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+
+
