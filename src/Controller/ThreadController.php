@@ -15,7 +15,10 @@ use App\Service\GrantedService;
 use App\Repository\PostRepository;
 use App\Repository\ThreadRepository;
 use App\Repository\PostVoteRepository;
+use App\Service\MailingService;
 use App\Service\MercureCookieGenerator;
+use App\Service\NotifService;
+use App\Service\RequestService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -32,7 +35,19 @@ class ThreadController extends AbstractController
     /**
      * @Route("/thread/{slug}", name="thread_show")
      */
-    public function index(Thread $thread, EntityManagerInterface $manager, Request $request, GrantedService $grantedService, PostRepository $repo, UserRepository $repoUser, MessageBusInterface $bus, MercureCookieGenerator $cookieGenerator)
+    public function index(
+        Thread $thread,
+        EntityManagerInterface $manager,
+        Request $request,
+        GrantedService $grantedService,
+        RequestService $requestService,
+        PostRepository $repo,
+        UserRepository $repoUser,
+        MessageBusInterface $bus,
+        MercureCookieGenerator $cookieGenerator,
+        MailingService $mailingService,
+        NotifService $notifService
+    )
     {
         $post = new Post();
 
@@ -65,39 +80,62 @@ class ThreadController extends AbstractController
                 if($post->getIsAdmin() == true){
                     $forumUsers = $repoUser->findAll();
                     foreach ($forumUsers as $forumUser) {
-                        $notif = new Notif();
-                        $notif->setSender($this->getUser())
-                            ->setReceiver($forumUser)
-                            ->setPost($post)
-                            ->setType('admin')
-                            ->setChecked(0);
-                        $manager->persist($notif);
+                        $notifService->sendNotif(
+                            $this->getUser(),
+                            $forumUser,
+                            $post,
+                            'admin',
+                            0
+                        );
                     }
                 }else{
-                    //envoi notif si mention
+                    //envoi notif aux abonnés
+                    $followers = $requestService->getFollowers();
+                    foreach ($followers as $follower){
+                        $notifService->sendNotif(
+                            $this->getUser(),
+                            $repoUser->find($follower),
+                            $post,
+                            'comment',
+                            0
+                        );
+
+                        //envoi notif mercure
+                        $notifService->sendMercureNotif(
+                            'comment',
+                            $post->getAuthor()->getFullName(),
+                            date("Y-m-d H:i:s"),
+                            $post->getThread()->getSlug(),
+                            '',
+                            $follower
+                        );
+                    }
+
+                    //check si mention @user
                     $notifContent = explode("mentionId", $post->getContent());
                     foreach($notifContent as $notifIdUser) {
                         if(is_numeric($notifIdUser)){
-                            $notif = new Notif();
-                            $notif->setSender($this->getUser())
-                                ->setReceiver($repoUser->find($notifIdUser))
-                                ->setPost($post)
-                                ->setType('comment')
-                                ->setChecked(0);
-                            $manager->persist($notif);
+                            //envoi notif
+                            $notifService->sendNotif(
+                                $this->getUser(),
+                                $repoUser->find($notifIdUser),
+                                $post,
+                                'comment',
+                                0
+                            );
+
+                            //envoi mail
+                            $mailingService->notifSend($this->getUser(),$repoUser->find($notifIdUser));
 
                             //envoi notif mercure
-                            $updateContent = json_encode([
-                                'type' => 'comment',
-                                'fullName' => $post->getAuthor()->getFullName(),
-                                'time' => $post->getCreatedAt(),
-                                'threadName' => $post->getThread()->getSlug()
-                            ]);
-                            $update = new Update("http://monsite.com/ping",
-                                $updateContent,
-                                ["http://monsite.com/user/{$notifIdUser}"]
+                            $notifService->sendMercureNotif(
+                                'comment',
+                                $post->getAuthor()->getFullName(),
+                                date("Y-m-d H:i:s"),
+                                $post->getThread()->getSlug(),
+                                '',
+                                $notifIdUser
                             );
-                            $bus->dispatch($update);
                         }
                     }
                 }
@@ -125,13 +163,13 @@ class ThreadController extends AbstractController
             $manager->persist($post);
 
             //envoi notif bdd
-            $notif = new Notif();
-            $notif->setSender($this->getUser())
-                ->setReceiver($post->getRespond()->getAuthor())
-                ->setPost($repo->find($idRespond))
-                ->setType('comment')
-                ->setChecked(0);
-            $manager->persist($notif);
+            $notifService->sendNotif(
+                $this->getUser(),
+                $post->getRespond()->getAuthor(),
+                $repo->find($idRespond),
+                'comment',
+                0
+            );
 
             $manager->flush();
             $this->addFlash(
@@ -140,18 +178,14 @@ class ThreadController extends AbstractController
             );
 
             //envoi notif mercure
-            $updateContent = json_encode([
-                'type' => 'comment',
-                'fullName' => $post->getAuthor()->getFullName(),
-                'time' => $post->getCreatedAt(),
-                'threadName' => $post->getThread()->getSlug(),
-                'idPost' => $post->getRespond()->getId()
-            ]);
-            $update = new Update("http://monsite.com/ping",
-                $updateContent,
-                ["http://monsite.com/user/{$post->getRespond()->getAuthor()->getId()}"]
+            $notifService->sendMercureNotif(
+                'comment',
+                $post->getAuthor()->getFullName(),
+                date("Y-m-d H:i:s"),
+                $post->getThread()->getSlug(),
+                $post->getRespond()->getId(),
+                $post->getRespond()->getAuthor()->getId()
             );
-            $bus->dispatch($update);
 
             return $this->redirectToRoute('thread_show', ['slug' => $thread->getSlug(), 'withAlert' => true]);
         }
@@ -213,7 +247,13 @@ class ThreadController extends AbstractController
      * @param PostVoteRepository $voteRepo
      * @return Response
      */
-    public function vote(Post $post, EntityManagerInterface $manager, PostVoteRepository $voteRepo, NotifRepository $notifRepo, MessageBusInterface $bus): Response
+    public function vote(
+        Post $post,
+        EntityManagerInterface $manager,
+        PostVoteRepository $voteRepo,
+        NotifRepository $notifRepo,
+        NotifService $notifService
+    ): Response
     {
         $user = $this->getUser();
         if (!$user) return $this->json([
@@ -246,29 +286,24 @@ class ThreadController extends AbstractController
         $manager->persist($vote);
 
         //envoi notif bdd
-        $notif = new Notif();
-        $notif->setSender($user)
-            ->setReceiver($post->getAuthor())
-            ->setPost($post)
-            ->setType('like')
-            ->setChecked(0);
-        $manager->persist($notif);
-
+        $notifService->sendNotif(
+            $user,
+            $post->getAuthor(),
+            $post,
+            'like',
+            0
+        );
         $manager->flush();
 
         //envoi notif mercure
-        $updateContent = json_encode([
-            'type' => 'like',
-            'fullName' => $user->getFullName(),
-            'time' => 'Maintenant',
-            'threadName' => $post->getThread()->getSlug(),
-            'idPost' => $post->getId()
-        ]);
-        $update = new Update("http://monsite.com/ping",
-            $updateContent,
-            ["http://monsite.com/user/{$post->getAuthor()->getId()}"]
+        $notifService->sendMercureNotif(
+            'like',
+            $user->getFullname(),
+            'Maintenant',
+            $post->getThread()->getSlug(),
+            $post->getId(),
+            $post->getAuthor()->getId()
         );
-        $bus->dispatch($update);
 
         return $this->json(['code' => 200, 'message' => 'Liké', 'votes' => $voteRepo->count(['post' => $post])], 200);
     }

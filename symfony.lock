@@ -144,6 +144,12 @@
     "jms/metadata": {
         "version": "2.1.0"
     },
+    "knplabs/knp-components": {
+        "version": "v2.3.3"
+    },
+    "knplabs/knp-paginator-bundle": {
+        "version": "v5.1.1"
+    },
     "lcobucci/jwt": {
         "version": "3.3.1"
     },

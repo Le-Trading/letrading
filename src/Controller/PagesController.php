@@ -9,8 +9,8 @@ use App\Form\ContactType;
 use App\Repository\MessageRepository;
 use App\Repository\NotifRepository;
 use App\Repository\OffersRepository;
-use App\Service\ContactService;
 use App\Repository\ThreadRepository;
+use App\Service\MailingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,7 +38,7 @@ class PagesController extends AbstractController
      * 
      * @return Response
      */
-    public function contactPage(Request $request, ContactService $contactService){
+    public function contactPage(Request $request, MailingService $mailingService){
         $contact = new Contact();
 
         $form = $this->createForm(ContactType::class, $contact);
@@ -46,7 +46,7 @@ class PagesController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid()){
 
-            $contactService->notify($contact);
+            $mailingService->contactSend($contact);
 
             $this->addFlash(
                 'success',
@@ -118,9 +118,12 @@ class PagesController extends AbstractController
      * Recuperation des notifs
      */
     public function getNotifs(NotifRepository $repo){
-        $notifs = $repo->findBy([
-            'receiver' => $this->getUser()
-        ]);
+        $notifs = $repo->findBy(
+            ['receiver' => $this->getUser()],
+            ['date' => 'desc' ],
+            4,
+            null
+        );
         $nbNonLu = $repo->findBy([
             'receiver' => $this->getUser(),
             'checked' => 0

@@ -139,6 +139,48 @@
 			]
 		});
 
+		function handleAnswering(id) {
+			var users = {{ users|json_encode|raw }};
+			CKEDITOR.instances.response_content.destroy();
+
+			/*var pseudo = $(id).data('target').substring(1);*/
+			var id = $(id).data('response');
+			$('#post' + id).after().append($('#form_response'));
+			$('#form_response').removeClass('hidden-form');
+			$('#response_respond').val(id);
+
+			CKEDITOR.replace('response_content', {
+				plugins: 'mentions,emoji,undo,link,wysiwygarea,toolbar',
+				contentsCss: [
+					'http://cdn.ckeditor.com/4.13.1/full-all/contents.css'
+				],
+				height: 150,
+				toolbar: [{
+					name: 'document',
+					items: ['Undo', 'Redo']
+				},
+					{
+						name: 'basicstyles',
+						items: ['Bold', 'Italic', 'Strike']
+					},
+					{
+						name: 'links',
+						items: ['EmojiPanel', 'Link', 'Unlink']
+					}
+				],
+				mentions: [{
+					feed: dataFeed,
+					itemTemplate: '<li data-id="{id}">' +
+							'<strong class="username">{pseudo}</strong>' +
+							'<span class="fullname"> {firstName} {lastName}</span>' +
+							'</li>',
+					outputTemplate: '<a href="/user/{pseudo}" id="mentionId{id}mentionId">@{pseudo}</a><span>&nbsp;</span>',
+					minChars: 0
+				}
+				]
+			});
+		}
+
 		function dataFeed(opts, callback) {
 			var matchProperty = 'pseudo',
 					data = users.filter(function(item) {
@@ -239,73 +281,39 @@
 			}).change();
 		});
 	</script>
-
-	<script>
-		function handleAnswering(id) {
-			CKEDITOR.instances.response_content.destroy();
-
-            var pseudo = $(id).data('target').substring(1);
-			var id = $(id).data('response');
-			$('#post' + id).after().append($('#form_response'));
-			$('#form_response').removeClass('hidden-form');
-			$('#response_respond').val(id);
-			CKEDITOR.replace('response_content', {
-				"toolbar": [
-				[
-				"Bold", "Italic"
-				],
-				[
-				"NumberedList",
-				"BulletedList",
-				"-",
-				"Outdent",
-				"Indent"
-				],
-				[
-				"Link", "Unlink"
-				],
-				["About"]
-				],
-				"language": "fr",
-                'uiColor' : '#7b8a8b',
-                'height' : '10em'
-			});
-            CKEDITOR.instances.response_content.setData("@"+pseudo);
-        }
-	</script>
 	<script type="text/javascript">
 		function onClickBtnVote(event) {
-event.preventDefault();
-const url = this.href;
-const id = this.dataset.id;
-const icone = this.querySelector('#thumbsLike'+id +' i');
-axios.get(url).then(function (response) {
-const likes = response.data.votes;
-$('#nbVotes' + id).text(likes);
-if($('#thumbsLike' + id + ' i').hasClass('far')){
-	$('#thumbsLike' + id + ' i').removeClass('far').addClass('fas');
-}
-else{
-	$('#thumbsLike' + id + ' i').removeClass('fas').addClass('far');
-	}
-if($('#thumbsLike'+id).hasClass('liked-thumbs')){
-	$('#thumbsLike'+id).removeClass('liked-thumbs').addClass('not-liked-thumbs');
-}
-else{
-	$('#thumbsLike'+id).removeClass('not-liked-thumbs').addClass('liked-thumbs');
-	}
+			event.preventDefault();
+			const url = this.href;
+			const id = this.dataset.id;
+			const icone = this.querySelector('#thumbsLike'+id +' i');
+			axios.get(url).then(function (response) {
+				const likes = response.data.votes;
+				$('#nbVotes' + id).text(likes);
+				if($('#thumbsLike' + id + ' i').hasClass('far')){
+					$('#thumbsLike' + id + ' i').removeClass('far').addClass('fas');
+				}
+				else{
+					$('#thumbsLike' + id + ' i').removeClass('fas').addClass('far');
+				}
+				if($('#thumbsLike'+id).hasClass('liked-thumbs')){
+					$('#thumbsLike'+id).removeClass('liked-thumbs').addClass('not-liked-thumbs');
+				}
+				else{
+					$('#thumbsLike'+id).removeClass('not-liked-thumbs').addClass('liked-thumbs');
+				}
+				if($('#boutonLike'+id).hasClass('liked')){
+					$('#boutonLike'+id).removeClass('liked').addClass('not-liked');
+				}
+				else{
+					$('#boutonLike'+id).removeClass('not-liked').addClass('liked');
+				}
+			});
+		}
 
-if($('#boutonLike'+id).hasClass('liked')){
-	$('#boutonLike'+id).removeClass('liked').addClass('not-liked');
-}
-else{
-	$('#boutonLike'+id).removeClass('not-liked').addClass('liked');
-}
-});
-}
-document.querySelectorAll('a.js-css-likes').forEach(function (link) {
-link.addEventListener('click', onClickBtnVote);
-});
+		document.querySelectorAll('a.js-css-likes').forEach(function (link) {
+			link.addEventListener('click', onClickBtnVote);
+		});
 	</script>
 
 	
