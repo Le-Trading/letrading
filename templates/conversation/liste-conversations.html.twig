@@ -6,30 +6,63 @@
 
 {% block body %}
     <div class="container">
-        <h4>Liste des conversations</h4>
-        <div class="col m5 offset-s2 block">
+        <h4 class="text-center my-3">Liste des conversations</h4>
+
+        <div class="alert alert-primary">
+            Vous avez actuellement {{ conversations | length }} conversation(s) en cours.
+        </div>
+        <div class="liste-conversations">
             {% for conversation in conversations %}
-                <div class="conversation-row">
-                    {% set users = conversation.getParticipants() %}
-                    <div class="conversation-title"><b>
-                            {% for user in users %}
-                                {% if user.id != app.user.id %}
-                                    <a href="">
-                                        <div class="user-icon" style="">
+                <div class="card card-hover bg-light my-3">
+                    <a
+                            href="{{ path("show_conversation", {'idConversation':conversation.id }) }}">
+                    <div class="card-body">
+
+                        {% set users = conversation.getParticipants() %}
+                        {% for user in users %}
+                            {% if user.id != app.user.id %}
+                                <div class="card-title">
+                                    <div class="row">
+
+                                        <div class="col-1">
+                                            {% if user.media %}
+                                                <img src="{{ vich_uploader_asset(user.media, 'imageFile', 'App\\Entity\\Media') }}"
+                                                     alt="Avatar de {{ user.pseudo }}"
+                                                     class=" avatar avatar-medium img img-rounded img-fluid"/>
+                                            {% else %}
+                                                <img src="{{ asset('images/image-user.png') }}"
+                                                     alt="Avatar de {{ user.pseudo }}"
+                                                     class="avatar avatar-medium img img-rounded img-fluid"/>
+                                            {% endif %}
                                         </div>
-                                    </a>
-                                    {{ user.pseudo }}
-                                {% endif %}
-                            {% endfor %}
-                        </b></div>
-                    {% set lastMessage = conversation.getMessages() %}
-                    {% for message in conversation.getMessages() %}
-                        {% if loop.last %}
-                            <div class="conversation-last-message "><a href="{{ path("show_conversation", {'idConversation':conversation.id }) }}">{{ message.content }}</a></div>
-                            <i class="message-remove material-icons">clear</i>
-                        {% endif %}
-                    {% endfor %}
+                                        <div class="col-6 ml-3">
+                                            <div class="row">
+                                                <span class="mr-3 text-fullName-conversation">
+                                                    {{ user.fullName }}
+                                                </span>
+                                                <span class="text-pseudo-conversation">
+                                                    @{{ user.pseudo }}
+                                                </span>
+                                            </div>
+                                            <div class="row">
+                                                {% set lastMessage = conversation.getMessages() %}
+                                                {% for message in conversation.getMessages() %}
+                                                    {% if loop.last %}
+                                                        <div class="conversation-last-message text-secondary mt-2">{{ message.content | striptags }}
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    </a>
                 </div>
+
             {% endfor %}
         </div>
     </div>

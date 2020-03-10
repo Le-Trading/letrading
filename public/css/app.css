@@ -127,3 +127,19 @@ li.dropdown:hover > .dropdown-menu {
 #form_response fieldset{
   margin: 0!important;
 }
+
+.card-hover:hover {
+  background-color: #e3e7e8!important;
+  transition-duration:0.5s;
+}
+.liste-conversations a:hover{
+  text-decoration:none;
+}
+.text-fullName-conversation{
+  font-weight:bold;
+  font-size: 1rem;
+}
+.text-pseudo-conversation{
+  font-style:italic;
+  font-size:0.9rem;
+}

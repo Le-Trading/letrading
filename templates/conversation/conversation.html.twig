@@ -4,12 +4,20 @@
 {% endblock %}
 {% block body %}
     <div class="container">
-        <h4><a href="{{ path("user_conversations") }}">Conversation</a></h4>
+        <h4 class="text-center">Conversation avec
+                {% for participant in conversation.participants %}
+                    {% if loop.last %}
+                        {{ participant.pseudo }}
+                    {% endif %}
+                    {% else %}
+                        {{ participant.pseudo }},
+                {% endfor %}
+        </h4>
         <div class="col m5 offset-s2 block">
             {% for key,message in messages %}
                 {% set prevAuthor = messages[key - 1].author|default(messages[0].author) %}
                 {% set author = message.author %}
-                <div class="message-box">
+                <div class="message-box row">
                     {% if author.pseudo != prevAuthor.pseudo or key == 0 %}
                         <a href="">
                             <div class="user-icon" style="">
@@ -26,10 +34,34 @@
             {% endfor %}
             {{ form_start(form) }}
             {{ form_widget(form) }}
+            <button class="btn btn-info" type="submit">Envoyer <i class="fa fa-paper-plane"></i></button>
             {{ form_end(form) }}
         </div>
     </div>
 {% endblock %}
 
+{% block javascripts %}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
 
-
+    <script>
+        $(document).ready(function() {
+            $('body').on('mouseover', '.message.unread', function () {
+                var msgId = parseInt($(this).attr('id').match(/\d+/)[0]);
+                console.log("msgId");
+                var block = $(this);
+                $.ajax({
+                    url: Routing.generate('read-message', {idMessage: msgId}),
+                    method: 'post',
+                    success: function (res) {
+                        if (res.ok === true) {
+                            block.css('background-color', 'white');
+                            block.removeClass('unread');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+    {# @TODO : faire le unread #}
+{% endblock %}

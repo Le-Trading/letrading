@@ -9,10 +9,12 @@ use App\Form\ConversationType;
 use App\Form\MessageType;
 use App\Form\MessageWithUsersType;
 use App\Repository\ConversationRepository;
+use App\Service\RequestService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,6 +39,7 @@ class ConversationController extends AbstractController
             'conversations' => $conversations,
         ]);
     }
+
     /**
      * show conversation
      *
@@ -82,38 +85,50 @@ class ConversationController extends AbstractController
         }
 
         return $this->render('conversation/conversation.html.twig', [
+            'conversation' => $conversation,
             'messages' => $messages,
             'form' => $form->createView()
         ]);
     }
+
     /**
      * @Route("/conversation/create/{id}", name="create_conversation")
      * @param User $user
      * @param Request $request
      * @param EntityManagerInterface $em
+     * @param RequestService $req
      * @return Response
      */
-    public function createConversation(User $user, Request $request, EntityManagerInterface $em){
-        $currentUser = $this->getUser();
-        $conversation = new Conversation();
-        $conversation->addParticipants($currentUser)
-            ->addParticipants($user);
-        $message = new Message();
-        $form = $this->createForm(MessageType::class, $message);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $message = $form->getData();
-            $message->setAuthor($currentUser);
-            $conversation->addMessage($message);
-            $em->persist($conversation);
-            $em->persist($message);
-            $em->flush();
+    public function createConversation(User $user, Request $request, EntityManagerInterface $em, RequestService $req)
+    {
+        if ($req->hasConversationWith($user)) {
+            return $this->redirectToRoute('show_conversation', [
+                'idConversation' => $req->hasConversationWith($user)->getId()
+            ]);
+        } else {
+            $currentUser = $this->getUser();
+            $conversation = new Conversation();
+            $conversation->addParticipants($currentUser)
+                ->addParticipants($user);
+            $message = new Message();
+            $form = $this->createForm(MessageType::class, $message);
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $message = $form->getData();
+                $message->setAuthor($currentUser);
+                $conversation->addMessage($message);
+                $em->persist($conversation);
+                $em->persist($message);
+                $em->flush();
+                return $this->redirectToRoute('show_conversation',
+                    ['idConversation' => $conversation->getId()]
+                );
+            }
+            return $this->render('conversation/create-conversation.html.twig', [
+                'form' => $form->createView(),
+                'destinataire' => $user
+            ]);
         }
-        // @TODO : Si l'utilisateur a déjà une conv avec l'utilisateur, rediriger vers la conv
-        return $this->render('conversation/create-conversation.html.twig', [
-            'form' => $form->createView(),
-            'destinataire' => $user
-        ]);
     }
 
 
@@ -145,36 +160,32 @@ class ConversationController extends AbstractController
             $em->flush();
         }
 
-        return $this->redirectToRoute('conversation',
+        return $this->redirectToRoute('show_conversation',
             ['idConversation' => $conversation->getId()]
         );
     }
 
 
-//    /**
-//     * @param Request $request
-//     * @param $messageId
-//     * @Route("/message/{idMessage}/read", requirements={"idMessage": "\d+"},
-//     *      options = { "expose" = true },
-//     *      name="read-message")
-//     * @Method({"POST"})
-//     * @return JsonResponse
-//     */
-//    public function markMessageAsRead(Request $request, $idMessage)
-//    {
-//        $message = $this->getDoctrine()->getRepository('AppBundle:UserMessage')
-//            ->find($idMessage);
-//
-//        $message->setIsRead(true);
-//        $em = $this->getDoctrine()->getManager();
-//        try {
-//            $em->persist($message);
-//            $em->flush();
-//
-//        } catch (Exception $e ) {
-//            return new JsonResponse(['error' => $e->getMessage()]);
-//        }
-//
-//        return new JsonResponse(['ok' => true]);
-//    }
+    /**
+     * @param Message $message
+     * @param Request $request
+     * @param EntityManagerInterface $em
+     * @return JsonResponse
+     * @Route("/message/{idMessage}/read", requirements={"idMessage": "\d+"},
+     *      options = { "expose" = true },
+     *      name="read-message")
+     * @ParamConverter("message", options={"mapping": {"idMessage": "id"}})
+     */
+    public function markMessageAsRead(Message $message, Request $request, EntityManagerInterface $em)
+    {
+        $message->setIsRead(true);
+        try {
+            $em->persist($message);
+            $em->flush();
+        } catch (Exception $e ) {
+            return new JsonResponse(['error' => $e->getMessage()]);
+        }
+
+        return new JsonResponse(['ok' => true]);
+    }
 }

@@ -101,6 +101,7 @@ class StripeClient
             $session = Session::create([
                 'customer' => $user->getStripeCustomerId(),
                 'payment_method_types' => ['card'],
+                'mode' => 'setup',
                 'subscription_data' => [
                     'items' => [[
                         'plan' => $offer->getPlan(),

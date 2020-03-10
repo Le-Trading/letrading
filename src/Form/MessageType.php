@@ -6,6 +6,7 @@ use App\Entity\Conversation;
 use App\Entity\Message;
 use App\Entity\User;
 use App\Form\Type\EntityHiddenType;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -21,8 +22,12 @@ class MessageType extends AbstractType
                 'class' => Conversation::class, 'label' => false ])
             ->add('author', EntityHiddenType::class, [
                 'class' => User::class, 'label' => false  ])
-            ->add('content', TextareaType::class, [ 'required' =>true, 'label' => false ])
-            ->add('submit', SubmitType::class, array('label' => 'Envoyer'));
+            ->add('content', CKEditorType::class, ['required' => false, 'label' => false])
+            ->add('media', MediaType::class, [
+                'label' => false,
+                'attr' => ['placeholder' => 'Choisissez votre fichier'],
+                'required' => false
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
