@@ -125,5 +125,9 @@ li.dropdown:hover > .dropdown-menu {
 }
 
 #form_response fieldset{
-    margin: 0!important;
+  margin: 0!important;
+}
+
+.text-no-color{
+  color: #333;
 }

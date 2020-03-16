@@ -117,9 +117,12 @@ class PagesController extends AbstractController
      * Recuperation des notifs
      */
     public function getNotifs(NotifRepository $repo){
-        $notifs = $repo->findBy([
-            'receiver' => $this->getUser()
-        ]);
+        $notifs = $repo->findBy(
+            ['receiver' => $this->getUser()],
+            ['date' => 'desc' ],
+            4,
+            null
+        );
         $nbNonLu = $repo->findBy([
             'receiver' => $this->getUser(),
             'checked' => 0

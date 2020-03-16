@@ -14,7 +14,7 @@
             {% if notifs is empty %}
                 <li class="list-group-item text-center firstMessage">Vous n'avez pas encore de notification</li>
             {% else %}
-                {% for notif in notifs|sort|reverse %}
+                {% for notif in notifs %}
                     <li class="list-group-item text-center">
                         {% if notif.type=="admin" %}
                             <b>Message Important <i class="fas fa-exclamation-triangle"></i></b> <br><br> {{ notif.post.content |raw }}
@@ -29,6 +29,7 @@
                         {% endif %}
                     </li>
                 {% endfor %}
+                <a class="m-3 text-center" href="{{ path('notif_index') }}">Voir toutes les notifications</a>
             {% endif %}
         </div>
     </ul>
