@@ -9,6 +9,8 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1 class="m-0 text-dark">Gestion des formations</h1>
+                    <br>
+                    <a href="{{ path('admin_formation_create') }}" class="btn btn-secondary btn-block"><i class="fas fa-plus"></i> Ajouter une nouvelle formation</a>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -21,7 +23,32 @@
     </div>
     <div class="content">
         <div class="container-fluid">
-            Yacine la pute
+            {% if formations is empty %}
+                <div class="alert alert-info alert-dismissible">
+                    <h5><i class="icon fas fa-info"></i> Aucune formation disponible</h5>
+                    Créez votre première formation :
+                    <a href="{{ path('admin_formation_create') }}" class="btn btn-app text-dark">
+                        <i class="fas fa-plus"></i> Ajouter
+                    </a>
+                </div>
+            {% else %}
+                {% for formation in formations %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">{{ formation.title }}</h2>
+                            <div class="card-tools">
+                                <a href="{{ path('admin_formation_edit', {'id' : formation.id}) }}"><i class="fa fa-edit"></i> Éditer</a>
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Réduire">
+                                    <i class="fas fa-minus"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            {{ formation.description | raw}}
+                            <img src="{{ vich_uploader_asset(formation.media, 'imageFile', 'App\\Entity\\Media') }}" class="img-fluid" alt="{{ formation.media.imageName }}">
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
 </div>

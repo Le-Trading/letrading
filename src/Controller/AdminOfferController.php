@@ -43,7 +43,7 @@ class AdminOfferController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Le contenu de l'offre {$offer->getTitle()} à bien été moddifié"
+                "Le contenu de l'offre {$offer->getTitle()} à bien été modifié"
             );
         }
         return $this->render('admin/offers/edit.html.twig',[
