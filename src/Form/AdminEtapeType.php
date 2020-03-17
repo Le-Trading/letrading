@@ -2,30 +2,25 @@
 
 namespace App\Form;
 
-use App\Entity\Formation;
-use FOS\CKEditorBundle\Form\Type\CKEditorType;
+use App\Entity\EtapeFormation;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class AdminFormationType extends ApplicationType
+class AdminEtapeType extends ApplicationType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('title', TextType::class, [
                 'required' => true,
-                'label' => "Titre",
+                'label' => "Titre"
             ])
             ->add('description', TextareaType::class, [
                 'required' => false,
-                'label' => "Description de la formation",
-            ])
-            ->add('media', MediaType::class, [
-                'attr' => ['placeholder' => 'Choisissez votre fichier'],
-                'required' => false
+                'label' => "Description de l'étape"
             ])
         ;
     }
@@ -33,7 +28,7 @@ class AdminFormationType extends ApplicationType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Formation::class,
+            'data_class' => EtapeFormation::class,
         ]);
     }
 }

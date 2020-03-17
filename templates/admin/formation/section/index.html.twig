@@ -1,0 +1,94 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Admin Formations{% endblock %}
+
+{% block body %}
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0 text-dark">Gestion de la formation <strong>{{ formation.title }}</strong></h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}">Accueil</a></li>
+                            <li class="breadcrumb-item active"><a href="{{ path('admin_formation_index') }}">Formations</a></li>
+                            <li class="breadcrumb-item active">Sections</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Sections de <strong>{{ formation.title }}</strong></h2>
+                        <div class="card-tools">
+                            <a class="ml-1 mr-1" href="{{ path('admin_formation_section_create', {'id' : formation.id}) }}"><i class="fas fa-plus-circle"></i> Ajouter une nouvelle section</a>
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Réduire">
+                                <i class="fas fa-minus"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if sections is empty %}
+                            <div class="alert alert-info alert-dismissible">
+                                <h5><i class="icon fas fa-info"></i> Aucune section pour cette formation</h5>
+                                Créez votre première section :
+                                <a href="{{ path('admin_formation_section_create', {'id' : formation.id}) }}" class="btn btn-app text-dark">
+                                    <i class="fas fa-plus"></i> Ajouter
+                                </a>
+                            </div>
+                        {% else %}
+                            {% for section in sections %}
+                                <div id="accordion">
+                                    <div class="card card-light">
+                                        <div class="card-header">
+                                            <h4 class="card-title">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ section.id }}">
+                                                    {{ section.title }}
+                                                </a>
+                                            </h4>
+                                            <div class="card-tools">
+                                                <a class="ml-1 mr-1" href="{{ path('admin_formation_section_edit', {idFormation : formation.id, idSection : section.id}) }}"><i class="fa fa-edit"></i> Éditer la section</a>
+                                                <a class="ml-1 mr-1" href="{{ path('admin_formation_etape_create', {idFormation : formation.id, idSection : section.id}) }}"><i class="fas fa-plus-circle"></i> Ajouter une étape</a>
+                                            </div>
+                                        </div>
+                                        <div id="collapse{{ section.id }}" class="panel-collapse collapse in">
+                                            <div class="card-body">
+                                                {% if etapes is empty %}
+                                                    <div class="alert alert-info alert-dismissible">
+                                                        <h5><i class="icon fas fa-info"></i> Aucune étape disponible</h5>
+                                                        Créer la première étape :
+                                                        <a href="{{ path('admin_formation_etape_create', {idFormation : formation.id, idSection : section.id}) }}" class="btn btn-app text-dark">
+                                                            <i class="fas fa-plus"></i> Ajouter
+                                                        </a>
+                                                    </div>
+                                                {% else %}
+                                                    {% for etape in etapes %}
+                                                        {% if etape.section.id == section.id %}
+                                                            <div class="card">
+                                                                <div class="card-header">
+                                                                    <h2 class="card-title">{{ etape.title }}</h2>
+                                                                    <div class="card-tools">
+                                                                        <a class="ml-1 mr-1" href="{{ path('admin_formation_edit', {'id' : formation.id}) }}"><i class="fa fa-edit"></i> Éditer étape</a>
+                                                                        <a class="ml-1 mr-1" href="{{ path('formation_index') }}" target="_blank"><i class="fas fa-eye"></i> Aperçu</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

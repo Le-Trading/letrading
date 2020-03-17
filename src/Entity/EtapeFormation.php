@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\EtapeFormationRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class EtapeFormation
 {
@@ -38,9 +39,24 @@ class EtapeFormation
     private $createdAt;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      */
     private $commentaire;
+
+    /**
+     * Permet d'init le la date de creation
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     *
+     * @return void
+     */
+    public function prePersist()
+    {
+        if (empty($this->createdAt)) {
+            $this->createdAt = new \DateTime();
+        }
+    }
 
     public function getId(): ?int
     {

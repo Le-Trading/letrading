@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\SectionFormationRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class SectionFormation
 {
@@ -52,6 +53,21 @@ class SectionFormation
     public function __construct()
     {
         $this->etapeFormations = new ArrayCollection();
+    }
+
+    /**
+     * Permet d'init le la date de creation
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     *
+     * @return void
+     */
+    public function prePersist()
+    {
+        if (empty($this->createdAt)) {
+            $this->createdAt = new \DateTime();
+        }
     }
 
     public function getId(): ?int

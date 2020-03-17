@@ -37,14 +37,16 @@
                         <div class="card-header">
                             <h2 class="card-title">{{ formation.title }}</h2>
                             <div class="card-tools">
-                                <a href="{{ path('admin_formation_edit', {'id' : formation.id}) }}"><i class="fa fa-edit"></i> Éditer</a>
+                                <a class="ml-1 mr-1" href="{{ path('admin_formation_edit', {'id' : formation.id}) }}"><i class="fa fa-edit"></i> Éditer formation</a>
+                                <a class="ml-1 mr-1" href="{{ path('admin_formation_section_index', {'id' : formation.id}) }}"><i class="fas fa-plus-circle"></i> Sections</a>
+                                <a class="ml-1 mr-1" href="{{ path('formation_index') }}" target="_blank"><i class="fas fa-eye"></i> Aperçu</a>
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Réduire">
                                     <i class="fas fa-minus"></i></button>
                             </div>
                         </div>
                         <div class="card-body">
                             {{ formation.description | raw}}
-                            <img src="{{ vich_uploader_asset(formation.media, 'imageFile', 'App\\Entity\\Media') }}" class="img-fluid" alt="{{ formation.media.imageName }}">
+                            <img src="{{ vich_uploader_asset(formation.media, 'imageFile', 'App\\Entity\\Media') }}" class="img-thumbnail" alt="{{ formation.media.imageName }}">
                         </div>
                     </div>
                 {% endfor %}
