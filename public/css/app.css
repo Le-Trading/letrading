@@ -136,3 +136,13 @@ li.dropdown:hover > .dropdown-menu {
   margin-left: 250px;
   background: #f4f6f9;
 }
+
+.formation-image{
+  max-width: 300px;
+  max-height: 300px;
+}
+
+.avatar-large{
+  max-width: 200px;
+  max-height: 200px;
+}

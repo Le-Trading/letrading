@@ -44,6 +44,11 @@ class EtapeFormation
     private $commentaire;
 
     /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Media", cascade={"persist", "remove"})
+     */
+    private $media;
+
+    /**
      * Permet d'init le la date de creation
      *
      * @ORM\PrePersist
@@ -119,6 +124,18 @@ class EtapeFormation
     public function setCommentaire(string $commentaire): self
     {
         $this->commentaire = $commentaire;
+
+        return $this;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?Media $media): self
+    {
+        $this->media = $media;
 
         return $this;
     }
