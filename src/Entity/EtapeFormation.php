@@ -49,6 +49,11 @@ class EtapeFormation
     private $media;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $position;
+
+    /**
      * Permet d'init le la date de creation
      *
      * @ORM\PrePersist
@@ -136,6 +141,18 @@ class EtapeFormation
     public function setMedia(?Media $media): self
     {
         $this->media = $media;
+
+        return $this;
+    }
+
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): self
+    {
+        $this->position = $position;
 
         return $this;
     }

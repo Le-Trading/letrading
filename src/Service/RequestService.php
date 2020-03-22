@@ -8,6 +8,7 @@
 
 namespace App\Service;
 
+use App\Repository\EtapeFormationRepository;
 use App\Repository\FollowRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
@@ -17,10 +18,16 @@ class RequestService {
     private $followRepo;
     private $security;
 
-    public function __construct(EntityManagerInterface $manager, FollowRepository $followRepo, Security $security) {
+    public function __construct(
+        EntityManagerInterface $manager,
+        FollowRepository $followRepo,
+        Security $security,
+        EtapeFormationRepository $etapeFormationRepository
+    ) {
         $this->manager = $manager;
         $this->security = $security;
         $this->followRepo = $followRepo;
+        $this->etapeFormationRepo = $etapeFormationRepository;
     }
 
     /**
@@ -59,5 +66,19 @@ class RequestService {
         }else{
             return true;
         }
+    }
+
+    /**
+     * Fonction qui permet de récuperer la position pour la création d'une etape de formation
+     *
+     * @param $idSection
+     * @return int
+     */
+    public function getPositionEtapeFormation($idSection){
+        $lastEtape = $this->etapeFormationRepo->findOneBy(
+            ['section' => $idSection],
+            ['position' => 'desc']
+        );
+        return $lastEtape->getPosition();
     }
 }

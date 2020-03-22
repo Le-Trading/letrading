@@ -17,7 +17,10 @@ class FormationController extends AbstractController
     {
         $formations = $repoFormation->findAll();
         $sections = $repoSection->findBy(['formation' => $formations]);
-        $etapes = $repoEtape->findBy(['section' => $sections]);
+        $etapes = $repoEtape->findBy(
+            ['section' => $sections],
+            ['position' => 'asc']
+        );
 
         return $this->render('formation/index.html.twig',
             [

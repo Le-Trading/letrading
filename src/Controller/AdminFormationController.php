@@ -11,6 +11,7 @@ use App\Form\AdminSectionType;
 use App\Repository\EtapeFormationRepository;
 use App\Repository\FormationRepository;
 use App\Repository\SectionFormationRepository;
+use App\Service\RequestService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,6 +35,35 @@ class AdminFormationController extends AbstractController
         return $this->render('admin/formation/index.html.twig',
             ['formations' => $formations]
         );
+    }
+
+    /**
+     * Permet de mettre a jour la position des etapes
+     *
+     * @Route("/admin/formation/section/updatePosition", name="admin_formation_etape_update_position")
+     */
+    public function updatePositionEtapeFormation(EntityManagerInterface $manager, Request $request, EtapeFormationRepository $repo){
+        if($request->isXmlHttpRequest()) {
+            $isToUpdate = $request->request->get('update');
+            $positions = $request->request->get('positions');
+
+            foreach ($positions as $position){
+                $index = $position[0];
+                $newPosition = $position[1];
+
+                $etapeToUpdate = $repo->findOneBy(['id'=>$index]);
+                $etapeToUpdate->setPosition($newPosition);
+
+                $manager->persist($etapeToUpdate);
+            }
+            $manager->flush();
+
+            return $this->json([
+                'code' => 200,
+                'update' => $isToUpdate,
+                'positions' => $positions,
+            ], 200);
+        }
     }
 
     /**
@@ -128,7 +158,8 @@ class AdminFormationController extends AbstractController
             ['formation' => $formation]
         );
         $etapes = $repoEtape->findBy(
-            ['section' => $sections]
+            ['section' => $sections],
+            ['position' => 'asc']
         );
 
         return $this->render('admin/formation/section/index.html.twig',[
@@ -237,14 +268,23 @@ class AdminFormationController extends AbstractController
      * @param SectionFormation $section
      * @return Response
      */
-    public function createEtape(SectionFormation $section, Formation $formation, Request $request, EntityManagerInterface $manager){
+    public function createEtape(
+        SectionFormation $section,
+        Formation $formation,
+        Request $request,
+        EntityManagerInterface $manager,
+        RequestService $requestService
+    ){
         $etape = new EtapeFormation();
+
+        $position = $requestService->getPositionEtapeFormation($section);
 
         $form = $this->createForm(AdminEtapeType::class, $etape);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $etape->setSection($section);
+            $etape->setPosition($position+1);
             $manager->persist($etape);
             $manager->flush();
 
