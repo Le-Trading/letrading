@@ -60,7 +60,7 @@ class StripeClient
                 'payment_method_types' => ['card'],
                 'line_items' => [[
                     'name' => $offer->getTitle(),
-                    'amount' => $offer->getPrice(),
+                    'amount' => $offer->getPrice() * 100,
                     'currency' => 'eur',
                     'quantity' => 1,
                 ]],
@@ -73,7 +73,7 @@ class StripeClient
                 'payment_method_types' => ['card'],
                 'line_items' => [[
                     'name' => $offer->getTitle(),
-                    'amount' => $offer->getPrice(),
+                    'amount' => $offer->getPrice() * 100,
                     'currency' => 'eur',
                     'quantity' => 1,
                 ]],

@@ -1,0 +1,64 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Admin Formations{% endblock %}
+
+{% block body %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">Gestion des formations</h1>
+                    <br>
+                    <a href="{{ path('admin_formation_create') }}" class="btn btn-secondary btn-block"><i class="fas fa-plus"></i> Ajouter une nouvelle formation</a>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}">Accueil</a></li>
+                        <li class="breadcrumb-item active">Formations</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            {% if formations is empty %}
+                <div class="alert alert-info alert-dismissible">
+                    <h5><i class="icon fas fa-info"></i> Aucune formation disponible</h5>
+                    Créez votre première formation :
+                    <a href="{{ path('admin_formation_create') }}" class="btn btn-app text-dark">
+                        <i class="fas fa-plus"></i> Ajouter
+                    </a>
+                </div>
+            {% else %}
+                {% for formation in formations %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">{{ formation.title }}</h2>
+                            <div class="card-tools">
+                                <a class="ml-1 mr-1" href="{{ path('admin_formation_edit', {'id' : formation.id}) }}"><i class="fa fa-edit"></i> Éditer formation</a>
+                                <a class="ml-1 mr-1" href="{{ path('admin_formation_section_index', {'id' : formation.id}) }}"><i class="fas fa-edit"></i> Sections</a>
+                                <a class="ml-1 mr-1" href="{{ path('formation_index') }}" target="_blank"><i class="fas fa-eye"></i> Aperçu</a>
+                                <a class="ml-1 mr-1 text-danger"
+                                   href="{{ path('admin_formation_delete', {'id' : formation.id}) }}"
+                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette formation ? Attention : Cela supprimera tout contenu lié à cette formation')">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </a>
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Réduire">
+                                    <i class="fas fa-minus"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            {{ formation.description | raw}}
+                            {% if formation.media %}
+                                <img src="{{ vich_uploader_asset(formation.media, 'imageFile', 'App\\Entity\\Media') }}" class="img-thumbnail" alt="{{ formation.media.imageName }}">
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

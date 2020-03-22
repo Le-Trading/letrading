@@ -1,0 +1,40 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Admin Edition Etape Section Formation{% endblock %}
+
+{% block body %}
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0 text-dark">Gestion de la formation <strong>{{ formation.title }}</strong></h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}">Accueil</a></li>
+                            <li class="breadcrumb-item active"><a href="{{ path('admin_formation_index') }}">Formations</a></li>
+                            <li class="breadcrumb-item active"><a href="{{ path('admin_formation_section_index', {'id' : formation.id}) }}">Sections</a></li>
+                            <li class="breadcrumb-item active">Édition</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container">
+                <div class="card card-secondary">
+                    <div class="card-header">
+                        <h3 class="card-title">Édition de l'étape <strong>{{ etape.title }}</strong></h3>
+                    </div>
+                    <div class="m-3">
+                        {{form_start(form)}}
+                        {{form_widget(form)}}
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications <i class="fas fa-check"></i></button>
+                        {{form_end(form)}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

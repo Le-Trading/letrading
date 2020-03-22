@@ -2385,16 +2385,16 @@
         },
         {
             "name": "stripe/stripe-php",
-            "version": "v7.27.0",
+            "version": "v7.27.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "a49e144ab6ddaaaca68a2f7521c8caf7001324d9"
+                "reference": "e3f37892c709f9318aa0e619511b858a3668165b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/a49e144ab6ddaaaca68a2f7521c8caf7001324d9",
-                "reference": "a49e144ab6ddaaaca68a2f7521c8caf7001324d9",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/e3f37892c709f9318aa0e619511b858a3668165b",
+                "reference": "e3f37892c709f9318aa0e619511b858a3668165b",
                 "shasum": ""
             },
             "require": {
@@ -2438,7 +2438,7 @@
                 "payment processing",
                 "stripe"
             ],
-            "time": "2020-02-28T17:06:16+00:00"
+            "time": "2020-03-13T18:40:27+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -6697,16 +6697,16 @@
         },
         {
             "name": "vich/uploader-bundle",
-            "version": "1.13.1",
+            "version": "1.13.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dustin10/VichUploaderBundle.git",
-                "reference": "282321173e8a01a295d04fa642658b6b10c3ec9a"
+                "reference": "f24c3a1764d30cbe6e7d4d8bbc2daca6f0c2693e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/282321173e8a01a295d04fa642658b6b10c3ec9a",
-                "reference": "282321173e8a01a295d04fa642658b6b10c3ec9a",
+                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/f24c3a1764d30cbe6e7d4d8bbc2daca6f0c2693e",
+                "reference": "f24c3a1764d30cbe6e7d4d8bbc2daca6f0c2693e",
                 "shasum": ""
             },
             "require": {
@@ -6730,6 +6730,7 @@
                 "doctrine/orm": "^2.7",
                 "ext-sqlite3": "*",
                 "knplabs/knp-gaufrette-bundle": "^0.7",
+                "kphoen/rusty": "dev-update-php-parser",
                 "league/flysystem-bundle": "^1.4",
                 "league/flysystem-memory": "^1.0",
                 "matthiasnoback/symfony-dependency-injection-test": "^4.1",
@@ -6790,7 +6791,7 @@
                 "file uploads",
                 "upload"
             ],
-            "time": "2020-02-06T07:49:31+00:00"
+            "time": "2020-03-11T14:30:56+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -7459,16 +7460,16 @@
         },
         {
             "name": "symfony/maker-bundle",
-            "version": "v1.14.3",
+            "version": "v1.14.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/maker-bundle.git",
-                "reference": "c864e7f9b8d1e1f5f60acc3beda11299f637aded"
+                "reference": "bc4df88792fbaaeb275167101dc714218475db5f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/maker-bundle/zipball/c864e7f9b8d1e1f5f60acc3beda11299f637aded",
-                "reference": "c864e7f9b8d1e1f5f60acc3beda11299f637aded",
+                "url": "https://api.github.com/repos/symfony/maker-bundle/zipball/bc4df88792fbaaeb275167101dc714218475db5f",
+                "reference": "bc4df88792fbaaeb275167101dc714218475db5f",
                 "shasum": ""
             },
             "require": {
@@ -7523,7 +7524,7 @@
                 "scaffold",
                 "scaffolding"
             ],
-            "time": "2019-11-07T00:56:03+00:00"
+            "time": "2020-03-04T13:57:29+00:00"
         },
         {
             "name": "symfony/phpunit-bridge",

@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Formations{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="header-formation text-center m-3">
+        <h1 class="text-uppercase">{{ formation.title }}</h1>
+        <a class="btn btn-primary col-10 p-4">
+            <h4 class="text-white">Commencer</h4>
+        </a>
+    </div>
+    <div class="content-formation row">
+        <div class="col-9">
+            {% for section in sections %}
+                <div class="mb-2 mt-2">
+                    <h3 class="text-uppercase"><strong>{{ section.title }}</strong></h3>
+                    {% for etape in etapes %}
+                        {% if etape.section.id == section.id %}
+                            <div class="row">
+                                <div class="col-4">
+                                    {% if etape.media %}
+                                        <img
+                                                class="avatar-large m-3"
+                                                src="{{ vich_uploader_asset(etape.media, 'imageFile', 'App\\Entity\\Media') }}"
+                                                alt="{{ etape.title }}"
+                                        >
+                                    {% else %}
+                                        <img src="{{ asset('images/image-user.png') }}" alt="{{ etape.title }}" class="avatar-large m-3"/>
+                                    {% endif %}
+                                </div>
+                                <div class="col-8 mt-auto mb-auto">
+                                    <h5><strong>{{ etape.title }}</strong></h5>
+                                    {% if etape.description %}
+                                        <h6>{{ etape.description }}</h6>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col-3 text-center">
+            {% if formation.media %}
+                <img
+                        class="formation-image m-3"
+                        src="{{ vich_uploader_asset(formation.media, 'imageFile', 'App\\Entity\\Media') }}"
+                        alt="{{ formation.title }}"
+                >
+            {% endif %}
+            <div class="">
+                <p class="m-2"><strong>X sur X Leçons terminées</strong></p>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
