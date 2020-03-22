@@ -53,6 +53,11 @@
                                             <div class="card-tools">
                                                 <a class="ml-1 mr-1" href="{{ path('admin_formation_section_edit', {idFormation : formation.id, idSection : section.id}) }}"><i class="fa fa-edit"></i> Éditer la section</a>
                                                 <a class="ml-1 mr-1" href="{{ path('admin_formation_etape_create', {idFormation : formation.id, idSection : section.id}) }}"><i class="fas fa-plus-circle"></i> Ajouter une étape</a>
+                                                <a class="ml-1 mr-1 text-danger"
+                                                   href="{{ path('admin_formation_section_delete', {idFormation : formation.id, idSection : section.id}) }}"
+                                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette section ? Attention : Cela supprimera tout contenu lié à cette section')">
+                                                    <i class="fas fa-trash"></i> Supprimer
+                                                </a>
                                             </div>
                                         </div>
                                         <div id="collapse{{ section.id }}" class="panel-collapse collapse in">
@@ -72,8 +77,13 @@
                                                                 <div class="card-header">
                                                                     <h2 class="card-title">{{ etape.title }}</h2>
                                                                     <div class="card-tools">
-                                                                        <a class="ml-1 mr-1" href="{{ path('admin_formation_edit', {'id' : formation.id}) }}"><i class="fa fa-edit"></i> Éditer étape</a>
+                                                                        <a class="ml-1 mr-1" href="{{ path('admin_formation_etape_edit', {idFormation : formation.id, idSection : section.id, idEtape : etape.id}) }}"><i class="fa fa-edit"></i> Éditer étape</a>
                                                                         <a class="ml-1 mr-1" href="{{ path('formation_index') }}" target="_blank"><i class="fas fa-eye"></i> Aperçu</a>
+                                                                        <a class="ml-1 mr-1 text-danger"
+                                                                           href="{{ path('admin_formation_etape_delete', {idFormation : formation.id, idSection : section.id, idEtape : etape.id}) }}"
+                                                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette étape ? Attention : Cela supprimera tout contenu lié à cette étape')">
+                                                                            <i class="fas fa-trash"></i> Supprimer
+                                                                        </a>
                                                                     </div>
                                                                 </div>
                                                             </div>

@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\FormationRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Formation
 {
@@ -37,6 +38,26 @@ class Formation
      * @ORM\OneToMany(targetEntity="App\Entity\SectionFormation", mappedBy="formation", orphanRemoval=true)
      */
     private $sectionFormations;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
+    /**
+     * Permet d'init le la date de creation
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     *
+     * @return void
+     */
+    public function prePersist()
+    {
+        if (empty($this->createdAt)) {
+            $this->createdAt = new \DateTime();
+        }
+    }
 
     public function __construct()
     {
@@ -111,6 +132,18 @@ class Formation
                 $sectionFormation->setFormation(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

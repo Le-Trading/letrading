@@ -86,11 +86,34 @@ class AdminFormationController extends AbstractController
                 'success',
                 "Le contenu de la formation {$formation->getTitle()} à bien été modifié"
             );
+
+            return $this->redirectToRoute('admin_formation_index');
         }
         return $this->render('admin/formation/edit.html.twig',[
             'formation' => $formation,
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * Permet de supprimer une formation
+     *
+     * @Route("/admin/formation/{id}/delete", name="admin_formation_delete")
+     *
+     * @param Formation $formation
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
+    public function delete(Formation $formation, EntityManagerInterface $manager){
+        $manager->remove($formation);
+        $manager->flush();
+
+        $this->addFlash(
+            'success',
+            "La formation a bien été supprimé !"
+        );
+
+        return $this->redirectToRoute('admin_formation_index');
     }
 
     /**
@@ -101,8 +124,12 @@ class AdminFormationController extends AbstractController
      * @return Response
      */
     public function indexSection(Formation $formation, SectionFormationRepository $repoFormation, EtapeFormationRepository $repoEtape){
-        $sections = $repoFormation->findAll();
-        $etapes = $repoEtape->findAll();
+        $sections = $repoFormation->findBy(
+            ['formation' => $formation]
+        );
+        $etapes = $repoEtape->findBy(
+            ['section' => $sections]
+        );
 
         return $this->render('admin/formation/section/index.html.twig',[
             'formation' => $formation,
@@ -167,12 +194,36 @@ class AdminFormationController extends AbstractController
                 'success',
                 "Le contenu de la formation {$section->getTitle()} à bien été modifié"
             );
+
+            return $this->redirectToRoute('admin_formation_section_index', ['id' => $formation->getId()]);
         }
         return $this->render('admin/formation/section/edit.html.twig',[
             'formation' => $formation,
             'section' => $section,
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * Permet de supprimer une section
+     *
+     * @Route("/admin/formation/{idFormation}/section/{idSection}/delete", name="admin_formation_section_delete")
+     * @ParamConverter("formation", options={"mapping": {"idFormation": "id"}})
+     * @ParamConverter("section", options={"mapping": {"idSection": "id"}})
+     *
+     * @param SectionFormation $section
+     * @return Response
+     */
+    public function deleteSection(Formation $formation, SectionFormation $section, EntityManagerInterface $manager){
+        $manager->remove($section);
+        $manager->flush();
+
+        $this->addFlash(
+            'success',
+            "La section a bien été supprimé !"
+        );
+
+        return $this->redirectToRoute('admin_formation_section_index', ['id' => $formation->getId()]);
     }
 
     /**
@@ -210,6 +261,64 @@ class AdminFormationController extends AbstractController
             'formation' => $formation,
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * Permet d'éditer une étape
+     *
+     * @Route("/admin/formation/{idFormation}/section/{idSection}/etape/{idEtape}/edit", name="admin_formation_etape_edit")
+     * @ParamConverter("formation", options={"mapping": {"idFormation": "id"}})
+     * @ParamConverter("section", options={"mapping": {"idSection": "id"}})
+     * @ParamConverter("etape", options={"mapping": {"idEtape": "id"}})
+     *
+     * @param Formation $formation
+     * @param EtapeFormation $etape
+     * @return Response
+     */
+    public function editEtape(EtapeFormation $etape, Formation $formation, Request $request, EntityManagerInterface $manager){
+        $form = $this->createForm(AdminEtapeType::class, $etape);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $manager->persist($etape);
+            $manager->flush();
+
+            $this->addFlash(
+                'success',
+                "Le contenu de la formation {$etape->getTitle()} à bien été modifié"
+            );
+
+            return $this->redirectToRoute('admin_formation_section_index', ['id' => $formation->getId()]);
+        }
+        return $this->render('admin/formation/section/etape/edit.html.twig',[
+            'formation' => $formation,
+            'etape' => $etape,
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * Permet de supprimer une etape
+     *
+     * @Route("/admin/formation/{idFormation}/section/{idSection}/etape/{idEtape}/delete", name="admin_formation_etape_delete")
+     * @ParamConverter("formation", options={"mapping": {"idFormation": "id"}})
+     * @ParamConverter("section", options={"mapping": {"idSection": "id"}})
+     * @ParamConverter("etape", options={"mapping": {"idEtape": "id"}})
+     *
+     * @param EtapeFormation $etape
+     * @return Response
+     */
+    public function deleteEtape(Formation $formation, EtapeFormation $etape, EntityManagerInterface $manager){
+        $manager->remove($etape);
+        $manager->flush();
+
+        $this->addFlash(
+            'success',
+            "L'étape a bien été supprimé !"
+        );
+
+        return $this->redirectToRoute('admin_formation_section_index', ['id' => $formation->getId()]);
     }
 
 }

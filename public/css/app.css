@@ -131,3 +131,8 @@ li.dropdown:hover > .dropdown-menu {
 .text-no-color{
   color: #333;
 }
+
+.admin-alert{
+  margin-left: 250px;
+  background: #f4f6f9;
+}

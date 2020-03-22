@@ -9,7 +9,7 @@
     </ul>
 </nav>
 {% for label, messages in app.flashes %}
-    <div class="container">
+    <div class="p-2 admin-alert">
         <div class="alert alert-{{ label }}">
             {% for message in messages %}
                 <p>{{ message | raw }}</p>
