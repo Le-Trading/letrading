@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+    Création d'une conversation
+{% endblock %}
+
+{% form_theme form 'conversation/_collection.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h2 class="h4 my-4">Création d'une conversation</h2>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    {{ form_start(form) }}
+                    {{ form_row(form.participants) }}
+                    {{ form_row(form.messages) }}
+
+                    <button class="btn btn-info" type="submit">Envoyer <i class="fa fa-paper-plane"></i></button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+{% block javascripts %}
+    <script src="/js/conversation.js">
+    </script>
+{% endblock %}
+
+
+

@@ -3,65 +3,185 @@
     Conversation
 {% endblock %}
 {% block body %}
-    <div class="container">
-        <h4 class="text-center">Conversation avec
-                {% for participant in conversation.participants %}
-                    {% if loop.last %}
-                        {{ participant.pseudo }}
-                    {% endif %}
-                    {% else %}
-                        {{ participant.pseudo }},
-                {% endfor %}
-        </h4>
-        <div class="col m5 offset-s2 block">
-            {% for key,message in messages %}
-                {% set prevAuthor = messages[key - 1].author|default(messages[0].author) %}
-                {% set author = message.author %}
-                <div class="message-box row">
-                    {% if author.pseudo != prevAuthor.pseudo or key == 0 %}
-                        <a href="">
-                            <div class="user-icon" style="">
-                            </div>
-                        </a>
-                        <div class="author">{{ message.author.pseudo }}</div>
-                    {% endif %}
-                    <div id="msg-{{ message.id }}"
-                         class="message {% if message.isRead == 0 and message.author != app.user %}unread{% endif %}">
-                        <div class="created"> {{ message.createdAt|date }}</div>
-                        <span>{{ message.content|raw }}</span>
+    <div class="container chat my-4">
+        <div class="card bg-primary">
+            <div class="card-header msg_head">
+                <div class="d-flex bd-highlight">
+                    <div class="user_info">
+                        <span>Conversation avec
+                            {% set lastParticipant = conversation.participants | last %}
+                            {% for participant in conversation.participants %}
+
+                                {% if  participant.id != app.user.id %}
+                                    {{ participant.pseudo }}
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <p>{{ messages | length }} messages</p>
                     </div>
                 </div>
-            {% endfor %}
-            {{ form_start(form) }}
-            {{ form_widget(form) }}
-            <button class="btn btn-info" type="submit">Envoyer <i class="fa fa-paper-plane"></i></button>
-            {{ form_end(form) }}
+            </div>
+            <div class="card-body msg_card_body">
+                {% for key,message in messages %}
+                    {% set prevAuthor = messages[key - 1].author|default(messages[0].author) %}
+                    {% set author = message.author %}
+                    <div class="d-flex {% if author == app.user %} justify-content-end {% else %} justify-content-start {% endif %} mb-4">
+                        {% if author == app.user %}
+                            <div id="msg-{{ message.id }}"
+                                 class="msg_cotainer_send {% if message.isRead == 0 and message.author != app.user %}unread{% endif %}"
+                                 style="{% if author.pseudo == prevAuthor.pseudo and key != 0%}
+                              margin-right:50px;
+                                {% endif %}">
+
+                                {{ message.content|raw }}
+                                {% if message.media %}
+
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-lg" data-toggle="modal"
+                                            data-target="#model{{ message.id }}">
+                                        <img src="{{ vich_uploader_asset(message.media, 'imageFile', 'App\\Entity\\Media') }}"
+                                             class="img-fluid img-thumbnail" alt="Image du post de {{ message.author.pseudo }}">
+
+
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="model{{ message.id }}" tabindex="-1" role="dialog"
+                                         aria-labelledby="modelTitleId" aria-hidden="true">
+
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <img src="{{ vich_uploader_asset(message.media, 'imageFile', 'App\\Entity\\Media') }}"
+                                                         style="max-height:100%; max-width:100%;" class="img"
+                                                         alt="{{ message.author.pseudo }}">
+
+
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Fermer
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {% endif %}
+                                <span class="msg_time_send"> {{ message.createdAt|date('d/m/Y H:i') }}</span>
+                            </div>
+                            {% if author.pseudo != prevAuthor.pseudo or key == 0 %}
+                                <div class="img_cont_msg">
+                                    <img class="rounded-circle user_img_msg" src="{% if author.media %}
+                                {{ vich_uploader_asset(author.media, 'imageFile', 'App\\Entity\\Media') }}
+                            {% else %}
+                                {{ asset('images/image-user.png') }}
+                            {% endif %}
+                                    " alt="Avatar de {{ author.pseudo }}"/>
+                                </div>
+                            {% endif %}
+                        {% else %}
+
+                            {# SI L'AUTEUR DU MSG EST PAS L'UTILISATEUR COURANT #}
+                            {% if author.pseudo != prevAuthor.pseudo or key == 0 %}
+                                <div class="img_cont_msg">
+                                    <img class="rounded-circle user_img_msg" src="{% if author.media %}
+                                {{ vich_uploader_asset(author.media, 'imageFile', 'App\\Entity\\Media') }}
+                            {% else %}
+                                {{ asset('images/image-user.png') }}
+                            {% endif %}
+                                    " alt="Avatar de {{ author.pseudo }}"/>
+                                </div>
+
+                            {% endif %}
+                            <div id="msg-{{ message.id }}"
+                                 class="msg_cotainer {% if message.isRead == 0 and message.author != app.user %}unread{% endif %}"
+                                 style="{% if author.pseudo == prevAuthor.pseudo and key != 0%}
+                              margin-left:50px;
+                                {% endif %}">
+
+                                {{ message.content|raw }}
+                                {% if message.media %}
+
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-lg" data-toggle="modal"
+                                            data-target="#model{{ message.id }}">
+                                        <img src="{{ vich_uploader_asset(message.media, 'imageFile', 'App\\Entity\\Media') }}"
+                                             class="img-thumbnail" alt="Image du post de {{ message.author.pseudo }}">
+
+
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="model{{ message.id }}" tabindex="-1" role="dialog"
+                                         aria-labelledby="modelTitleId" aria-hidden="true">
+
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <img src="{{ vich_uploader_asset(message.media, 'imageFile', 'App\\Entity\\Media') }}"
+                                                         style="max-height:100%; max-width:100%;" class="img"
+                                                         alt="{{ message.author.pseudo }}">
+
+
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Fermer
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {% endif %}
+                                <span class="msg_time"> {{ message.createdAt|date('d/m/Y H:i') }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <button class="btn btn-info" type="submit">Envoyer <i class="fa fa-paper-plane"></i></button>
+                {{ form_end(form) }}
+            </div>
         </div>
     </div>
 {% endblock %}
 
-{% block javascripts %}
-    <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
-    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    {% block javascripts %}
+        <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
+        <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
 
-    <script>
-        $(document).ready(function() {
-            $('body').on('mouseover', '.message.unread', function () {
-                var msgId = parseInt($(this).attr('id').match(/\d+/)[0]);
-                console.log("msgId");
-                var block = $(this);
-                $.ajax({
-                    url: Routing.generate('read-message', {idMessage: msgId}),
-                    method: 'post',
-                    success: function (res) {
-                        if (res.ok === true) {
-                            block.css('background-color', 'white');
-                            block.removeClass('unread');
+        <script>
+            $(document).ready(function () {
+                $('body').on('mouseover', '.unread', function () {
+                    var msgId = parseInt($(this).attr('id').match(/\d+/)[0]);
+                    console.log("msgId");
+                    var block = $(this);
+                    $.ajax({
+                        url: Routing.generate('read-message', {idMessage: msgId}),
+                        method: 'post',
+                        success: function (res) {
+                            if (res.ok === true) {
+                                block.removeClass('unread');
+                            }
                         }
-                    }
+                    });
                 });
             });
-        });
-    </script>
-    {# @TODO : faire le unread #}
-{% endblock %}
+        </script>
+        {# @TODO : faire le unread #}
+    {% endblock %}

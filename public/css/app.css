@@ -148,3 +148,94 @@ li.dropdown:hover > .dropdown-menu {
 .text-no-color{
   color: #333;
 }
+
+.msg_cotainer{
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 10px;
+  border-radius: 25px;
+  background-color: #82ccdd;
+  padding: 10px;
+  position: relative;
+}
+.msg_cotainer_send{
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 10px;
+  border-radius: 25px;
+  background-color: #18BC9C ;
+  padding: 10px;
+  position: relative;
+}
+.msg_time{
+  left: 0;
+  bottom: -15px;
+  color: rgba(255,255,255,0.5);
+  font-size: 10px;
+}
+.msg_time_send{
+  right:0;
+  bottom: -15px;
+  color: rgba(255,255,255,0.5);
+  font-size: 10px;
+}
+.img_cont_msg{
+  height: 40px;
+  width: 40px;
+}
+.msg_card_body{
+}
+.chat{
+  margin-top: auto;
+  margin-bottom: auto;
+}
+.user_img{
+  height: 70px;
+  width: 70px;
+  border:1.5px solid #f5f6fa;
+
+}
+.user_img_msg{
+  height: 40px;
+  width: 40px;
+  border:1.5px solid #f5f6fa;
+
+}
+.user_info{
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 15px;
+}
+.user_info span{
+  font-size: 20px;
+  color: white;
+}
+.user_info p{
+  font-size: 10px;
+  color: rgba(255,255,255,0.6);
+}
+.card{
+  border-radius: 15px !important;
+}
+.card-header{
+  border-radius: 15px 15px 0 0 !important;
+  border-bottom: 0 !important;
+}
+.msg_head{
+  position: relative;
+}
+.user_info{
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 15px;
+}
+.msg_card_body .unread {
+  background-color: #d6b469!important;
+}
+.message-box .created {
+  font-size: 10px;
+  color: black;
+}
+#message #message_media legend, #message #message_media input{
+  color:#fff;
+}

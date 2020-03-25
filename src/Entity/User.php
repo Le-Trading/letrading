@@ -410,6 +410,7 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Conversation", mappedBy="participants")
+     * @ORM\OrderBy({"updatedAt" = "DESC"})
      */
     private $conversations;
 

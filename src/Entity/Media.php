@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
@@ -34,7 +35,9 @@ class Media implements \Serializable
      * NOTE: This is not a mapped field of entity metadata, just a simple property.
      * 
      * @Vich\UploadableField(mapping="images_site", fileNameProperty="imageName", size="imageSize")
-     * 
+     * @Assert\File(
+     *     maxSize = "2048k"
+     * )
      * @var File
      */
     private $imageFile;
