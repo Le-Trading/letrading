@@ -50,6 +50,8 @@
                     'App\\Controller\\PagesController::getNotifs'
                 	))
                 }}
+				{{ render(controller('App\\Controller\\PagesController:getMessagesUnread')) }}
+
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#">
 						{% if app.user.media %}

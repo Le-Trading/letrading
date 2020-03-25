@@ -10,6 +10,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
@@ -35,7 +36,9 @@ class Media implements \Serializable
      * NOTE: This is not a mapped field of entity metadata, just a simple property.
      *
      * @Vich\UploadableField(mapping="images_site", fileNameProperty="imageName", size="imageSize")
-     * 
+     * @Assert\File(
+     *     maxSize = "2048k"
+     * )
      * @var File
      */
     private $imageFile;
@@ -65,6 +68,11 @@ class Media implements \Serializable
      * @ORM\OneToOne(targetEntity="App\Entity\Post", inversedBy="media", cascade={"persist", "remove"})
      */
     private $post;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Message", mappedBy="media", cascade={"persist", "remove"})
+     */
+    private $message;
 
     /**
      * Permet d'init le slug
@@ -171,6 +179,24 @@ class Media implements \Serializable
     public function setPost(?Post $post): self
     {
         $this->post = $post;
+
+        return $this;
+    }
+
+    public function getMessage(): ?Message
+    {
+        return $this->message;
+    }
+
+    public function setMessage(?Message $message): self
+    {
+        $this->message = $message;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newMedia = null === $message ? null : $this;
+        if ($message->getMedia() !== $newMedia) {
+            $message->setMedia($newMedia);
+        }
 
         return $this;
     }

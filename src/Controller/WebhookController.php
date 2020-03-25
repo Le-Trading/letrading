@@ -107,11 +107,11 @@ class WebhookController extends AbstractController
                 $stripeSubscriptionId = $event->data->object->subscription;
                 if ($stripeSubscriptionId) {
                     $subscription = $this->findSubscription($stripeSubscriptionId);
-                    if ($event->data->object->attempt_count == 1) {
-                        $stripeClient->fullyCancelSubscription($subscription);
-                        $user = $subscription->getUser();
-                        // todo - send the user an email about the problem
-                    }
+//                    if ($event->data->object->attempt_count == 1) {
+//                        $stripeClient->fullyCancelSubscription($subscription);
+//                        $user = $subscription->getUser();
+//                        // todo - send the user an email about the problem
+//                    }
                     if ($event->data->object->attempt_count == 4) {
                         $stripeClient->fullyCancelSubscription($subscription);
                     }

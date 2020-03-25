@@ -101,6 +101,7 @@ class StripeClient
             $session = Session::create([
                 'customer' => $user->getStripeCustomerId(),
                 'payment_method_types' => ['card'],
+                'mode' => 'setup',
                 'subscription_data' => [
                     'items' => [[
                         'plan' => $offer->getPlan(),
@@ -242,15 +243,14 @@ class StripeClient
 
     /**
      * @param $stripeSubscriptionId
-     * @return int
+     * @return Subscription
      * @throws ApiErrorException
      */
     public function findSubscription($stripeSubscriptionId)
     {
         try {
             $sub = \Stripe\Subscription::retrieve($stripeSubscriptionId);
-            dump($sub);
-            return $sub->current_period_end;
+            return $sub;
         } catch (\Stripe\Error\Base $e) {
             $this->logger->error(sprintf('%s exception encountered when creating a classic payment: "%s"', get_class($e), $e->getMessage()), ['exception' => $e]);
 

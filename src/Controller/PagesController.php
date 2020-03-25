@@ -6,6 +6,7 @@ use App\Client\StripeClient;
 use App\Entity\Contact;
 use App\Entity\Notif;
 use App\Form\ContactType;
+use App\Repository\MessageRepository;
 use App\Repository\NotifRepository;
 use App\Repository\OffersRepository;
 use App\Repository\ThreadRepository;
@@ -129,6 +130,21 @@ class PagesController extends AbstractController
         ]);
         return $this->render('partials/request/notifs.html.twig',
             ['notifs' => $notifs, 'notifNonLu' => count($nbNonLu)]
+        );
+    }
+
+    public function getMessagesUnread(MessageRepository $repo){
+        $convs = $this->getUser()->getConversations();
+        $count = 0;
+        foreach($convs as $conv){
+            foreach($conv->getMessages() as $message){
+                if ($message->getAuthor() != $this->getUser() && !$message->getIsRead()){
+                    $count++;
+                }
+            }
+        }
+        return $this->render('partials/request/unreadMessages.html.twig',
+            ['messagesCount' => $count]
         );
     }
 }

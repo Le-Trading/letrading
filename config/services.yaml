@@ -45,3 +45,5 @@ services:
     App\Service\JwtProvider:
         arguments:
             $secret: '%env(MERCURE_JWT_KEY)%'
+    App\Service\MediaNamer:
+        public: true

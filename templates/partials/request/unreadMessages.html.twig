@@ -1,0 +1,21 @@
+
+
+{% block stylesheet %}
+
+{% endblock %}
+<div class="header">
+    <a href="{{ path('user_conversations') }}" class="notification-trigger">
+        <i class="fas fa-envelope fa-lg"></i>
+        <div class="notifMsg"></div>
+    </a>
+</div>
+{# @TODO : update le nbr de msg non lus comme notifs #}
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+            if({{ messagesCount }} !== 0){
+                $('.notifMsg').addClass('notification-num').html({{ messagesCount }});
+            }
+        });
+    </script>
+{% endblock %}

@@ -32,7 +32,7 @@
                     Suivre
                 {% endif %}
             </a>
-            <a href="#" class="btn btn-info">Envoyer mp</a>
+            <a href="{{ path('create_conversation', {'id':user.id}) }}" class="btn btn-info">Envoyer mp</a>
         </div>
     </div>
 {% endblock %}
