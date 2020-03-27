@@ -26,8 +26,7 @@ class PostType extends ApplicationType
         $builder
             ->add('content', CKEditorType::class, ['required' => false, 'label' => false])
             ->add('media', MediaType::class, [
-                'label' => false,
-                'attr' => ['placeholder' => 'Choisissez votre fichier'],
+                'label' => "Pièce Jointe",
                 'required' => false
             ])
             ->add('feeling', ChoiceType::class, [

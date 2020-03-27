@@ -7,7 +7,7 @@
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
                 {% if app.user.media %}
-                    <img src="{{ vich_uploader_asset(app.user.media, 'imageFile', 'App\\Entity\\Media') }}" class="img-circle elevation-2" alt="{{ app.user.fullName }}">
+                    <img src="{{ vich_uploader_asset(app.user.media, 'avatarFile', 'App\\Entity\\Media') }}" class="img-circle elevation-2" alt="{{ app.user.fullName }}">
                 {% else %}
                     <img src="{{ asset('images/image-user.png') }}" alt="Avatar de {{ app.user.pseudo }}" class="img-circle elevation-2"/>
                 {% endif %}

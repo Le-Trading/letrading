@@ -3,10 +3,15 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\EtapeFormationRepository")
  * @ORM\HasLifecycleCallbacks()
+ * @UniqueEntity(
+ *     fields={"title"},
+ *     message="L'étape existe déja. Merci de choisir un autre nom"
+ * )
  */
 class EtapeFormation
 {
@@ -44,7 +49,7 @@ class EtapeFormation
     private $commentaire;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Media", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\Media", mappedBy="etapeFormation", cascade={"persist", "remove"})
      */
     private $media;
 
@@ -52,6 +57,11 @@ class EtapeFormation
      * @ORM\Column(type="integer")
      */
     private $position;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Media", mappedBy="etapeContenuFormation", cascade={"persist", "remove"})
+     */
+    private $content;
 
     /**
      * Permet d'init le la date de creation
@@ -142,6 +152,11 @@ class EtapeFormation
     {
         $this->media = $media;
 
+        // set (or unset) the owning side of the relation if necessary
+        $newEtapeFormation = null === $media ? null : $this;
+        if ($media->getEtapeFormation() !== $newEtapeFormation) {
+            $media->setEtapeFormation($newEtapeFormation);
+        }
         return $this;
     }
 
@@ -154,6 +169,23 @@ class EtapeFormation
     {
         $this->position = $position;
 
+        return $this;
+    }
+
+    public function getContent(): ?Media
+    {
+        return $this->content;
+    }
+
+    public function setContent(?Media $content): self
+    {
+        $this->content = $content;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newEtapeContenuFormation = null === $content ? null : $this;
+        if ($content->getEtapeContenuFormation() !== $newEtapeContenuFormation) {
+            $content->setEtapeContenuFormation($newEtapeContenuFormation);
+        }
         return $this;
     }
 }

@@ -31,13 +31,73 @@ class Media implements \Serializable
     private $user;
 
     /**
-     * NOTE: This is not a mapped field of entity metadata, just a simple property.
-     * 
-     * @Vich\UploadableField(mapping="images_site", fileNameProperty="imageName", size="imageSize")
+     * @ORM\OneToOne(targetEntity="App\Entity\Formation", inversedBy="media", cascade={"persist", "remove"})
+     */
+    private $formation;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\SectionFormation", inversedBy="media", cascade={"persist", "remove"})
+     */
+    private $sectionFormation;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\EtapeFormation", inversedBy="media", cascade={"persist", "remove"})
+     */
+    private $etapeFormation;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\EtapeFormation", inversedBy="media", cascade={"persist", "remove"})
+     */
+    private $etapeContenuFormation;
+
+    /**
+     * @Vich\UploadableField(mapping="default", fileNameProperty="imageName", size="imageSize")
+     *
+     * @var File
+     */
+    private $defaultFile;
+
+    /**
+     * @Vich\UploadableField(mapping="avatar", fileNameProperty="imageName", size="imageSize")
      * 
      * @var File
      */
-    private $imageFile;
+    private $avatarFile;
+
+    /**
+     * @Vich\UploadableField(mapping="forum", fileNameProperty="imageName", size="imageSize")
+     *
+     * @var File
+     */
+    private $forumFile;
+
+    /**
+     * @Vich\UploadableField(mapping="formation", fileNameProperty="imageName", size="imageSize")
+     *
+     * @var File
+     */
+    private $formationFile;
+
+    /**
+     * @Vich\UploadableField(mapping="section_formation", fileNameProperty="imageName", size="imageSize")
+     *
+     * @var File
+     */
+    private $sectionFormationFile;
+
+    /**
+     * @Vich\UploadableField(mapping="etape_formation", fileNameProperty="imageName", size="imageSize")
+     *
+     * @var File
+     */
+    private $etapeFormationFile;
+
+    /**
+     * @Vich\UploadableField(mapping="etape_contenu_formation", fileNameProperty="imageName", size="imageSize")
+     *
+     * @var File
+     */
+    private $etapeContenuFormationFile;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -92,29 +152,172 @@ class Media implements \Serializable
 
         return $this;
     }
-    /**
-     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
-     * of 'UploadedFile' is injected into this setter to trigger the update. If this
-     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
-     * must be able to accept an instance of 'File' as the bundle will inject one here
-     * during Doctrine hydration.
-     *
-     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $imageFile
-     */
-    public function setImageFile(?File $imageFile = null): void
-    {
-        $this->imageFile = $imageFile;
 
-        if (null !== $imageFile) {
-            // It is required that at least one field changes if you are using doctrine
-            // otherwise the event listeners won't be called and the file is lost
+    public function getFormation(): ?Formation
+    {
+        return $this->formation;
+    }
+
+    public function setFormation(?Formation $formation): self
+    {
+        $this->formation = $formation;
+
+        return $this;
+    }
+
+    public function getSectionFormation(): ?SectionFormation
+    {
+        return $this->sectionFormation;
+    }
+
+    public function setSectionFormation(?SectionFormation $sectionFormation): self
+    {
+        $this->sectionFormation = $sectionFormation;
+
+        return $this;
+    }
+
+    public function getEtapeFormation(): ?EtapeFormation
+{
+    return $this->etapeFormation;
+}
+
+    public function setEtapeFormation(?EtapeFormation $etapeFormation): self
+    {
+        $this->etapeFormation = $etapeFormation;
+
+        return $this;
+    }
+
+    public function getEtapeContenuFormation(): ?EtapeFormation
+    {
+        return $this->etapeContenuFormation;
+    }
+
+    public function setEtapeContenuFormation(?EtapeFormation $etapeContenuFormation): self
+    {
+        $this->etapeContenuFormation = $etapeContenuFormation;
+
+        return $this;
+    }
+
+    /**
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $defaultFile
+     */
+    public function setDefaultFile(?File $defaultFile = null): void
+    {
+        $this->defaultFile = $defaultFile;
+
+        if (null !== $defaultFile) {
             $this->updatedAt = new \DateTimeImmutable();
         }
     }
 
-    public function getImageFile(): ?File
+    public function getDefaultFile(): ?File
     {
-        return $this->imageFile;
+        return $this->defaultFile;
+    }
+
+    /**
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $avatarFile
+     */
+    public function setAvatarFile(?File $avatarFile = null): void
+    {
+        $this->avatarFile = $avatarFile;
+
+        if (null !== $avatarFile) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getAvatarFile(): ?File
+    {
+        return $this->avatarFile;
+    }
+
+    /**
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $forumFile
+     */
+    public function setForumFile(?File $forumFile = null): void
+    {
+        $this->forumFile = $forumFile;
+
+        if (null !== $forumFile) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getForumFile(): ?File
+    {
+        return $this->forumFile;
+    }
+
+    /**
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $formationFile
+     */
+    public function setFormationFile(?File $formationFile = null): void
+    {
+        $this->formationFile = $formationFile;
+
+        if (null !== $formationFile) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getFormationFile(): ?File
+    {
+        return $this->formationFile;
+    }
+
+    /**
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $sectionFormationFile
+     */
+    public function setSectionFormationFile(?File $sectionFormationFile = null): void
+    {
+        $this->sectionFormationFile = $sectionFormationFile;
+
+        if (null !== $sectionFormationFile) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getSectionFormationFile(): ?File
+    {
+        return $this->sectionFormationFile;
+    }
+
+    /**
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $etapeFormationFile
+     */
+    public function setEtapeFormationFile(?File $etapeFormationFile = null): void
+    {
+        $this->etapeFormationFile = $etapeFormationFile;
+
+        if (null !== $etapeFormationFile) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getEtapeFormationFile(): ?File
+    {
+        return $this->etapeFormationFile;
+    }
+
+    /**
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $etapeContenuFormationFile
+     */
+    public function setEtapeContenuFormationFile(?File $etapeContenuFormationFile = null): void
+    {
+        $this->etapeContenuFormationFile = $etapeContenuFormationFile;
+
+        if (null !== $etapeContenuFormationFile) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getEtapeContenuFormationFile(): ?File
+    {
+        return $this->etapeContenuFormationFile;
     }
 
     public function setImageName(?string $imageName): void

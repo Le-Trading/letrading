@@ -52,7 +52,7 @@
                         <div class="card-body">
                             {{ formation.description | raw}}
                             {% if formation.media %}
-                                <img src="{{ vich_uploader_asset(formation.media, 'imageFile', 'App\\Entity\\Media') }}" class="img-thumbnail" alt="{{ formation.media.imageName }}">
+                                <img src="{{ vich_uploader_asset(formation.media, 'formationFile', 'App\\Entity\\Media') }}" class="img-thumbnail" alt="{{ formation.media.imageName }}">
                             {% endif %}
                         </div>
                     </div>

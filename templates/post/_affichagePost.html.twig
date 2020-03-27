@@ -5,7 +5,7 @@
 		<div class="row">
 			<div class="col-md-2">
 				{% if author.media %}
-					<img src="{{ vich_uploader_asset(author.media, 'imageFile', 'App\\Entity\\Media') }}" alt="Avatar de {{author.pseudo}}" class=" img img-rounded img-fluid"/>
+					<img src="{{ vich_uploader_asset(author.media, 'avatarFile', 'App\\Entity\\Media') }}" alt="Avatar de {{author.pseudo}}" class=" img img-rounded img-fluid"/>
 					{% else %}
 						<img src="{{ asset('images/image-user.png') }}" alt="Avatar de {{author.pseudo}}" class=" img img-rounded img-fluid"/>
 				{% endif %}
@@ -66,7 +66,7 @@
 
 						<!-- Button trigger modal -->
 						<button type="button" class="btn btn-lg" data-toggle="modal" data-target="#model{{post.id}}">
-							<img src="{{vich_uploader_asset(post.media, 'imageFile', 'App\\Entity\\Media')}}" class="img-thumbnail" alt="Image du post de {{post.author.pseudo}}">
+							<img src="{{vich_uploader_asset(post.media, 'forumFile', 'App\\Entity\\Media')}}" class="img-thumbnail" alt="Image du post de {{post.author.pseudo}}">
 
 
 						</button>
@@ -82,7 +82,7 @@
 										</button>
 									</div>
 									<div class="modal-body">
-										<img src="{{vich_uploader_asset(post.media, 'imageFile', 'App\\Entity\\Media')}}" style="max-height:100%; max-width:100%;" class="img" alt="{{post.author.pseudo}}">
+										<img src="{{vich_uploader_asset(post.media, 'forumFile', 'App\\Entity\\Media')}}" style="max-height:100%; max-width:100%;" class="img" alt="{{post.author.pseudo}}">
 
 
 									</div>

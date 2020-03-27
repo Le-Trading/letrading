@@ -53,7 +53,7 @@
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#">
 						{% if app.user.media %}
-							<img src="{{ vich_uploader_asset(app.user.media, 'imageFile', 'App\\Entity\\Media') }}" class="avatar avatar-mini" alt="{{ app.user.fullName }}">
+							<img src="{{ vich_uploader_asset(app.user.media, 'avatarFile', 'App\\Entity\\Media') }}" class="avatar avatar-mini" alt="{{ app.user.fullName }}">
 							{{ app.user.fullName }}
 						{% else %}
 							<img src="{{ asset('images/image-user.png') }}" alt="Avatar de {{ app.user.pseudo }}" class="avatar avatar-mini"/>
