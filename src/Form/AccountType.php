@@ -21,7 +21,7 @@ class AccountType extends AbstractType
             ->add('pseudo', TextType::class, ['label' => 'Pseudo'])
             ->add('email', EmailType::class, ['label' => 'Email'])
             ->add('media', MediaType::class, [
-                'attr' => ['placeholder' => 'Choisissez votre fichier'],
+                'label' => "Avatar",
                 'required' => false
             ]);
     }

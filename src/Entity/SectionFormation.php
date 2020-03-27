@@ -5,10 +5,15 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\SectionFormationRepository")
  * @ORM\HasLifecycleCallbacks()
+ * @UniqueEntity(
+ *     fields={"title"},
+ *     message="La section existe déja. Merci de choisir un autre nom"
+ * )
  */
 class SectionFormation
 {
@@ -30,7 +35,7 @@ class SectionFormation
     private $description;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Media", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\Media", mappedBy="sectionFormation", cascade={"persist", "remove"})
      */
     private $media;
 
@@ -108,6 +113,11 @@ class SectionFormation
     {
         $this->media = $media;
 
+        // set (or unset) the owning side of the relation if necessary
+        $newSectionFormation = null === $media ? null : $this;
+        if ($media->getSectionFormation() !== $newSectionFormation) {
+            $media->setSectionFormation($newSectionFormation);
+        }
         return $this;
     }
 

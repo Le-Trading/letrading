@@ -2,10 +2,50 @@ vich_uploader:
   db_driver: orm
 
   mappings:
-    images_site:
+    default:
       uri_prefix: /images
       upload_destination: "%kernel.project_dir%/public/images"
       inject_on_load: false
       delete_on_update: true
       delete_on_remove: true
       namer: App\Service\MediaNamer
+    avatar:
+      uri_prefix: /images/avatar
+      upload_destination: "%kernel.project_dir%/public/images/avatar"
+      inject_on_load: false
+      delete_on_update: true
+      delete_on_remove: true
+      namer:
+        service: Vich\UploaderBundle\Naming\PropertyNamer
+        options: { property: user.slug }
+    forum:
+      uri_prefix: /images/forum
+      upload_destination: "%kernel.project_dir%/public/images/forum"
+      inject_on_load: false
+      delete_on_update: true
+      delete_on_remove: true
+    formation:
+      uri_prefix: /images/formation
+      upload_destination: "%kernel.project_dir%/public/images/formation"
+      inject_on_load: false
+      delete_on_update: true
+      delete_on_remove: true
+      namer:
+        service: Vich\UploaderBundle\Naming\PropertyNamer
+        options: { property: formation.title }
+    section_formation:
+      uri_prefix: /images/formation/section
+      upload_destination: "%kernel.project_dir%/public/images/formation/section"
+      inject_on_load: false
+      delete_on_update: true
+      delete_on_remove: true
+      namer:
+        service: Vich\UploaderBundle\Naming\PropertyNamer
+        options: { property: sectionFormation.title }
+    etape_formation:
+      uri_prefix: /images/formation/etape
+      upload_destination: "%kernel.project_dir%/public/images/formation/etape"
+      inject_on_load: false
+      delete_on_update: true
+      delete_on_remove: true
+      namer: Vich\UploaderBundle\Naming\HashNamer

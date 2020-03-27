@@ -22,12 +22,20 @@ class FormationController extends AbstractController
             ['position' => 'asc']
         );
 
-        return $this->render('formation/index.html.twig',
-            [
-                'formation' => $formations[0],
-                'sections' => $sections,
-                'etapes' => $etapes
-            ]
-        );
+        if(empty($formations)){
+            $this->addFlash(
+                'warning',
+                "Aucune formation n'est encore disponible"
+            );
+            return $this->redirectToRoute('homepage');
+        }else{
+            return $this->render('formation/index.html.twig',
+                [
+                    'formation' => $formations[0],
+                    'sections' => $sections,
+                    'etapes' => $etapes
+                ]
+            );
+        }
     }
 }

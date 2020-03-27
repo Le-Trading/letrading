@@ -22,7 +22,7 @@
                                     {% if etape.media %}
                                         <img
                                                 class="avatar-large m-3"
-                                                src="{{ vich_uploader_asset(etape.media, 'imageFile', 'App\\Entity\\Media') }}"
+                                                src="{{ vich_uploader_asset(etape.media, 'etapeFormationFile', 'App\\Entity\\Media') }}"
                                                 alt="{{ etape.title }}"
                                         >
                                     {% else %}
@@ -45,16 +45,16 @@
             {% if formation.media %}
                 <img
                         class="formation-image m-3"
-                        src="{{ vich_uploader_asset(formation.media, 'imageFile', 'App\\Entity\\Media') }}"
+                        src="{{ vich_uploader_asset(formation.media, 'formationFile', 'App\\Entity\\Media') }}"
                         alt="{{ formation.title }}"
                 >
             {% endif %}
-            <div class="">
-                <p class="m-2"><strong>X sur X Leçons terminées</strong></p>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="">
+                    <p class="m-2"><strong>X sur X Leçons terminées</strong></p>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
                 </div>
-            </div>
         </div>
     </div>
 </div>

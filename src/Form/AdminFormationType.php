@@ -24,7 +24,7 @@ class AdminFormationType extends ApplicationType
                 'label' => "Description de la formation",
             ])
             ->add('media', MediaType::class, [
-                'attr' => ['placeholder' => 'Choisissez votre fichier'],
+                'label' => "Aperçu de la formation",
                 'required' => false
             ])
         ;

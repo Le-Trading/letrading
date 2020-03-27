@@ -5,10 +5,15 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\FormationRepository")
  * @ORM\HasLifecycleCallbacks()
+ * @UniqueEntity(
+ *     fields={"title"},
+ *     message="La formation existe déja. Merci de choisir un autre nom"
+ * )
  */
 class Formation
 {
@@ -30,7 +35,7 @@ class Formation
     private $description;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Media", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\Media", mappedBy="formation", cascade={"persist", "remove"})
      */
     private $media;
 
@@ -102,6 +107,11 @@ class Formation
     {
         $this->media = $media;
 
+        // set (or unset) the owning side of the relation if necessary
+        $newFormation = null === $media ? null : $this;
+        if ($media->getFormation() !== $newFormation) {
+            $media->setFormation($newFormation);
+        }
         return $this;
     }
 

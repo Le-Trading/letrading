@@ -112,6 +112,10 @@ class RequestService {
             ['section' => $idSection],
             ['position' => 'desc']
         );
-        return $lastEtape->getPosition();
+
+        if(is_null($lastEtape))
+            return 0;
+        else
+            return $lastEtape->getPosition();
     }
 }

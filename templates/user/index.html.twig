@@ -10,7 +10,7 @@
             <div class="col-6 text-center">
                 {% if user.media %}
                     <img class="avatar mb-3"
-                         src="{{ vich_uploader_asset(user.media, 'imageFile', 'App\\Entity\\Media') }}"
+                         src="{{ vich_uploader_asset(user.media, 'avatarFile', 'App\\Entity\\Media') }}"
                          alt="Avatar de {{ user.fullName }}">
                 {% else %}
                     <img class="avatar mb-3"

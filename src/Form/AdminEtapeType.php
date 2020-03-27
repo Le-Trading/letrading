@@ -23,7 +23,11 @@ class AdminEtapeType extends ApplicationType
                 'label' => "Description de l'étape"
             ])
             ->add('media', MediaType::class, [
-                'attr' => ['placeholder' => 'Choisissez votre fichier'],
+                'label' => "Aperçu de l'étape",
+                'required' => false
+            ])
+            ->add('content', MediaType::class, [
+                'label' => "Contenu de la formation",
                 'required' => false
             ])
         ;
