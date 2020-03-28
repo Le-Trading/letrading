@@ -16,13 +16,13 @@ class MediaType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->addEventListener(FormEvents::PRE_SET_DATA, function(FormEvent $event){
+            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
                 $form = $event->getForm();
 
                 //récupération provenance entité
                 $entityParent = $event->getForm()->getParent()->getConfig()->getDataClass();
 
-                if($entityParent=="App\Entity\User"){
+                if ($entityParent == "App\Entity\User") {
                     $form->add('avatarFile', VichImageType::class, [
                         'label' => false,
                         'attr' => ['placeholder' => 'Choisissez votre fichier'],
@@ -38,31 +38,37 @@ class MediaType extends AbstractType
                             ])
                         ]
                     ]);
-                } elseif($entityParent=="App\Entity\Post"){
+                } elseif ($entityParent == "App\Entity\Post") {
                     $form->add('forumFile', VichImageType::class, [
                         'label' => false,
                         'attr' => ['placeholder' => 'Choisissez votre fichier'],
                         'required' => false
                     ]);
-                }elseif($entityParent=="App\Entity\Formation"){
+                } elseif ($entityParent == "App\Entity\Formation") {
                     $form->add('formationFile', VichImageType::class, [
                         'label' => false,
                         'attr' => ['placeholder' => 'Choisissez votre fichier'],
                         'required' => false
                     ]);
-                }elseif($entityParent=="App\Entity\SectionFormation"){
+                } elseif ($entityParent == "App\Entity\SectionFormation") {
                     $form->add('sectionFormationFile', VichImageType::class, [
                         'label' => false,
                         'attr' => ['placeholder' => 'Choisissez votre fichier'],
                         'required' => false
                     ]);
-                }elseif($entityParent=="App\Entity\EtapeFormation"){
+                } elseif ($entityParent == "App\Entity\EtapeFormation") {
                     $form->add('etapeFormationFile', VichImageType::class, [
                         'label' => false,
                         'attr' => ['placeholder' => 'Choisissez votre fichier'],
                         'required' => false
                     ]);
-                }else{
+                } elseif ($entityParent == "App\Entity\Message") {
+                    $form->add('messageFile', VichImageType::class, [
+                        'label' => false,
+                        'attr' => ['placeholder' => 'Choisissez votre fichier'],
+                        'required' => false
+                    ]);
+                } else {
                     $form->add('defaultFile', VichImageType::class, [
                         'label' => false,
                         'attr' => ['placeholder' => 'Choisissez votre fichier'],

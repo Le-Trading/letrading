@@ -107,6 +107,13 @@ class Media implements \Serializable
     private $etapeContenuFormationFile;
 
     /**
+     * @Vich\UploadableField(mapping="message", fileNameProperty="imageName", size="imageSize")
+     *
+     * @var File
+     */
+    private $messageFile;
+
+    /**
      * @ORM\Column(type="string", length=255)
      *
      * @var string
@@ -139,11 +146,12 @@ class Media implements \Serializable
 
     /**
      * Permet d'init le slug
-     * 
+     *
      * @ORM\PrePersist
      * @ORM\PreUpdate
      *
      * @return void
+     * @throws \Exception
      */
     public function prePersist()
     {
@@ -249,6 +257,7 @@ class Media implements \Serializable
 
     /**
      * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $forumFile
+     * @throws \Exception
      */
     public function setForumFile(?File $forumFile = null): void
     {
@@ -264,6 +273,23 @@ class Media implements \Serializable
         return $this->forumFile;
     }
 
+    /**
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $messageFile
+     * @throws \Exception
+     */
+    public function setMessageFile(?File $messageFile = null): void
+    {
+        $this->messageFile = $messageFile;
+
+        if (null !== $messageFile) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getMessageFile(): ?File
+    {
+        return $this->messageFile;
+    }
     /**
      * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $formationFile
      */
@@ -317,6 +343,7 @@ class Media implements \Serializable
 
     /**
      * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $etapeContenuFormationFile
+     * @throws \Exception
      */
     public function setEtapeContenuFormationFile(?File $etapeContenuFormationFile = null): void
     {

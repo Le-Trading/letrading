@@ -101,7 +101,6 @@ class StripeClient
             $session = Session::create([
                 'customer' => $user->getStripeCustomerId(),
                 'payment_method_types' => ['card'],
-                'mode' => 'setup',
                 'subscription_data' => [
                     'items' => [[
                         'plan' => $offer->getPlan(),
@@ -290,18 +289,41 @@ class StripeClient
      */
     public function findPaidInvoices(User $user)
     {
-        $allInvoices = \Stripe\Invoice::all([
-            'customer' => $user->getStripeCustomerId()
-        ]);
-        $iterator = $allInvoices->autoPagingIterator();
-        $invoices = [];
-        foreach ($iterator as $invoice) {
-            if ($invoice->paid) {
-                $invoices[] = $invoice;
+        if ($user->getStripeCustomerId()) {
+            $allInvoices = \Stripe\Invoice::all([
+                'customer' => $user->getStripeCustomerId()
+            ]);
+            $allCharges = \Stripe\Charge::all(['customer' => $user->getStripeCustomerId()]);
+            $iterator = $allInvoices->autoPagingIterator();
+            $iterator2 = $allCharges->autoPagingIterator();
+            $invoices = [];
+            foreach ($iterator as $invoice) {
+                if ($invoice->paid) {
+                    $invoices[] = $invoice;
+                }
             }
+        }else{
+            $invoices = null;
         }
-        dump($invoices);
         return $invoices;
+    }
+
+    public function findCharges(User $user)
+    {
+        if ($user->getStripeCustomerId()) {
+            try {
+                $allCharges = \Stripe\Charge::all(['customer' => $user->getStripeCustomerId()]);
+            } catch (ApiErrorException $e) {
+            }
+            $iterator = $allCharges->autoPagingIterator();
+            $charges = [];
+            foreach ($iterator as $charge) {
+                $charges[] = $charge;
+            }
+        }else{
+            $charges = null;
+        }
+        return $charges;
     }
 
     /**

@@ -6,13 +6,13 @@
 
     <div class="container">
         <h2 class="h4 my-4 text-center">Liste des paiements</h2>
-        {% if invoices | length > 0 %}
+        {% if charges | length > 0 %}
             <table class="table table-hover align-items-center">
                 <thead class="table-secondary">
                 <tr>
                     <td>Date du paiement</td>
 
-                    <td>N° de commande</td>
+                    <td>N° de paiement</td>
 
                     <td>Montant</td>
 
@@ -20,26 +20,26 @@
                 </tr>
                 </thead>
                 <tbody class="bg-light">
-                {% for invoice in invoices %}
+                {% for charge in charges %}
                     <tr>
                         <td>
-                            {% if invoice.created %}
-                                {{ invoice.created|date('d/m/Y') }}
+                            {% if charge.created %}
+                                {{ charge.created|date('d/m/Y') }}
                             {% endif %}
                         </td>
                         <td>
-                            {% if invoice.id %}
-                                {{ invoice.number }}
+                            {% if charge.id %}
+                                {{ charge.id }}
                             {% endif %}
                         </td>
                         <td>
-                            {% if invoice.amount_due %}
-                                {{ invoice.amount_due/100 }} €
+                            {% if charge.amount %}
+                                {{ charge.amount/100 }} €
                             {% endif %}
                         </td>
                         <td>
-                            {% if invoice.invoice_pdf %}
-                                <a class="text-right btn btn-warning" href="{{ invoice.invoice_pdf }}" class="href">Télécharger</a>
+                            {% if charge.receipt_url %}
+                                <a class="text-right btn btn-warning" href="{{ charge.receipt_url }}">Télécharger</a>
                             {% endif %}
                         </td>
                     </tr>
@@ -47,7 +47,7 @@
 
                 </tbody>
             </table>
-            {% else %}
+        {% else %}
             <div class="alert alert-primary">
                 Vous n'avez aucun paiement associé à votre compte.
             </div>

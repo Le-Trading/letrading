@@ -44,6 +44,11 @@ class Souscription
      */
     private $endsAt;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isEnded;
+
     public function getStripeSubscriptionId()
     {
         return $this->stripeSubscriptionId;
@@ -129,6 +134,7 @@ class Souscription
         $this->stripeSubscriptionId = $stripeSubscriptionId;
         $this->billingPeriodEndsAt = $periodEnd;
         $this->endsAt = null;
+        $this->isEnded = false;
     }
 
     public function desactivateSubscription()
@@ -136,15 +142,28 @@ class Souscription
         // paid through end of period
         $this->endsAt = $this->billingPeriodEndsAt;
         $this->billingPeriodEndsAt = null;
+        $this->isEnded = true;
     }
 
     public function isActive()
     {
-        return $this->endsAt === null || $this->endsAt > new \DateTime();
+        return ($this->endsAt === null || $this->endsAt > new \DateTime()) && !$this->isEnded == true;
     }
     public function isCancelled()
     {
-        return $this->endsAt !== null;
+        return $this->endsAt !== null && $this->isEnded !== true;
+    }
+
+    public function getIsEnded(): ?bool
+    {
+        return $this->isEnded;
+    }
+
+    public function setIsEnded(?bool $isEnded): self
+    {
+        $this->isEnded = $isEnded;
+
+        return $this;
     }
 
 }

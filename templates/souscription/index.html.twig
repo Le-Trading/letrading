@@ -55,7 +55,7 @@
                         {{ souscription.offer.price }} €
                     </td>
                     <td>
-                        {% if souscription.cancelled %}
+                        {% if souscription.cancelled or souscription.isEnded %}
                             <span class="badge badge-danger">Arrêté</span>
                         {% else %}
                             <span class="badge badge-success">En cours</span>

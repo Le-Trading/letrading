@@ -273,11 +273,12 @@ class AccountController extends AbstractController
     public function payments(StripeClient $stripeClient){
         try {
             $invoices = $stripeClient->findPaidInvoices($this->getUser());
-
+            $charges = $stripeClient->findCharges($this->getUser());
         } catch (ApiErrorException $e) {
 
         }
         return $this->render('account/payments.html.twig', [
+            'charges' => $charges,
             'invoices' => $invoices
         ]);
     }

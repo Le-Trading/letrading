@@ -56,6 +56,7 @@ class Formation
      * @ORM\PreUpdate
      *
      * @return void
+     * @throws \Exception
      */
     public function prePersist()
     {

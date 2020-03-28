@@ -39,7 +39,7 @@
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-lg" data-toggle="modal"
                                             data-target="#model{{ message.id }}">
-                                        <img src="{{ vich_uploader_asset(message.media, 'imageFile', 'App\\Entity\\Media') }}"
+                                        <img src="{{ vich_uploader_asset(message.media, 'messageFile', 'App\\Entity\\Media') }}"
                                              class="img-fluid img-thumbnail" alt="Image du post de {{ message.author.pseudo }}">
 
 
@@ -58,7 +58,7 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <img src="{{ vich_uploader_asset(message.media, 'imageFile', 'App\\Entity\\Media') }}"
+                                                    <img src="{{ vich_uploader_asset(message.media, 'messageFile', 'App\\Entity\\Media') }}"
                                                          style="max-height:100%; max-width:100%;" class="img"
                                                          alt="{{ message.author.pseudo }}">
 
@@ -79,7 +79,7 @@
                             {% if author.pseudo != prevAuthor.pseudo or key == 0 %}
                                 <div class="img_cont_msg">
                                     <img class="rounded-circle user_img_msg" src="{% if author.media %}
-                                {{ vich_uploader_asset(author.media, 'imageFile', 'App\\Entity\\Media') }}
+                                {{ vich_uploader_asset(author.media, 'avatarFile', 'App\\Entity\\Media') }}
                             {% else %}
                                 {{ asset('images/image-user.png') }}
                             {% endif %}
@@ -92,7 +92,7 @@
                             {% if author.pseudo != prevAuthor.pseudo or key == 0 %}
                                 <div class="img_cont_msg">
                                     <img class="rounded-circle user_img_msg" src="{% if author.media %}
-                                {{ vich_uploader_asset(author.media, 'imageFile', 'App\\Entity\\Media') }}
+                                {{ vich_uploader_asset(author.media, 'avatarFile', 'App\\Entity\\Media') }}
                             {% else %}
                                 {{ asset('images/image-user.png') }}
                             {% endif %}
@@ -112,7 +112,7 @@
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-lg" data-toggle="modal"
                                             data-target="#model{{ message.id }}">
-                                        <img src="{{ vich_uploader_asset(message.media, 'imageFile', 'App\\Entity\\Media') }}"
+                                        <img src="{{ vich_uploader_asset(message.media, 'messageFile', 'App\\Entity\\Media') }}"
                                              class="img-thumbnail" alt="Image du post de {{ message.author.pseudo }}">
 
 
@@ -131,7 +131,7 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <img src="{{ vich_uploader_asset(message.media, 'imageFile', 'App\\Entity\\Media') }}"
+                                                    <img src="{{ vich_uploader_asset(message.media, 'messageFile', 'App\\Entity\\Media') }}"
                                                          style="max-height:100%; max-width:100%;" class="img"
                                                          alt="{{ message.author.pseudo }}">
 
