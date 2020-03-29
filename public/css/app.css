@@ -254,3 +254,7 @@ li.dropdown:hover > .dropdown-menu {
 #message #message_media legend, #message #message_media input{
   color:#fff;
 }
+
+.admin-content-formation fieldset{
+    margin: 0!important;
+}

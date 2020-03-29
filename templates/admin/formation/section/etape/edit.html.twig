@@ -29,7 +29,18 @@
                     </div>
                     <div class="m-3">
                         {{form_start(form)}}
-                        {{form_widget(form)}}
+                        {{ form_row(form.title) }}
+                        {{ form_row(form.description) }}
+                        {{ form_row(form.media) }}
+                        <div class="admin-content-formation">
+                            {{ form_row(form.content) }}
+                            {% if etape.content %}
+                                <video controls width="100%">
+                                    <source src="/images/formation/etape/{{ etape.content.imageName }}"
+                                            type="video/mp4">
+                                </video>
+                            {% endif %}
+                        </div>
                         <button type="submit" class="btn btn-primary">Enregistrer les modifications <i class="fas fa-check"></i></button>
                         {{form_end(form)}}
                     </div>

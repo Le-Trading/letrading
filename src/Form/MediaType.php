@@ -20,7 +20,7 @@ class MediaType extends AbstractType
                 $form = $event->getForm();
 
                 //récupération provenance entité
-                $entityParent = $event->getForm()->getParent()->getConfig()->getDataClass();
+                $entityParent = $form->getParent()->getConfig()->getDataClass();
 
                 if ($entityParent == "App\Entity\User") {
                     $form->add('avatarFile', VichImageType::class, [
