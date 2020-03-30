@@ -1,3 +1,12 @@
+/* COMMON */
+:root{
+    --primary-color-light: #0984e3;
+}
+
+body{
+    font-family: "Roboto";
+}
+
 body::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
     border-radius: 10px;
@@ -33,7 +42,71 @@ div.carousel-caption {
     text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
 }
 
-.avatar {
+a:hover, a:active, a:focus{
+    color: var(--primary-color-light)!important;
+}
+
+/* NAVBAR */
+.nav-link.active{
+    color: var(--primary-color-light)!important;
+}
+
+ul.main-navbar li.nav-item > a.nav-link{
+    padding: 0 1.3rem 0 0!important;
+}
+
+.right-navbar{
+    float: right;
+}
+
+.dropdown-arrow::after{
+    content: url("./../images/templating/header/down-arrow.png");
+    margin-left: 0.5rem;
+    vertical-align: text-bottom;
+}
+
+.nav-link.live-icon::before{
+    content: url("./../images/templating/header/live-icon.png");
+    vertical-align: text-bottom;
+    margin-right: 0.5rem;
+}
+
+li.inscription-homepage{
+    border: 2px dashed var(--primary-color-light);
+    border-radius: 25px;
+}
+
+li.inscription-homepage a::before{
+    content: url("./../images/templating/header/icon-inscription.png");
+    vertical-align: top;
+    margin-right: 0.5rem;
+}
+
+li.inscription-homepage a{
+    margin-top: 0.2rem!important;
+    color: var(--primary-color-light)!important;
+}
+
+li.connexion-homepage{
+    border: 2px solid var(--primary-color-light);
+    background-color: var(--primary-color-light);
+    border-radius: 25px;
+    margin-left: 1rem;
+}
+
+li.connexion-homepage a::before{
+    content: url("./../images/templating/header/icon-connexion.png");
+    vertical-align: top;
+    margin-right: 0.5rem;
+}
+
+li.connexion-homepage a{
+    margin-top: 0.2rem!important;
+}
+/* HOMEPAGE */
+
+
+/*.avatar {
     max-width: 128px;
     max-height: 128px;
     border-radius: 50%;
@@ -257,4 +330,4 @@ li.dropdown:hover > .dropdown-menu {
 
 .admin-content-formation fieldset{
     margin: 0!important;
-}
+}*/
