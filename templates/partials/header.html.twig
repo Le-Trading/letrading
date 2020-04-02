@@ -1,98 +1,104 @@
-<nav class="row justify-content-center navbar navbar-expand-lg navbar-dark bg-primary">
-	<div class="col-10">
-		<div class="row d-flex align-items-center">
-			<div class="col-2 mr-4 p-0">
-				<a href="{{ path('homepage') }}"><img src="\images\templating\header\Logo-final-blanc-resize.png"></a>
-				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-			</div>
-			<div class="col-6 p-0">
-				<ul class="navbar-nav mr-auto main-navbar">
-					<li class="nav-item">
-						<a class="nav-link" href="{{ path('homepage') }}">Accueil</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="{{ path('formation_index') }}">Formations</a>
-					</li>
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-arrow" href="#" data-toggle="dropdown">Discussions</a>
-						<ul class="dropdown-menu dropdown-menu-center">
+<div class="header-background">
+	<nav class="row justify-content-center m-0 navbar navbar-expand navbar-dark">
+		<div class="col-10">
+			<div class="row d-flex align-items-center">
+				<div class="col-2 p-0 logo-block m-auto">
+					<a href="{{ path('homepage') }}"><img class="w-100" src="\images\templating\Logo-final-blanc.png"></a>
+					<div class="row justify-content-center">
+						<a class="burger-menu" data-toggle="collapse" href="#collapseBurger" role="button"
+						   aria-expanded="false" aria-controls="collapseBurger">
+							<div class="bar1"></div>
+							<div class="bar2"></div>
+							<div class="bar3"></div>
+						</a>
+					</div>
+
+				</div>
+				<div class="col-xl-7 col-md-10 col-sm-12 p-0">
+					<ul class="navbar-nav mr-auto main-navbar justify-content-center collapse" id="collapseBurger">
+						<li class="nav-item">
+							<a class="nav-link" href="{{ path('homepage') }}">Accueil</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{{ path('formation_index') }}">Formations</a>
+						</li>
+						<li class="nav-item dropdown d-inline-block d-md-flex">
+							<a class="nav-link dropdown-arrow" href="#" data-toggle="dropdown">Discussions</a>
+							<ul class="dropdown-menu dropdown-menu-center">
+								{{ render(controller(
+									'App\\Controller\\PagesController::getThreads'
+								))
+								}}
+							</ul>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link live-icon" href="#">Live</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{{ path('historic_index') }}">Historique</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{{ path('offers_index') }}">Offres</a>
+						</li>
+						<li class="nav-item dropdown d-inline-block d-md-flex">
+							<a class="nav-link dropdown-arrow" href="#" data-toggle="dropdown">Divers</a>
+							<ul class="dropdown-menu dropdown-menu-center">
+								<li><a href="#" class="dropdown-item">Témoignage</a></li>
+								<li><a href="#" class="dropdown-item">Lexique</a></li>
+								<li><a href="#" class="dropdown-item">Qui sommes nous ?</a></li>
+								<li><a href="#" class="dropdown-item">Parrainage</a></li>
+								<li><a href="#" class="dropdown-item">Affiliation</a></li>
+								<div class="dropdown-divider"></div>
+								<li><a href="{{ path('pages_contact') }}" class="dropdown-item">Contactez nous</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<div class="col-xl-3 col-md-12 p-0 justify-content-center d-flex m-md-0 mt-5">
+					<ul class="navbar-nav right-navbar">
+						{% if app.user %}
 							{{ render(controller(
-								'App\\Controller\\PagesController::getThreads'
+								'App\\Controller\\PagesController::getNotifs'
 							))
 							}}
-						</ul>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link live-icon" href="#">Live</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="{{ path('historic_index') }}">Historique</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="{{ path('offers_index') }}">Offres</a>
-					</li>
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-arrow" href="#">Divers</a>
-						<div class="dropdown-menu dropdown-menu-center">
-							<a href="#" class="dropdown-item">Témoignage</a>
-							<a href="#" class="dropdown-item">Lexique</a>
-							<a href="#" class="dropdown-item">Qui sommes nous ?</a>
-							<a href="#" class="dropdown-item">Parrainage</a>
-							<a href="#" class="dropdown-item">Affiliation</a>
-							<div class="dropdown-divider"></div>
-							<a href="{{ path('pages_contact') }}" class="dropdown-item">Contactez nous</a>
-						</div>
-					</li>
-				</ul>
-			</div>
-			<div class="col-3 p-0">
-				<ul class="navbar-nav right-navbar">
-					{% if app.user %}
-						{{ render(controller(
-							'App\\Controller\\PagesController::getNotifs'
-						))
-						}}
-						{{ render(controller('App\\Controller\\PagesController:getMessagesUnread')) }}
+							{{ render(controller('App\\Controller\\PagesController:getMessagesUnread')) }}
 
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#">
-								{% if app.user.media %}
-									<img src="{{ vich_uploader_asset(app.user.media, 'avatarFile', 'App\\Entity\\Media') }}" class="avatar avatar-mini" alt="{{ app.user.fullName }}">
-									{{ app.user.fullName }}
-								{% else %}
-									<img src="{{ asset('images/image-user.png') }}" alt="Avatar de {{ app.user.pseudo }}" class="avatar avatar-mini"/>
-									{{ app.user.fullName }}
-								{% endif %}
-							</a>
-
-							<div class="dropdown-menu dropdown-menu-right">
-								<a href="{{ path('account_index') }}" class="dropdown-item">Mon compte</a>
-								<a href="{{ path('manage_souscription') }}" class="dropdown-item">Mes abonnements</a>
-								<a href="{{ path('account_payments') }}" class="dropdown-item">Mes paiements</a>
-								<div class="dropdown-divider"></div>
-								<a href="{{ path('account_logout') }}" class="dropdown-item">Déconnexion</a>
-							</div>
-						</li>
-						{% if is_granted('ROLE_ADMIN') %}
-							<li class="nav-item">
-								<a class="nav-link" href="{{ path('admin_dashboard') }}" target="_blank"><i class="fas fa-user-cog"></i> Administration</a>
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-arrow" href="#" data-toggle="dropdown">
+									{% if app.user.media %}
+										<img src="{{ vich_uploader_asset(app.user.media, 'avatarFile', 'App\\Entity\\Media') }}" class="avatar avatar-mini" alt="{{ app.user.fullName }}">
+										{{ app.user.fullName }}
+									{% else %}
+										<img src="{{ asset('images/image-user.png') }}" alt="Avatar de {{ app.user.pseudo }}" class="avatar avatar-mini"/>
+										{{ app.user.fullName }}
+									{% endif %}
+								</a>
+								<ul class="dropdown-menu dropdown-menu-right">
+									<li><a href="{{ path('account_index') }}" class="dropdown-item">Mon compte</a></li>
+									<li><a href="{{ path('manage_souscription') }}" class="dropdown-item">Mes abonnements</a></li>
+									<li><a href="{{ path('account_payments') }}" class="dropdown-item">Mes paiements</a></li>
+									<div class="dropdown-divider"></div>
+									<li><a href="{{ path('account_logout') }}" class="dropdown-item">Déconnexion</a></li>
+								</ul>
+							</li>
+							{% if is_granted('ROLE_ADMIN') %}
+								{#<li class="nav-item">
+									<a class="nav-link" href="{{ path('admin_dashboard') }}" target="_blank"><i class="fas fa-user-cog"></i> Administration</a>
+								</li>#}
+							{% endif %}
+						{% else %}
+							<li class="nav-item inscription-homepage">
+								<a class="nav-link" href="{{ path('account_register') }}">Inscription</a>
+							</li>
+							<li class="nav-item connexion-homepage">
+								<a class="nav-link" href="{{ path('account_login') }}">Connexion</a>
 							</li>
 						{% endif %}
-					{% else %}
-						<li class="nav-item inscription-homepage">
-							<a class="nav-link" href="{{ path('account_register') }}">Inscription</a>
-						</li>
-						<li class="nav-item connexion-homepage">
-							<a class="nav-link" href="{{ path('account_login') }}">Connexion</a>
-						</li>
-					{% endif %}
-				</ul>
+					</ul>
+				</div>
 			</div>
 		</div>
-	</div>
-</nav>
+	</nav>
 {% for label, messages in app.flashes %}
 	<div class="container">
 		<div class="alert alert-{{ label }}">
@@ -104,5 +110,11 @@
 {% endfor %}
 
 {% block javascripts %}
-
+	<script src="/js/jquery.min.js"></script>
+	<script>
+		$('.burger-menu').click(function () {
+			$('#collapseBurger').toggleClass("d-block");
+			$('.burger-menu').toggleClass("change");
+		})
+	</script>
 {% endblock %}
