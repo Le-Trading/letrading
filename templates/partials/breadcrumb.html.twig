@@ -1,0 +1,54 @@
+<hr class="col-10 hr-footer primary-text-color w-75 ">
+<div class="d-flex justify-content-center p-5 text-center">
+    <div class="col-md-6 col-10">
+        <p class="text-white font-weight-light">
+            <a class="primary-text-color text-decoration-none" href="{{ path('homepage') }}">Accueil</a>
+            >
+            {#récupération du fil d'ariane#}
+            {% for breadcrumb in breadcrumbs %}
+                {#check si un fil d'ariane contient une route prédéfinis#}
+                {% if breadcrumb[2] is defined %}
+                    {#check si la route contient plusieurs paramètres#}
+                    {% if breadcrumb[2] == "multiple" %}
+                        {% if breadcrumb[1] == "thread_post_like" %}
+                            <a href="{{ path(breadcrumb[1],{'slug' : 'forex', 'id' : '56'}) }}"
+                               class="{% if loop.last %}text-white {% else %}primary-text-color {% endif %}
+                                text-capitalize text-decoration-none">{{ breadcrumb[0] }}
+                            </a>
+                        {% endif %}
+                    {#check si la route contient un seul paramètre#}
+                    {% else %}
+                        {% set path_key = "" %}
+                        {% set path_value = "" %}
+                        {% for key_path_variable, value_path_variable in breadcrumb[2] %}
+                            {% set path_key = key_path_variable %}
+                            {% set path_value = value_path_variable %}
+                        {% endfor %}
+                        <a href="{{ path(breadcrumb[1],{(path_key): path_value}) }}"
+                           class="{% if loop.last %}text-white {% else %}primary-text-color {% endif %}
+                            text-capitalize text-decoration-none">{{ breadcrumb[0] }}
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{{ path(breadcrumb[1]) }}"
+                       class="{% if loop.last %}text-white {% else %}primary-text-color {% endif %}
+                       text-capitalize text-decoration-none">{{ breadcrumb[0] }}
+                    </a>
+                {% endif %}
+                {% if not loop.last %} > {% endif %}
+            {% endfor %}
+        </p>
+        {% if content %}
+            <h1 class="text-white mt-2 h2">{{ content }}</h1>
+        {% endif %}
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="w-75 d-flex">
+        <hr class="col-lg-5 col-sm-4 col-3 hr-footer primary-text-color mt-3">
+        <div class="col-lg-1 col-sm-2 col-3 text-center">
+            <img class="img-fluid avatar-mini" src="/images/templating/logo-letrading-small.png">
+        </div>
+        <hr class="col-lg-5 col-sm-4 col-3 hr-footer primary-text-color mt-3">
+    </div>
+</div>

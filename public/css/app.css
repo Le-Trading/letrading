@@ -229,19 +229,24 @@ a:hover, a:active, a:focus{
 
 /****************************************************************************
 HEADER */
+.header-home-background{
+    background-image: url("../images/templating/homepage/bg-top-home.jpg");
+    background-size: cover;
+}
+
 .header-background{
-    background-image: url("../images/templating/homepage/bg-top.jpg");
+    background-image: url("../images/templating/header/bg-top.jpg");
     background-size: cover;
 }
 
 @media screen and (max-width: 1068px){
-    .header-background{
+    .header-home-background{
         background-image: url("../images/templating/homepage/bg-top-sm.jpg");
     }
 }
 
 @media screen and (max-width: 800px){
-    .header-background{
+    .header-home-background{
         background-image: url("../images/templating/homepage/bg-top-xs.jpg");
     }
 
