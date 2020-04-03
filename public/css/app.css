@@ -219,12 +219,58 @@ a:hover, a:active, a:focus{
     margin-top: -7rem!important;
 }
 
+.w-80{
+    width: 80%!important;
+}
+
 .zoom:hover {
     -ms-transform: scale(1.03); /* IE 9 */
     -webkit-transform: scale(1.03); /* Safari 3-8 */
     transform: scale(1.03);
     -webkit-transition: .3s ease-in-out;
     transition: .3s ease-in-out;
+}
+
+/****************************************************************************
+FORMULAIRE */
+.input-form-custom{
+    background: none;
+    border: none;
+    margin: 1rem;
+    border-bottom: 1px solid var(--primary-color-light);
+    width: 100%;
+    color:white;
+}
+
+.input-form-custom::placeholder{
+    color:white;
+}
+
+.btn-form-custom{
+    float: right;
+    color: var(--primary-color-light);
+    text-decoration: underline;
+}
+
+.btn-form-custom::after{
+    content: url("./../images/templating/icon-envoi.png");
+    vertical-align: sub;
+    margin-left: 0.5rem;
+}
+
+.btn-form-custom:hover::after{
+    content: url("./../images/templating/icon-envoi-hover.png");
+}
+
+.btn-form-custom:hover{
+    color: white;
+}
+
+.error-form-custom{
+    color: red;
+    margin: auto;
+    list-style: none;
+    padding: inherit;
 }
 
 /****************************************************************************
