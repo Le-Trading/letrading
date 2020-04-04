@@ -3,15 +3,21 @@
 namespace App\Controller;
 
 use App\Client\StripeClient;
+use App\Entity\Comment;
 use App\Entity\Contact;
 use App\Entity\Notif;
+use App\Entity\Temoignage;
+use App\Form\CommentType;
 use App\Form\ContactType;
+use App\Form\TemoignageType;
 use App\Repository\MessageRepository;
 use App\Repository\NotifRepository;
 use App\Repository\OffersRepository;
+use App\Repository\TemoignageRepository;
 use App\Repository\ThreadRepository;
 use App\Service\MailingService;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,8 +41,13 @@ class PagesController extends AbstractController
      * Formulaire de contact
      *
      * @Route("/contact-us", name="pages_contact")
-     * 
+     *
+     * @param Request $request
+     * @param MailingService $mailingService
      * @return Response
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function contactPage(Request $request, MailingService $mailingService){
         $contact = new Contact();
@@ -68,6 +79,41 @@ class PagesController extends AbstractController
         return $this->render('/pages/success.html.twig');
     }
 
+    /**
+     * @Route("/temoignages", name="temoignages_page")
+     * @param TemoignageRepository $repo
+     * @param EntityManagerInterface $em
+     * @param PaginatorInterface $paginator
+     * @param Request $request
+     * @return Response
+     */
+    public function temoignages(TemoignageRepository $repo, EntityManagerInterface $em, PaginatorInterface $paginator, Request $request)
+    {
+        $temoignages = $paginator->paginate(
+            $repo->findAll(),
+            $request->query->getInt('page', 1),
+            4
+        );
+        $temoignage = new Temoignage();
+
+        $form = $this->createForm(TemoignageType::class, $temoignage);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            $temoignage->setAuthor($this->getUser());
+            $em->persist($temoignage);
+            $em->flush();
+
+            $this->addFlash(
+                'success',
+                "Votre commentaire a bien été pris en compte"
+            );
+        }
+
+        return $this->render('/pages/temoignages.html.twig',[
+            'temoignages' => $temoignages,
+            'form' => $form->createView()
+        ]);
+    }
     /**
      * @Route("/success/{checkout_session_id}", name="success_page_parameter")
      * @param $checkout_session_id

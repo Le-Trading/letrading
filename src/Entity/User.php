@@ -132,6 +132,7 @@ class User implements UserInterface
         $this->messages = new ArrayCollection();
         $this->followers = new ArrayCollection();
         $this->followed = new ArrayCollection();
+        $this->temoignages = new ArrayCollection();
     }
 
     /**
@@ -430,6 +431,11 @@ class User implements UserInterface
     private $followed;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Temoignage", mappedBy="author", orphanRemoval=true)
+     */
+    private $temoignages;
+
+    /**
      * @return string
      */
     public function getResetToken(): string
@@ -641,6 +647,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($followed->getFollowed() === $this) {
                 $followed->setFollowed(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Temoignage[]
+     */
+    public function getTemoignages(): Collection
+    {
+        return $this->temoignages;
+    }
+
+    public function addTemoignage(Temoignage $temoignage): self
+    {
+        if (!$this->temoignages->contains($temoignage)) {
+            $this->temoignages[] = $temoignage;
+            $temoignage->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTemoignage(Temoignage $temoignage): self
+    {
+        if ($this->temoignages->contains($temoignage)) {
+            $this->temoignages->removeElement($temoignage);
+            // set the owning side to null (unless already changed)
+            if ($temoignage->getAuthor() === $this) {
+                $temoignage->setAuthor(null);
             }
         }
 

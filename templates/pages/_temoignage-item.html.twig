@@ -1,0 +1,17 @@
+<div class="item col-4 mt-3">
+    <div class="recommandation-homepage-block">
+        <div class="m-3 temoignage-rating">
+            <img src="/images/templating/star-rating-full.png">
+            <img src="/images/templating/star-rating-full.png">
+            <img src="/images/templating/star-rating-full.png">
+            <img src="/images/templating/star-rating-full.png">
+            <img src="/images/templating/star-rating-empty.png">
+        </div>
+        <p class="font-weight-light p-2">
+            {{ temoignage.content }}
+        </p>
+        <hr class="hr-small primary-text-color">
+        <h5 class="m-0">{{ temoignage.author.fullName }}</h5>
+        <p class="secondary-color-grey-dark">{{ temoignage.author.fonction }}</p>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Témoignages de nos clients
+{% endblock %}
+
+{% block body %}
+    {% include '/partials/breadcrumb.html.twig'
+        with {
+        'breadcrumbs':[
+            ['temoignages', 'temoignages_page']
+        ],
+        'content':'Témoignages de nos clients'
+    } %}
+    <div class="appear row justify-content-center m-3">
+        <div class="col-10 text-white text-center d-flex flex-wrap mt-4">
+            {% if temoignages | length > 0 %}
+                {% for temoignage in temoignages %}
+                    {% include '/pages/_temoignage-item.html.twig'
+                        with {
+                        'temoignage' : temoignage
+                    } %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="container">
+        <div class="form-group">
+            {{form_start(form)}}
+            {{form_widget(form)}}
+            <button type="submit" class="btn btn-success">
+                Confirmer
+            </button>
+            {{form_end(form)}}
+        </div>
+    </div>
+
+    <div class="pagination justify-content-center m-3">
+        {{ knp_pagination_render(temoignages) }}
+    </div>
+{% endblock %}
+
+
+
