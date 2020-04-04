@@ -89,10 +89,14 @@ class PagesController extends AbstractController
      */
     public function temoignages(TemoignageRepository $repo, EntityManagerInterface $em, PaginatorInterface $paginator, Request $request)
     {
+        $query = $repo->createQueryBuilder('e')
+        ->addOrderBy('e.createdAt', 'DESC')
+        ->getQuery()
+        ->execute();
         $temoignages = $paginator->paginate(
-            $repo->findAll(),
+            $query,
             $request->query->getInt('page', 1),
-            4
+            9
         );
         $temoignage = new Temoignage();
 
@@ -105,8 +109,21 @@ class PagesController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Votre commentaire a bien été pris en compte"
+                "Votre témoignage a bien été pris en compte"
             );
+            $query = $repo->createQueryBuilder('e')
+                ->addOrderBy('e.createdAt', 'DESC')
+                ->getQuery()
+                ->execute();
+            $temoignages = $paginator->paginate(
+                $query,
+                $request->query->getInt('page', 1),
+                9
+            );
+            return $this->render('/pages/temoignages.html.twig',[
+                'temoignages' => $temoignages,
+                'form' => $form->createView()
+            ]);
         }
 
         return $this->render('/pages/temoignages.html.twig',[

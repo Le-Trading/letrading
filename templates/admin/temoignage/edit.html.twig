@@ -1,0 +1,36 @@
+{% extends "admin/base.html.twig" %}
+
+{% block title %}
+    Edition du témoignage n°{{ temoignage.id }}
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>
+            Modification du témoignage n°{{ temoignage.id }}
+        </h1>
+        <div class="alert alert-info">
+            <div><strong>Auteur : </strong> {{ temoignage.author.fullName }}</div>
+            <div><strong>Date de création :</strong> {{ temoignage.createdAt | date('d/m/Y H:i') }}</div>
+            <div><strong>Note donnée :</strong> {{ temoignage.rating }}</div>
+        </div>
+        <div class="form-group">
+            {{ form_start(form) }}
+            <div class="form-group">
+                <span>Contenu du témoignage</span>
+                {{ form_row(form.content) }}
+            </div>
+            <div class="form-group">
+                <span>Fonction de l'utilisateur</span>
+                {{ form_row(form.fonction) }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mb-5">
+            <i class="fas fa-check"></i>
+            Enregistrer les modifications
+        </button>
+
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

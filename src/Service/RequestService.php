@@ -12,6 +12,7 @@ use App\Repository\EtapeFormationRepository;
 use App\Entity\User;
 use App\Repository\FollowRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Repository\RepositoryFactory;
 use Symfony\Component\Security\Core\Security;
 
 class RequestService {
@@ -117,5 +118,13 @@ class RequestService {
             return 0;
         else
             return $lastEtape->getPosition();
+    }
+
+    public function countItemsInRepository($repository){
+        $count = $repository->createQueryBuilder('t')
+            ->select('count(t.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+        return $count;
     }
 }

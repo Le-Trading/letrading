@@ -12,7 +12,21 @@
         ],
         'content':'Témoignages de nos clients'
     } %}
-    <div class="appear row justify-content-center m-3">
+    <div class="row justify-content-center m-0">
+        <div class="col-10 col-md-6 text-white text-center">
+            <p class="font-weight-light mt-1">
+                Des centaines de personnes à travers le monde nous ont fait confiance en l’espace de quelques mois.
+                Comme eux, n’hésitez plus, vivez une expérience inoubliable que ce soit pour booster vos revenus ou
+                tout simplement découvrir un nouvel univers.
+            </p>
+            <div class="mt-2">
+                <img class="p-3" src="/images/templating/separator-blue.png">
+                <img class="p-3" src="/images/templating/icon-quote.png">
+                <img class="p-3" src="/images/templating/separator-blue.png">
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center mb-3">
         <div class="col-10 text-white text-center d-flex flex-wrap mt-4">
             {% if temoignages | length > 0 %}
                 {% for temoignage in temoignages %}
@@ -24,20 +38,34 @@
             {% endif %}
         </div>
     </div>
-    <div class="container">
-        <div class="form-group">
-            {{form_start(form)}}
-            {{form_widget(form)}}
-            <button type="submit" class="btn btn-success">
-                Confirmer
-            </button>
-            {{form_end(form)}}
-        </div>
-    </div>
-
-    <div class="pagination justify-content-center m-3">
+    <div class="pagination justify-content-center my-5">
         {{ knp_pagination_render(temoignages) }}
     </div>
+    {% if app.user.getPayments | length > 0 or app.user.getSouscription %}
+        <div class="row justify-content-center mt-5">
+            <div class="col-10 col-md-6 text-white text-center">
+                <h2 class="mt-3 mb-3">VOUS AUSSI, VOUS POUVEZ TÉMOIGNER</h2>
+                <div class="mt-2">
+                    <img class="p-3" src="/images/templating/separator-blue.png">
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-6 form-group">
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    <button type="submit" class="btn-secondary-custom mt-4">
+                        Envoyer le témoignage
+                    </button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+
+
 {% endblock %}
 
 

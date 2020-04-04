@@ -87,6 +87,9 @@ div.carousel-caption {
 
 a:hover, a:active, a:focus{
     color: var(--primary-color-light)!important;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 .primary-text-color{
@@ -107,6 +110,9 @@ a:hover, a:active, a:focus{
 .btn-primary-custom a:hover{
     background-color: var(--secondary-color-btn-fill);
     text-decoration: none!important;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 .btn-secondary-custom a{
@@ -120,6 +126,9 @@ a:hover, a:active, a:focus{
 .btn-secondary-custom a:hover{
     text-decoration: none!important;
     opacity: 0.5;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 .video-wrapper {
@@ -148,6 +157,9 @@ a:hover, a:active, a:focus{
 
 .video-overlay-play-button:hover {
     opacity: 1;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 .video-overlay-play-button.is-hidden {
@@ -167,6 +179,9 @@ a:hover, a:active, a:focus{
 
 .owl-prev:hover, .owl-next:hover {
     background: none!important;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 .owl-prev {
@@ -260,10 +275,17 @@ FORMULAIRE */
 
 .btn-form-custom:hover::after{
     content: url("./../images/templating/icon-envoi-hover.png");
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 .btn-form-custom:hover{
     color: white;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+
 }
 
 .error-form-custom{
@@ -390,6 +412,9 @@ li.inscription-homepage a{
 li.inscription-homepage:hover {
     text-decoration: none!important;
     opacity: 0.5;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 li.connexion-homepage{
@@ -412,10 +437,16 @@ li.connexion-homepage a{
 li.connexion-homepage:hover{
     background-color: var(--secondary-color-btn-fill);
     color: var(--primary-color-light)!important;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 li.connexion-homepage a:hover::before{
     content: url("./../images/templating/header/icon-connexion-primary.png");
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 /****************************************************************************
@@ -453,6 +484,9 @@ HOMEPAGE */
 
 .download-e-book-block a:hover::before{
     content: url("./../images/templating/homepage/icon-download-primary.png");
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 .counter-homepage-block{
@@ -567,4 +601,128 @@ HOMEPAGE */
     border: 2px solid var(--primary-color-dark);
     background: var(--primary-color-dark);
     border-radius: 10px;
+}
+button.btn-secondary-custom{
+    border: 2px dashed var(--primary-color-light);
+    border-radius: 25px;
+    padding: 1rem 2rem 1rem 2rem!important;
+    color: var(--primary-color-light);
+    background: var(--secondary-color-btn-fill);
+}
+button.btn-secondary-custom:hover{
+    text-decoration: none!important;
+    opacity: 0.5;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+
+.page-item a{
+    background-color : var(--primary-color-light)!important;
+}
+.page-item.disabled span{
+    background-color: var(--primary-color-dark)!important;
+}
+
+.page-item.active span {
+    background-color : #063A52!important;
+}
+.page-item a:hover{
+    color:#fff!important;
+    text-decoration: none!important;
+    opacity: 0.5;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+
+.msg_cotainer{
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 10px;
+    border-radius: 25px;
+    background-color: #82ccdd;
+    padding: 10px;
+    position: relative;
+}
+.msg_cotainer_send{
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 10px;
+    border-radius: 25px;
+    background-color: #18BC9C ;
+    padding: 10px;
+    position: relative;
+}
+.msg_time{
+    left: 0;
+    bottom: -15px;
+    color: rgba(255,255,255,0.5);
+    font-size: 10px;
+}
+.msg_time_send{
+    right:0;
+    bottom: -15px;
+    color: rgba(255,255,255,0.5);
+    font-size: 10px;
+}
+.img_cont_msg{
+    height: 40px;
+    width: 40px;
+}
+.msg_card_body{
+}
+.chat{
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.user_img{
+    height: 70px;
+    width: 70px;
+    border:1.5px solid #f5f6fa;
+
+}
+.user_img_msg{
+    height: 40px;
+    width: 40px;
+    border:1.5px solid #f5f6fa;
+
+}
+.user_info{
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 15px;
+}
+.user_info span{
+    font-size: 20px;
+    color: white;
+}
+.user_info p{
+    font-size: 10px;
+    color: rgba(255,255,255,0.6);
+}
+.card{
+    border-radius: 15px !important;
+}
+.card-header{
+    border-radius: 15px 15px 0 0 !important;
+    border-bottom: 0 !important;
+}
+.msg_head{
+    position: relative;
+}
+.user_info{
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 15px;
+}
+.msg_card_body .unread {
+    background-color: #d6b469!important;
+}
+.message-box .created {
+    font-size: 10px;
+    color: black;
+}
+#message #message_media legend, #message #message_media input{
+    color:#fff;
 }

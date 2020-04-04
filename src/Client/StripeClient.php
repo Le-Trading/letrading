@@ -302,7 +302,7 @@ class StripeClient
                     $invoices[] = $invoice;
                 }
             }
-        }else{
+        } else {
             $invoices = null;
         }
         return $invoices;
@@ -320,8 +320,22 @@ class StripeClient
             foreach ($iterator as $charge) {
                 $charges[] = $charge;
             }
-        }else{
+        } else {
             $charges = null;
+        }
+        return $charges;
+    }
+
+    public function findAllCharges()
+    {
+        try {
+            $allCharges = \Stripe\Charge::all();
+        } catch (ApiErrorException $e) {
+        }
+        $iterator = $allCharges->autoPagingIterator();
+        $charges = [];
+        foreach ($iterator as $charge) {
+            $charges[] = $charge;
         }
         return $charges;
     }
@@ -357,7 +371,8 @@ class StripeClient
      * @param User $user
      * @throws ApiErrorException
      */
-    public function handleChangementCardSession($id, User $user)
+    public
+    function handleChangementCardSession($id, User $user)
     {
         $retrieve = Session::retrieve($id);
         $setupIntent = \Stripe\SetupIntent::retrieve($retrieve->setup_intent);
