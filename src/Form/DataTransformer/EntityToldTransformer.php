@@ -32,7 +32,7 @@ class EntityToIdTransformer implements DataTransformerInterface
     public function transform($entity)
     {
         if (null === $entity) {
-            return;
+            return null;
         }
         return $entity->getId();
     }
