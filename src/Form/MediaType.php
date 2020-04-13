@@ -68,6 +68,12 @@ class MediaType extends AbstractType
                         'attr' => ['placeholder' => 'Choisissez votre fichier'],
                         'required' => false
                     ]);
+                } elseif ($entityParent == "App\Entity\Offers") {
+                    $form->add('offersFile', VichImageType::class, [
+                        'label' => false,
+                        'attr' => ['placeholder' => 'Choisissez votre fichier'],
+                        'required' => false
+                    ]);
                 } else {
                     $form->add('defaultFile', VichImageType::class, [
                         'label' => false,

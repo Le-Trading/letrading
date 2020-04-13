@@ -126,48 +126,14 @@
     </div>
     <div class="appear row justify-content-center m-0">
         <div class="col-7 text-center d-md-flex mt-9 mb-4 justify-content-center">
-            <div class="col-md-5 col-12 homepage-background-offer-rectangle p-0 zoom mb-md-0 mb-5">
-                <div class="filigrane-offer-signaux">
-                    <img class="mt-n5" src="/images/templating/homepage/offre-signaux.png">
-                    <h5 class="font-weight-bold mt-3">SIGNAUX</h5>
-                    <div class="mt-4">
-                        <p class="font-weight-light m-0">À partir de</p>
-                        <h2 class="primary-text-color">
-                            <small class="text-black font-weight-light vertical-align-super">€</small>87
-                        </h2>
-                    </div>
-                    <p class="font-weight-light mt-4 pr-5 pl-5">
-                        Lorem ipsum dolor sit amet,
-                        consectetur adipiscing elit.
-                        Mauris vulputate metus et nisl
-                        luctus pharetra
-                    </p>
-                    <div class="mb-4">
-                        <a class="primary-text-color d-block p-4" href="">En savoir plus</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-1"><br><br></div>
-            <div class="col-md-5 col-12 homepage-background-offer-rectangle p-0 zoom">
-                <div class="filigrane-offer-premium">
-                    <img class="mt-n5" src="/images/templating/homepage/offre-premium.png">
-                    <h5 class="font-weight-bold mt-3">PREMIUM</h5>
-                    <div class="mt-5">
-                        <h2 class="primary-text-color">
-                            <small class="text-black font-weight-light vertical-align-super">€</small>997
-                        </h2>
-                    </div>
-                    <p class="font-weight-light mt-4 pr-5 pl-5">
-                        Lorem ipsum dolor sit amet,
-                        consectetur adipiscing elit.
-                        Mauris vulputate metus et nisl
-                        luctus pharetra
-                    </p>
-                    <div class="mb-4">
-                        <a class="primary-text-color d-block p-4" href="">En savoir plus</a>
-                    </div>
-                </div>
-            </div>
+            {% if offers | length > 0 %}
+                {% for offer in offers %}
+                    {% include '/offers/_offers-item.html.twig'
+                        with {
+                        'offer' : offer
+                    } %}
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
 </div>
@@ -360,82 +326,14 @@
     <div class="appear row justify-content-center m-0">
         <div class="col-10 text-white text-center d-flex mt-4">
             <div class="owl-carousel owl-theme temoignage-carousel text-white">
-                <div class="item">
-                    <div class="recommandation-homepage-block">
-                        <div class="m-3 temoignage-rating">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-empty.png">
-                        </div>
-                        <p class="font-weight-light p-2">
-                            Quand on est seul ou mal accompagné, c'est le chaos... Mais depuis fin 2018, Jonathan Hiel me guide
-                            chaque semaine, son expertise et sa pédagogie sont hors du commun. Je me sens privilégié, et
-                            vous le recommande, un véritable avant / après !
-                        </p>
-                        <hr class="hr-small primary-text-color">
-                        <h5 class="m-0">LAURENT LYON</h5>
-                        <p class="secondary-color-grey-dark">Senior Advisor Investment & Market</p>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="recommandation-homepage-block">
-                        <div class="m-3 temoignage-rating">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-empty.png">
-                        </div>
-                        <p class="font-weight-light p-2">
-                            Quand on est seul ou mal accompagné, c'est le chaos... Mais depuis fin 2018, Jonathan Hiel me guide
-                            chaque semaine, son expertise et sa pédagogie sont hors du commun. Je me sens privilégié, et
-                            vous le recommande, un véritable avant / après !
-                        </p>
-                        <hr class="hr-small primary-text-color">
-                        <h5 class="m-0">LAURENT LYON</h5>
-                        <p class="secondary-color-grey-dark">Senior Advisor Investment & Market</p>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="recommandation-homepage-block">
-                        <div class="m-3 temoignage-rating">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-empty.png">
-                        </div>
-                        <p class="font-weight-light p-2">
-                            Quand on est seul ou mal accompagné, c'est le chaos... Mais depuis fin 2018, Jonathan Hiel me guide
-                            chaque semaine, son expertise et sa pédagogie sont hors du commun. Je me sens privilégié, et
-                            vous le recommande, un véritable avant / après !
-                        </p>
-                        <hr class="hr-small primary-text-color">
-                        <h5 class="m-0">LAURENT LYON</h5>
-                        <p class="secondary-color-grey-dark">Senior Advisor Investment & Market</p>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="recommandation-homepage-block">
-                        <div class="m-3 temoignage-rating">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-full.png">
-                            <img src="/images/templating/star-rating-empty.png">
-                        </div>
-                        <p class="font-weight-light p-2">
-                            Quand on est seul ou mal accompagné, c'est le chaos... Mais depuis fin 2018, Jonathan Hiel me guide
-                            chaque semaine, son expertise et sa pédagogie sont hors du commun. Je me sens privilégié, et
-                            vous le recommande, un véritable avant / après !
-                        </p>
-                        <hr class="hr-small primary-text-color">
-                        <h5 class="m-0">LAURENT LYON</h5>
-                        <p class="secondary-color-grey-dark">Senior Advisor Investment & Market</p>
-                    </div>
-                </div>
+                {% if temoignages | length > 0 %}
+                    {% for temoignage in temoignages %}
+                        {% include '/pages/_temoignage-item-home.html.twig'
+                            with {
+                            'temoignage' : temoignage
+                        } %}
+                    {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>

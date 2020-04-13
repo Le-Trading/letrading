@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20200403102838 extends AbstractMigration
+final class Version20200410151505 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -22,8 +22,9 @@ final class Version20200403102838 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('CREATE TABLE temoignage (id INT AUTO_INCREMENT NOT NULL, author_id INT NOT NULL, created_at DATETIME NOT NULL, rating INT NOT NULL, content LONGTEXT NOT NULL, fonction LONGTEXT NOT NULL, INDEX IDX_BDADBC46F675F31B (author_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE temoignage ADD CONSTRAINT FK_BDADBC46F675F31B FOREIGN KEY (author_id) REFERENCES user (id)');
+        $this->addSql('ALTER TABLE offers ADD image_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE offers ADD CONSTRAINT FK_DA4604273DA5256D FOREIGN KEY (image_id) REFERENCES media (id)');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_DA4604273DA5256D ON offers (image_id)');
     }
 
     public function down(Schema $schema) : void
@@ -31,6 +32,8 @@ final class Version20200403102838 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('DROP TABLE temoignage');
+        $this->addSql('ALTER TABLE offers DROP FOREIGN KEY FK_DA4604273DA5256D');
+        $this->addSql('DROP INDEX UNIQ_DA4604273DA5256D ON offers');
+        $this->addSql('ALTER TABLE offers DROP image_id');
     }
 }

@@ -53,6 +53,11 @@ class Offers
      */
     private $plan;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Media", inversedBy="offers", cascade={"persist", "remove"})
+     */
+    private $media;
+
     public function __construct()
     {
         $this->payments = new ArrayCollection();
@@ -182,6 +187,18 @@ class Offers
     public function setPlan(string $plan): self
     {
         $this->plan = $plan;
+
+        return $this;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?Media $media): self
+    {
+        $this->media = $media;
 
         return $this;
     }

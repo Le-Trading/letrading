@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20200328110343 extends AbstractMigration
+final class Version20200410153807 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -22,7 +22,9 @@ final class Version20200328110343 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE souscription ADD is_ended TINYINT(1) DEFAULT NULL');
+        $this->addSql('ALTER TABLE offers DROP FOREIGN KEY FK_DA4604273DA5256D');
+        $this->addSql('DROP INDEX UNIQ_DA4604273DA5256D ON offers');
+        $this->addSql('ALTER TABLE offers DROP image_id');
     }
 
     public function down(Schema $schema) : void
@@ -30,6 +32,8 @@ final class Version20200328110343 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE souscription DROP is_ended');
+        $this->addSql('ALTER TABLE offers ADD image_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE offers ADD CONSTRAINT FK_DA4604273DA5256D FOREIGN KEY (image_id) REFERENCES media (id)');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_DA4604273DA5256D ON offers (image_id)');
     }
 }

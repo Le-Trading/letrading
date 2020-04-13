@@ -522,6 +522,7 @@ HOMEPAGE */
     background-size: cover;
     background-repeat: round;
     box-shadow: 2px 94px 142px -6px rgba(0,0,0,0.82);
+    z-index:500;
 }
 
 @media screen and (max-width: 800px) {
@@ -541,7 +542,9 @@ HOMEPAGE */
     background-size: cover;
     background-repeat: round;
 }
-
+filigrane-offer-premium h5{
+    text-transform:uppercase;
+}
 .homepage-background-equipe{
     background-image: url("../images/templating/homepage/bg-section-equipe.jpg");
     background-size: cover;
@@ -726,3 +729,9 @@ button.btn-secondary-custom:hover{
 #message #message_media legend, #message #message_media input{
     color:#fff;
 }
+
+.link-unstyled, .link-unstyled:link, .link-unstyled:hover, .link-unstyled p {
+    color: inherit;
+    text-decoration: inherit;
+}
+

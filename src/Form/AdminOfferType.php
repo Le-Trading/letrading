@@ -24,6 +24,10 @@ class AdminOfferType extends ApplicationType
                     'toolbar' => "basic"
                 )
             ])
+            ->add('media', MediaType::class, [
+                'label' => "Image de l'offre",
+                'required' => false
+            ])
             ->add('price', IntegerType::class, ['required' => true ])
         ;
     }

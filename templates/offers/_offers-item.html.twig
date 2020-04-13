@@ -1,0 +1,23 @@
+<div class="col-md-5 col-12 homepage-background-offer-rectangle p-0 zoom mr-5">
+    <a class="link-unstyled" href="{{ path('offers_show', {'title' : offer.title}) }}">
+        <div class="filigrane-offer-premium">
+            {% if offer.media %}
+                <img src="{{ vich_uploader_asset(offer.media, 'offersFile', 'App\\Entity\\Media') }}" class="mt-n5"
+                     alt="Image de l'offre {{ offer.title }}">
+            {% endif %}
+            <h5 class="font-weight-bold mt-3">{{ offer.title }}</h5>
+            <div class="mt-5">
+                <h2 class="primary-text-color">
+                    <small class="text-black font-weight-light vertical-align-super">€</small>{{ offer.price }} {% if offer.type == "subscription" %}/mois{% endif %}
+                </h2>
+            </div>
+            <p class="font-weight-light mt-4 pr-5 pl-5">
+                {{ offer.description | raw }}
+            </p>
+            <div class="mb-4">
+                <a class="primary-text-color d-block p-4" href="{{ path('offers_show', {'title' : offer.title}) }}">En
+                    savoir plus</a>
+            </div>
+        </div>
+    </a>
+</div>

@@ -4,30 +4,34 @@
 {% endblock %}
 
 {% block body %}
-	<div class="container">
-		<h1 class="h3 text-center my-5">Liste des offres</h1>
-
-		<div class="card-deck mb-3 text-center">
-			{% for offer in offers %}
-				<div class="card mb-4 box-shadow">
-					<div class="card-header">
-						<h4 class="my-0 font-weight-normal">{{offer.title}}</h4>
-					</div>
-					<div class="card-body">
-						<h1 class="card-title pricing-card-title">{{offer.price}}€
-							{% if offer.type == "subscription" %}
-								<small class="text-muted">/ mois</small>
-							{% endif %}
-						</h1>
-						<ul class="list-unstyled mt-3 mb-4">
-							{{offer.description | raw}}
-						</ul>
-						<a href="{{path('offers_show', {'title' : offer.title})}}" class="btn btn-lg btn-block btn-primary">Découvrir</a>
-
-
-					</div>
-				</div>
-			{% endfor %}
+	{% include '/partials/breadcrumb.html.twig'
+		with {
+		'breadcrumbs':[
+			['offres', 'offers_index']
+		],
+		'content':'Liste des offres'
+	}
+	%}
+	<div class="row justify-content-center m-0">
+		<div class="col-10 col-md-6 text-white text-center">
+			<h2 class="mt-2 mb-3">NOS OFFRES PRIVILÈGE</h2>
+			<p class="font-weight-light mt-2">
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vulputate metus et nisl luctus
+				pharetra. Interdum et malesuada fames ac ante ipsum primis in faucibus.
+			</p>
+			<img src="/images/templating/separator-white.png" class="mt-2">
+		</div>
+	</div>
+	<div class="row justify-content-center m-0">
+		<div class="col-7 text-center d-md-flex mt-9 mb-4 justify-content-center">
+			{% if offers | length > 0 %}
+				{% for offer in offers %}
+					{% include '/offers/_offers-item.html.twig'
+						with {
+						'offer' : offer
+					} %}
+				{% endfor %}
+			{% endif %}
 		</div>
 	</div>
 {% endblock %}

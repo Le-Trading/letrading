@@ -114,6 +114,12 @@ class Media implements \Serializable
     private $messageFile;
 
     /**
+     * @Vich\UploadableField(mapping="offers", fileNameProperty="imageName", size="imageSize")
+     *
+     * @var File
+     */
+    private $offersFile;
+    /**
      * @ORM\Column(type="string", length=255)
      *
      * @var string
@@ -143,6 +149,11 @@ class Media implements \Serializable
      * @ORM\OneToOne(targetEntity="App\Entity\Message", mappedBy="media", cascade={"persist", "remove"})
      */
     private $message;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Offers", mappedBy="media", cascade={"persist", "remove"})
+     */
+    private $offers;
 
     /**
      * Permet d'init le slug
@@ -198,9 +209,9 @@ class Media implements \Serializable
     }
 
     public function getEtapeFormation(): ?EtapeFormation
-{
-    return $this->etapeFormation;
-}
+    {
+        return $this->etapeFormation;
+    }
 
     public function setEtapeFormation(?EtapeFormation $etapeFormation): self
     {
@@ -256,6 +267,24 @@ class Media implements \Serializable
     }
 
     /**
+     * @param File|null $offersFile
+     * @throws \Exception
+     */
+    public function setOffersFile(?File $offersFile = null): void
+    {
+        $this->offersFile = $offersFile;
+
+        if (null !== $offersFile) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getOffersFile(): ?File
+    {
+        return $this->offersFile;
+    }
+
+    /**
      * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $forumFile
      * @throws \Exception
      */
@@ -290,6 +319,7 @@ class Media implements \Serializable
     {
         return $this->messageFile;
     }
+
     /**
      * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $formationFile
      */
@@ -401,7 +431,7 @@ class Media implements \Serializable
         list(
             $this->id,
             $this->imageName,
-        ) = unserialize($serialized, array('allowed_classes' => false));
+            ) = unserialize($serialized, array('allowed_classes' => false));
     }
 
     public function getPost(): ?Post
@@ -429,6 +459,23 @@ class Media implements \Serializable
         $newMedia = null === $message ? null : $this;
         if ($message->getMedia() !== $newMedia) {
             $message->setMedia($newMedia);
+        }
+
+        return $this;
+    }
+    public function getOffers(): ?Offers
+    {
+        return $this->offers;
+    }
+
+    public function setOffers(?Offers $offers): self
+    {
+        $this->offers = $offers;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newOffers = null === $offers ? null : $this;
+        if ($offers->getMedia() !== $newOffers) {
+            $offers->setMedia($newOffers);
         }
 
         return $this;

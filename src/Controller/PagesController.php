@@ -28,12 +28,22 @@ class PagesController extends AbstractController
 {
     /**
      * @Route("/", name="homepage")
+     * @param OffersRepository $repo
+     * @param TemoignageRepository $temRepo
+     * @return Response
      */
-    public function index(OffersRepository $repo)
+    public function index(OffersRepository $repo, TemoignageRepository $temRepo)
     {
         $offers = $repo->findAll();
+        $temoignages = $temRepo->createQueryBuilder('e')
+            ->addOrderBy('e.createdAt', 'DESC')
+            ->getQuery()
+            ->execute();
         return $this->render('home.html.twig',
-            ['offers' => $offers]
+            [
+                'offers' => $offers,
+                'temoignages' => $temoignages,
+            ]
         );
     }
 
@@ -49,13 +59,14 @@ class PagesController extends AbstractController
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    public function contactPage(Request $request, MailingService $mailingService){
+    public function contactPage(Request $request, MailingService $mailingService)
+    {
         $contact = new Contact();
 
         $form = $this->createForm(ContactType::class, $contact);
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
 
             $mailingService->contactSend($contact);
 
@@ -66,10 +77,11 @@ class PagesController extends AbstractController
             return $this->redirectToRoute('homepage');
         }
 
-        return $this->render('pages/contact.html.twig',[
+        return $this->render('pages/contact.html.twig', [
             'form' => $form->createView()
         ]);
     }
+
     /**
      * @Route("/success", name="success_page")
      */
@@ -90,9 +102,9 @@ class PagesController extends AbstractController
     public function temoignages(TemoignageRepository $repo, EntityManagerInterface $em, PaginatorInterface $paginator, Request $request)
     {
         $query = $repo->createQueryBuilder('e')
-        ->addOrderBy('e.createdAt', 'DESC')
-        ->getQuery()
-        ->execute();
+            ->addOrderBy('e.createdAt', 'DESC')
+            ->getQuery()
+            ->execute();
         $temoignages = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
@@ -102,7 +114,7 @@ class PagesController extends AbstractController
 
         $form = $this->createForm(TemoignageType::class, $temoignage);
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $temoignage->setAuthor($this->getUser());
             $em->persist($temoignage);
             $em->flush();
@@ -120,17 +132,18 @@ class PagesController extends AbstractController
                 $request->query->getInt('page', 1),
                 9
             );
-            return $this->render('/pages/temoignages.html.twig',[
+            return $this->render('/pages/temoignages.html.twig', [
                 'temoignages' => $temoignages,
                 'form' => $form->createView()
             ]);
         }
 
-        return $this->render('/pages/temoignages.html.twig',[
+        return $this->render('/pages/temoignages.html.twig', [
             'temoignages' => $temoignages,
             'form' => $form->createView()
         ]);
     }
+
     /**
      * @Route("/success/{checkout_session_id}", name="success_page_parameter")
      * @param $checkout_session_id
@@ -150,8 +163,9 @@ class PagesController extends AbstractController
      *
      * @Route("/updateNotif", name="notifs_update")
      */
-    public function updateNotif(EntityManagerInterface $manager, Request $request, NotifRepository $notifRepo){
-        if($request->isXmlHttpRequest()) {
+    public function updateNotif(EntityManagerInterface $manager, Request $request, NotifRepository $notifRepo)
+    {
+        if ($request->isXmlHttpRequest()) {
             $idNotif = $request->request->get('id');
 
             $notif = $notifRepo->findOneBy([
@@ -169,7 +183,8 @@ class PagesController extends AbstractController
     /**
      * Recuperation des threads pour affichage header
      */
-    public function getThreads(ThreadRepository $repo){
+    public function getThreads(ThreadRepository $repo)
+    {
         $threads = $repo->findAll();
         return $this->render(
             'partials/request/thread.html.twig',
@@ -180,10 +195,11 @@ class PagesController extends AbstractController
     /**
      * Recuperation des notifs
      */
-    public function getNotifs(NotifRepository $repo){
+    public function getNotifs(NotifRepository $repo)
+    {
         $notifs = $repo->findBy(
             ['receiver' => $this->getUser()],
-            ['date' => 'desc' ],
+            ['date' => 'desc'],
             4,
             null
         );
@@ -196,12 +212,13 @@ class PagesController extends AbstractController
         );
     }
 
-    public function getMessagesUnread(MessageRepository $repo){
+    public function getMessagesUnread(MessageRepository $repo)
+    {
         $convs = $this->getUser()->getConversations();
         $count = 0;
-        foreach($convs as $conv){
-            foreach($conv->getMessages() as $message){
-                if ($message->getAuthor() != $this->getUser() && !$message->getIsRead()){
+        foreach ($convs as $conv) {
+            foreach ($conv->getMessages() as $message) {
+                if ($message->getAuthor() != $this->getUser() && !$message->getIsRead()) {
                     $count++;
                 }
             }

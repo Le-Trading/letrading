@@ -32,7 +32,9 @@ class OffersController extends AbstractController
      *
      * @param $title
      * @param OffersRepository $repo
+     * @param StripeClient $stripeClient
      * @return Response
+     * @throws \Stripe\Exception\ApiErrorException
      */
     public function show($title, OffersRepository $repo, StripeClient $stripeClient)
     {
