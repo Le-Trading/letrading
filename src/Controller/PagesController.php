@@ -83,11 +83,19 @@ class PagesController extends AbstractController
     }
 
     /**
+     * Page Qui sommes nous ?
+     *
+     * @Route("/equipe", name="page_equipe")
+     * @return Response
+     */
+    public function equipePage(){
+        return $this->render('/pages/equipe.html.twig');
+    }
+
+    /**
      * @Route("/success", name="success_page")
      */
-    public function success()
-    {
-
+    public function success(){
         return $this->render('/pages/success.html.twig');
     }
 

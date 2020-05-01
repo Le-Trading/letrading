@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Qui sommes nous ?{% endblock %}
+
+{% block body %}
+    {% include '/partials/breadcrumb.html.twig'
+        with {
+        'breadcrumbs':[
+            ['rencontrer l\équipe', 'page_equipe']
+        ],
+        'content':'Rencontrer l\'équipe'
+    }
+    %}
+    <div class="container">
+        <div class="row justify-content-center m-0">
+            <div class="col-9 text-white mt-5 d-md-flex justify-content-center">
+                <div class="col-12 col-md-6 m-auto m-md-0">
+                    <div class="video-wrapper">
+                        <video>
+                            <source src="//clips.vorwaerts-gmbh.de/VfE_html5.mp4">
+                        </video>
+                    </div>
+                    <div class="text-center position-relative mt-n2-5">
+                        <img src="/images/templating/homepage/photo-equipe-jonathan.png">
+                        <div class="equipe-page-block p-4 mt-n7">
+                            <h4 class="mt-6">JONATHAN HIEL</h4>
+                            <p class="m-0">Gérant de fonds</p>
+                            <p class="pt-2 m-0 font-weight-light">DAX / FOREX / DOW JONES / S&P500 / CAC / BUND</p>
+                            <img src="/images/templating/separator-blue.png" class="mt-3">
+                        </div>
+                    </div>
+                    <div class="equipe-page-block-second font-weight-light pr-5 pl-5 pt-1">
+                        <ul>
+                            <li>Gérant de fonds professionnel depuis plus de 10 ans</li>
+                            <li>Ancien membre du Board Director chez HG Finance</li>
+                            <li>Trader à temps plein spécialisé dans le Trading des Indices, bien que présent
+                                également sur le marché du Forex et marché obligataire</li>
+                        </ul>
+                    </div>
+                </div>
+                <br><br>
+                <div class="col-12 col-md-6 m-auto m-md-0">
+                    <div class="video-wrapper">
+                        <video>
+                            <source src="//clips.vorwaerts-gmbh.de/VfE_html5.mp4">
+                        </video>
+                    </div>
+                    <div class="text-center position-relative mt-n2-5">
+                        <img src="/images/templating/homepage/photo-equipe-clement.png">
+                        <div class="equipe-page-block p-4 mt-n7">
+                            <h4 class="mt-6">CLÉMENT GIROT</h4>
+                            <p class="m-0">Gérant de fonds</p>
+                            <p class="pt-2 m-0 font-weight-light">DAX / FOREX / DOW JONES</p>
+                            <img src="/images/templating/separator-blue.png" class="mt-3">
+                        </div>
+                    </div>
+                    <div class="equipe-page-block-second font-weight-light pr-5 pl-5 pt-1">
+                        <ul>
+                            <li>Gérant de fonds professionnel depuis peu</li>
+                            <li>Titulaire d’un double diplôme en Finance Internationale / Commerce</li>
+                            <li>Trader à temps plein spécialisé dans le Trading du Forex, bien que présent également sur le
+                                marché des Indices et des matières premières</li>
+                        </ul>
+                    </div>
+                </div>
+                <br><br>
+                <div class="col-12 col-md-6 m-auto m-md-0">
+                    <div class="video-wrapper">
+                        <video>
+                            <source src="//clips.vorwaerts-gmbh.de/VfE_html5.mp4">
+                        </video>
+                    </div>
+                    <div class="text-center position-relative mt-n2-5">
+                        <img src="/images/templating/homepage/photo-equipe-jonathan.png">
+                        <div class="equipe-page-block p-4 mt-n7">
+                            <h4 class="mt-6">JONATHAN HIEL</h4>
+                            <p class="m-0">Gérant de fonds</p>
+                            <p class="pt-2 m-0 font-weight-light">DAX / FOREX / DOW JONES / S&P500 / CAC / BUND</p>
+                            <img src="/images/templating/separator-blue.png" class="mt-3">
+                        </div>
+                    </div>
+                    <div class="equipe-page-block-second font-weight-light pr-5 pl-5 pt-1">
+                        <ul>
+                            <li>Gérant de fonds professionnel depuis plus de 10 ans</li>
+                            <li>Ancien membre du Board Director chez HG Finance</li>
+                            <li>Trader à temps plein spécialisé dans le Trading des Indices, bien que présent
+                                également sur le marché du Forex et marché obligataire</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center m-0">
+            <div class="col-10 col-md-8 text-white text-center mt-6 mb-5">
+                <img class="p-3" src="/images/templating/icon-quote.png">
+                <p class="font-weight-light mt-2">
+                    Découvrez les stratégies les plus efficaces en Trading<br>
+                    et apprenez dés maintenant à Trader comme des gérants de fonds professionnels
+                </p>
+                <div class="btn-primary-custom text-white text-center font-weight-light mt-4">
+                    <a class="font-weight-bolder text-white no-hover" href="#">Commencer gratuitement</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -218,6 +218,10 @@ a:hover, a:active, a:focus{
     margin-bottom: 9rem!important;
 }
 
+.mt-6{
+    margin-top: 6rem!important;
+}
+
 .mt-9{
     margin-top: 9rem!important;
 }
@@ -228,6 +232,10 @@ a:hover, a:active, a:focus{
 
 .mt-n4{
     margin-top: -4rem!important;
+}
+
+.mt-n2-5{
+    margin-top: -2.5rem!important;
 }
 
 .mt-n7{
@@ -567,6 +575,29 @@ filigrane-offer-premium h5{
     border: 2px solid var(--secondary-color-grey);
     background: var(--secondary-color-grey);
     border-radius: 0 0 10px 10px;
+}
+
+.equipe-page-block{
+    border: 2px solid #082540;
+    background: #082540;
+}
+
+.equipe-page-block-second{
+    border: 2px solid #082540;
+    background: #082540;
+}
+
+.equipe-page-block-second ul{
+    list-style: none;
+}
+
+.equipe-page-block-second li::before{
+    content: "\2022";
+    color: var(--primary-color-light);
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
 }
 
 .equipe-homepage-block-second ul{
